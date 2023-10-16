@@ -3,15 +3,15 @@ import mongoose from "mongoose";
 const productSchema = mongoose.Schema({
   name: {
     type: String,
-    reuired: true,
+    required: true,
   },
   mrp: {
     type: Number,
-    reuired: true,
+    required: true,
   },
   costPrice: {
     type: Number,
-    reuired: true,
+    required: true,
   },
   measuring: {
     type: String,
@@ -20,15 +20,15 @@ const productSchema = mongoose.Schema({
   },
   retailPrice: {
     type: Number,
-    reuired: true,
+    required: true,
   },
   wholesalePrice: {
     type: Number,
-    reuired: true,
+    required: true,
   },
   barcode: {
     type: Number,
-    reuired: true,
+    required: true,
   },
   stock: {
     type: Number,
@@ -51,6 +51,7 @@ productSchema.virtual("totalPackets").get(function () {
 productSchema.virtual("totalStock").get(function () {
   const box = Math.floor(this.stock / this.box);
   const remainingItem = this.stock % this.box;
+  return box + remainingItem; // You were missing the return statement
 });
 
 export default mongoose.model("Product", productSchema);

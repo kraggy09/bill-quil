@@ -158,6 +158,14 @@ export const updateInventoryRequest = async (req, res) => {
   const { name, barcode, mrp, costPrice, stock, wholesalePrice, retailPrice } =
     req.body;
   try {
+    const filter = { barcode };
+    const updateProduct = await UpdateProducts.findOne(filter);
+    if (updateProduct) {
+      return res.status(404).json({
+        msg: `Product is already sent for verfication from the admin`,
+        updateProduct,
+      });
+    }
     if (name) {
       const filter = { name, mrp }; // Filter to find the product
       const update = {};
@@ -177,19 +185,25 @@ export const updateInventoryRequest = async (req, res) => {
         update.mrp = mrp;
       }
       // Use findOneAndUpdate to find and update the product
-      const updatedProduct = await UpdateProducts.findOneAndUpdate(
-        filter,
-        update,
-        {
-          new: true,
-        }
-      );
+      const product = await Product.findOne(filter);
+      if (product) {
+        const updatedProduct = await UpdateProducts.create({
+          box: product.box,
+          packet: product.box,
+          name: product.name,
+          barcode: product.barcode,
+          costPrice: product.costPrice,
+          wholesalePrice: product.wholesalePrice,
+          mrp: product.mrp,
+          retailPrice: product.retailPrice,
+          measuring: product.measuring,
+          stock: product.stock,
+          ...update,
+        });
 
-      if (updatedProduct) {
-        return res.status(200).json({
-          success: true,
-          msg: "Product updated successfully",
-          data: updatedProduct,
+        return res.status(201).json({
+          updatedProduct,
+          msg: `Your product has been sent to admin for verification of updating `,
         });
       }
     }
@@ -213,16 +227,26 @@ export const updateInventoryRequest = async (req, res) => {
         update.mrp = mrp;
       }
 
-      // Use findOneAndUpdate to find and update the product
-      const updatedProduct = await Product.findOneAndUpdate(filter, update, {
-        new: true,
-      });
+      const product = await Product.findOne(filter);
+      console.log(product);
+      if (product) {
+        const updatedProduct = await UpdateProducts.create({
+          box: product.box,
+          packet: product.box,
+          name: product.name,
+          barcode: product.barcode,
+          costPrice: product.costPrice,
+          wholesalePrice: product.wholesalePrice,
+          mrp: product.mrp,
+          retailPrice: product.retailPrice,
+          measuring: product.measuring,
+          stock: product.stock,
+          ...update,
+        });
 
-      if (updatedProduct) {
-        return res.status(200).json({
-          success: true,
-          msg: "Product updated successfully",
-          data: updatedProduct,
+        return res.status(201).json({
+          updatedProduct,
+          msg: `Your product has been sent to admin for verification of updating `,
         });
       }
     }

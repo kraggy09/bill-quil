@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getAllproduct,
   getProduct,
+  updateInventoryRequest,
   // updateInventory,
 } from "../controllers/Product.js";
 
@@ -13,6 +14,6 @@ router.route("/products/newItem").post(createNewProduct);
 router.route("/product").get(getProduct);
 router.route("/products").get(getAllproduct);
 router.route("/products/delete").delete(deleteProduct);
-// router.route("/products/update").put(updateInventory);
+router.route("/products/updateRequest").post(updateInventoryRequest);
 
 export default router;
