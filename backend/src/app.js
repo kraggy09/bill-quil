@@ -4,7 +4,8 @@ import userRouter from "./routes/User.js";
 import productRouter from "./routes/Product.js";
 import productUpdateRouter from "./routes/UpdateProducts.js";
 import billRouter from "./routes/Bill.js";
-
+import customerRouter from "./routes/Customer.js";
+import transactionRouter from "./routes/Transaction.js";
 dotenv.config({
   path: "./src/config/config.env",
 });
@@ -18,5 +19,7 @@ app.use("/api/v1", userRouter);
 app.use("/api/v1", productRouter);
 app.use("/api/v1", billRouter);
 app.use("/api/admin", productUpdateRouter);
+app.use("/api/v1", customerRouter);
+app.use("/api/v1", transactionRouter);
 
 export default app;

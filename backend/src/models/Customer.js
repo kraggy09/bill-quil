@@ -10,7 +10,17 @@ const customerSchema = new mongoose.Schema({
       ref: "Bill",
     },
   ],
+  transactions: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Transaction",
+    },
+  ],
   outstanding: {
+    type: Number,
+    required: true,
+  },
+  phone: {
     type: Number,
     required: true,
   },

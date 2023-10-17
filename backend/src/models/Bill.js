@@ -1,12 +1,18 @@
 import mongoose from "mongoose";
+
+const currentDate = Date.now();
 const billSchema = mongoose.Schema({
+  date: {
+    type: Date,
+    default: currentDate,
+  },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
   },
   createdAt: {
     type: Date,
-    default: Date.now, // Set the default value to the current date
+    default: currentDate, // Set the default value to the current date
   },
   items: [
     {
@@ -24,6 +30,18 @@ const billSchema = mongoose.Schema({
     type: Date,
     // Specify the TTL (Time to Live) value in seconds (30 days)
     expires: 30 * 24 * 60 * 60,
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+  payment: {
+    type: Number,
+    required: true,
+  },
+  discount: {
+    type: Number,
+    default: 0,
   },
 });
 

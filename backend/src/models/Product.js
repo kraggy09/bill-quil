@@ -42,6 +42,10 @@ const productSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  minQuantity: {
+    type: Number,
+    required: true,
+  },
 });
 
 productSchema.virtual("totalPackets").get(function () {
