@@ -8,17 +8,15 @@ const initialState = {
   error: null,
 };
 
+console.log(initialState.customer);
 export const fetchCustomers = createAsyncThunk(
   "customers/fetchCustomers",
   async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:4000/api/v1/getAllCustomers"
-      ); // Adjust the URL as needed
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await axios.get(
+      "http://localhost:4000/api/v1/getAllCustomers"
+    );
+
+    return response.data.customers;
   }
 );
 
@@ -26,14 +24,20 @@ const customerSlice = createSlice({
   name: "customer",
   initialState,
   reducers: {
-    updateOutstanding: (state, action) => {
-      const { customerId, newOutstanding } = action.payload;
+    updateOutstanding: (state, { payload }) => {
+      const { customerId, newOutstanding } = payload;
       const customerToUpdate = state.customers.find(
         (customer) => customer.id === customerId
       );
       if (customerToUpdate) {
         customerToUpdate.outstanding = newOutstanding;
       }
+    },
+
+    findCustomer: (state, { payload }) => {
+      return state.customers.filter((customer) =>
+        customer.name.includes(payload.findName)
+      );
     },
   },
   extraReducers: (builder) => {
@@ -55,4 +59,6 @@ const customerSlice = createSlice({
 });
 
 export const { updateOutstanding } = customerSlice.actions;
+export const { findCustomer } = customerSlice.actions;
+
 export default customerSlice.reducer;

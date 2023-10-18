@@ -38,28 +38,19 @@ const NewProduct = () => {
   //   const [submitted, setSubmitted] = useState(false);
   const apiUrl = "http://localhost:4000/api/v1/products/newItem";
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
 
     if (name === "name" || name == "measuring") {
       // Handle string input (e.g., "name")
       dispatch({ type: "updateField", fieldName: name, fieldValue: value });
     } else {
-      // Handle numeric input (e.g., "mrp", "cp", etc.)
-      const numberValue = parseFloat(value);
+      value = Number(value);
 
-      if (!isNaN(numberValue)) {
-        if (numberValue >= 0) {
-          dispatch({
-            type: "updateField",
-            fieldName: name,
-            fieldValue: numberValue,
-          });
-        } else {
-          toast.error("Negative numbers are not allowed.");
-        }
-      } else {
-        toast.error("Please enter a valid number.");
-      }
+      dispatch({
+        type: "updateField",
+        fieldName: name,
+        fieldValue: value,
+      });
     }
   };
 

@@ -3,6 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css";
+
 const initialState = {
   name: "",
   phone: "",
@@ -20,16 +21,12 @@ const formReducer = (state, action) => {
 };
 
 const apiUrl = "http://localhost:4000/api/v1/newCustomer";
+
 const NewCustomer = () => {
-  const myInputRef = useRef(null);
   const [formData, dispatch] = useReducer(formReducer, initialState);
-  const handleReset = () => {
-    dispatch({ type: "reset" });
-  };
-  console.log(formData);
+  const myInputRef = useRef(null);
 
   useEffect(() => {
-    // Focus on the input element when the component mounts
     myInputRef.current.focus();
   }, []);
 
@@ -42,6 +39,10 @@ const NewCustomer = () => {
 
       dispatch({ type: "updateField", fieldName: name, fieldValue: value });
     }
+  };
+
+  const handleReset = () => {
+    dispatch({ type: "reset" });
   };
 
   const handleSubmit = async (e) => {
@@ -61,7 +62,13 @@ const NewCustomer = () => {
       })
       .catch((err) => {
         console.log(err.response);
-        toast.error(err.response.data.msg);
+        if (err.response.data) {
+          toast.error(err.response.data.msg);
+        } else {
+          toast.error("Error");
+        }
+
+        // toast.error(err.response);
       });
   };
 
@@ -71,15 +78,15 @@ const NewCustomer = () => {
     label: "px-6 font-bold text-xl",
     inputContainer: "my-6",
     button:
-      "min-w-[150px] py-2 rounded-xl text-xl font-bold hover:border-green-500 hover:bg-green-500 hover:text-white transition-all ease-linear duration-300 border-green-600 border-2 mx-auto",
+      "min-w-[150px] flex items-center justify-center px-3 py-2 rounded-xl text-xl font-bold hover:border-green-500 hover:bg-green-500 hover:text-white transition-all ease-linear duration-300 border-green-600 border-2 mx-auto",
   };
+
   return (
     <div className="w-full flex min-h-[100vh] items-center justify-center">
       <form
         onSubmit={handleSubmit}
         className=" shadow-xl min-h-[20vw]  max-w-[50vw] shadow-gray-400 rounded-xl"
       >
-        {" "}
         <h1 className="text-center text-3xl font-bold">
           <p className="inline-block border-b-2 px-6 my-6 py-2 border-black">
             Create a New Customer
@@ -132,7 +139,7 @@ const NewCustomer = () => {
             />
           </span>
           <button className={css.button} type="submit">
-            Submit
+            <AiOutlinePlus /> Create Customer
           </button>
           <ToastContainer autoClose={3000} />
         </div>

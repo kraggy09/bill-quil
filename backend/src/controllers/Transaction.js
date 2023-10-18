@@ -40,15 +40,16 @@ export const createNewTransaction = async (req, res) => {
 
 export const createNewPayment = async (req, res) => {
   try {
-    const { name, amount } = req.body;
+    let { id, amount } = req.body;
+    amount = Number(amount);
     const newTransaction = await Transaction.create({
       name,
       amount,
       taken: false,
       purpose: "Payment",
     });
-    const customer = await Customer.findOneAndUpdate(
-      { name: name },
+    const customer = await Customer.findByIdAndUpdate(
+      { id },
       {
         $inc: { outstanding: -amount },
         $push: { transactions: newTransaction._id }, // Corrected $push usage
