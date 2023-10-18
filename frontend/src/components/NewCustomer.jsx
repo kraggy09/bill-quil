@@ -57,7 +57,7 @@ const NewCustomer = () => {
       .then((res) => {
         console.log("Response", res);
         toast.success("customer created successfully");
-        dispatch({ type: "reset" });
+        handleReset();
       })
       .catch((err) => {
         console.log(err.response);
