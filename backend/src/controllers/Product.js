@@ -3,7 +3,7 @@ import UpdateProducts from "../models/UpdateProducts.js";
 
 export const createNewProduct = async (req, res) => {
   try {
-    const {
+    let {
       name,
       barcode,
       mrp,
@@ -14,10 +14,12 @@ export const createNewProduct = async (req, res) => {
       stock,
       packet,
       box,
+      minQuantity,
     } = req.body;
 
+    name = name.toLowerCase();
     const productBarcode = await Product.findOne({ barcode });
-    const productName = await Product.findOne({ $and: [{ name }, { mrp }] });
+    const productName = await Product.findOne({ name });
     if (productBarcode) {
       if (barcode == productBarcode.barcode) {
         return res.status(400).json({
@@ -28,7 +30,7 @@ export const createNewProduct = async (req, res) => {
       }
     }
     if (productName) {
-      if (productName.name == name && productName.mrp == mrp) {
+      if (productName.name.toLowerCase() == name) {
         return res.status(400).json({
           success: false,
           msg: `Product Already exists`,
@@ -47,6 +49,7 @@ export const createNewProduct = async (req, res) => {
       stock,
       packet,
       box,
+      minQuantity,
     });
 
     return res.status(201).json({

@@ -3,7 +3,8 @@ import Customer from "../models/Customer.js";
 export const createNewCustomer = async (req, res) => {
   try {
     const customerData = req.body;
-    const { name, outstanding, phone } = customerData;
+    let { name, outstanding, phone } = customerData;
+    name = name.toLowerCase();
     const customer = await Customer.findOne({ name });
     if (customer) {
       return res.status(404).json({
@@ -27,6 +28,52 @@ export const createNewCustomer = async (req, res) => {
     return res.status(500).json({
       success: false,
       msg: error.message,
+    });
+  }
+};
+
+export const getAllCustomers = async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    if (customers) {
+      return res.status(200).json({
+        customers,
+        msg: "List of customers",
+        success: true,
+      });
+    }
+    return res.status(404).json({
+      msg: "No customers found",
+      success: false,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      msg: "Server error",
+    });
+  }
+};
+
+export const getSingleCustomer = async (req, res) => {
+  const customerId = req.body;
+  const customer = await Customer.findById({ customerId });
+  try {
+    if (customer) {
+      return res.status(200).json({
+        msg: "Customer found successfully",
+        data: customer,
+        success: true,
+      });
+    }
+    return res.status(404).json({
+      msg: "Customer not found ",
+
+      success: false,
+    });
+  } catch (error) {
+    return res.status(404).json({
+      msg: "Server error",
+      success: false,
     });
   }
 };
