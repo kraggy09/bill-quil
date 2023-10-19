@@ -4,6 +4,7 @@ import NewProduct from "./components/NewProduct";
 import NewTransaction from "./components/NewTransaction";
 import { useEffect } from "react";
 import { fetchCustomers } from "./store/customerSlice";
+import HomePage from "./pages/HomePage";
 
 const App = () => {
   const customers = useSelector((store) => store.customer.customers);
@@ -22,8 +23,10 @@ const App = () => {
 
   return (
     <div className="min-h-[100vh] w-full">
-      <NewTransaction />
-      <div>
+      <HomePage />
+      <div className="hidden">
+        <NewTransaction />
+
         <NewCustomer />
         <NewProduct />
       </div>

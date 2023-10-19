@@ -2,6 +2,7 @@ import getDate from "../config/getDate.js";
 import Customer from "../models/Customer.js";
 import DailyReport from "../models/DailyReport.js";
 import Transaction from "../models/Transaction.js";
+import mongoose from "mongoose";
 const currentDate = getDate();
 
 export const createNewTransaction = async (req, res) => {
@@ -14,12 +15,13 @@ export const createNewTransaction = async (req, res) => {
       purpose,
     });
 
-    const dailyReport = await DailyReport.findOneAndUpdate(
-      { date: currentDate },
-      {
-        $push: { transactions: newTransaction._id },
-      }
-    );
+    // const dailyReport = await DailyReport.findOneAndUpdate(
+    //   { date: currentDate },
+    //   {
+    //     $push: { transactions: newTransaction._id },
+    //   },
+    //   { upsert: true, new: true }
+    // );
 
     //Logic to be written for adding this transaction in the dailyreport
 
@@ -40,7 +42,9 @@ export const createNewTransaction = async (req, res) => {
 
 export const createNewPayment = async (req, res) => {
   try {
-    let { id, amount } = req.body;
+    let { name, id, amount } = req.body;
+    id = new mongoose.Types.ObjectId(id);
+
     amount = Number(amount);
     const newTransaction = await Transaction.create({
       name,
@@ -49,7 +53,7 @@ export const createNewPayment = async (req, res) => {
       purpose: "Payment",
     });
     const customer = await Customer.findByIdAndUpdate(
-      { id },
+      id,
       {
         $inc: { outstanding: -amount },
         $push: { transactions: newTransaction._id }, // Corrected $push usage
@@ -61,6 +65,10 @@ export const createNewPayment = async (req, res) => {
       { date: currentDate },
       {
         $push: { transactions: newTransaction._id },
+      },
+      {
+        upsert: true,
+        new: true,
       }
     );
     if (customer) {
@@ -69,11 +77,12 @@ export const createNewPayment = async (req, res) => {
         success: true,
         customer,
         newTransaction,
-        dailyReport,
+        // dailyReport,
       });
     }
     return res.status(201).json({ msg: "Payment not created", success: false });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       msg: "Server down",
       success: false,

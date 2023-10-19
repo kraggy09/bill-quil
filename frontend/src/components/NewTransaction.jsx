@@ -1,5 +1,10 @@
 import { useReducer, useState } from "react";
+import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
+
+import { fetchCustomers } from "../store/customerSlice";
 const initialState = {
   name: "",
   purpose: "",
@@ -18,6 +23,8 @@ const formReducer = (state, action) => {
   }
 };
 
+const apiUrl = "http://localhost:4000/api/v1/";
+
 const findCustomer = (customers, val) => {
   return customers.filter((customer) => {
     // console.log(customer);
@@ -28,15 +35,18 @@ const findCustomer = (customers, val) => {
 const NewTransaction = () => {
   const [taken, setTaken] = useState(!false);
   const [formData, dispatch] = useReducer(formReducer, initialState);
+  const [visible, setVisible] = useState(false);
+  const [foundCustomer, setFoundCustomer] = useState({});
+  console.log(foundCustomer);
 
-  const { customers } = useSelector((store) => store.customer);
+  const customers = useSelector((store) => store.customer.customers);
   // console.log(customers);
 
   console.log(formData);
 
   const css = {
     input:
-      "mx-auto outline-none focus:border-green-800 transtion-all duration-300 ease-linear   border-b-2 px-2 text-xl font-bold max-w-[300px]",
+      "mx-auto capitalize outline-none focus:border-green-800 transtion-all duration-300 ease-linear   border-b-2 px-2 text-xl font-bold max-w-[300px]",
     label: "px-6 font-bold text-xl",
     inputContainer: "my-6",
     button: `min-w-[150px] my-6 flex items-center justify-center px-3 py-2 rounded-xl text-xl font-bold ${
@@ -47,16 +57,49 @@ const NewTransaction = () => {
       taken ? "border-red-600" : "border-green-600"
     } border-2 mx-auto`,
   };
+  const dispatchR = useDispatch();
 
   const handleField = (e) => {
     let { name, value } = e.target;
     dispatch({ type: "updateField", fieldName: name, fieldValue: value });
   };
 
+  const handleSubmit = async () => {
+    if (!taken) {
+      await axios
+        .post(apiUrl + "createPayment", {
+          ...formData,
+          id: foundCustomer._id,
+        })
+        .then((res) => {
+          console.log(res);
+          toast.success("Payment Recieved");
+        })
+        .catch((err) => console.log(err));
+    } else {
+      await axios
+        .post(apiUrl + "createTransation", {
+          ...formData,
+        })
+        .then((res) => {
+          console.log(res);
+          toast.success("Cashout Done");
+        })
+        .catch((err) => console.log(err));
+    }
+    dispatchR(fetchCustomers());
+    dispatch({ type: "reset" });
+    setFoundCustomer(null);
+  };
+
+  // console.log(foundCustomer);
   return (
     <div className="w-full min-h-[100vh] flex items-center justify-center">
       <form
-        action=""
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit();
+        }}
         className="shadow-xl shadow-gray-400 min-w-[80vw] rounded-2xl max-w-[80vw]"
       >
         <h1 className="text-center text-3xl my-6 font-bold">
@@ -89,11 +132,12 @@ const NewTransaction = () => {
             </div>
           </div>
 
-          <span className="mx-auto my-3">
+          <span className="mx-auto my-3 relative">
             <label className={css.label} htmlFor="name">
               Name:
             </label>
             <input
+              required
               className={css.input}
               type="text"
               id="name"
@@ -101,16 +145,45 @@ const NewTransaction = () => {
               value={formData.name}
               onChange={(e) => {
                 handleField(e);
-                const ab = findCustomer(customers, formData.name);
-                console.log(ab);
+                if (formData.name.length > 0) {
+                  setVisible(true);
+                } else {
+                  setVisible(false);
+                }
               }}
             />
+            <div className="absolute min-w-[300px] -right-5 bg-gray-200 rounded-xl ">
+              {!taken &&
+                visible &&
+                formData.name != "" &&
+                findCustomer(customers, formData.name).map((d) => {
+                  return (
+                    <div
+                      className="hover:bg-green-500 px-6 hover:cursor-pointer font-bold capitalize py-1 hover:text-white"
+                      onClick={() => {
+                        dispatch({
+                          type: "updateField",
+                          fieldName: "name",
+                          fieldValue: d.name,
+                        });
+                        setVisible(false);
+                        setFoundCustomer(d);
+                      }}
+                      key={d._id}
+                    >
+                      {d.name}:{"    "}
+                      {d.outstanding}
+                    </div>
+                  );
+                })}
+            </div>
           </span>
           <span className="mx-auto my-3">
             <label className={css.label} htmlFor="amount">
               Amount:
             </label>
             <input
+              required
               className={css.input}
               type="text"
               id="amount"
@@ -155,10 +228,12 @@ const NewTransaction = () => {
               </label>
 
               <input
+                required
                 className={css.input}
                 type="text"
                 id="amount"
                 name="amount"
+                value={foundCustomer ? foundCustomer.outstanding : ""}
                 disabled
                 onChange={handleField}
               />
@@ -169,6 +244,7 @@ const NewTransaction = () => {
             Create {taken ? "Transaction" : "Payment"}
           </button>
         </div>
+        <ToastContainer autoClose={3000} />
       </form>
     </div>
   );
