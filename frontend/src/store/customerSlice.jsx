@@ -58,7 +58,6 @@ const customerSlice = createSlice({
   },
 });
 
-export const { updateOutstanding } = customerSlice.actions;
-export const { findCustomer } = customerSlice.actions;
+export const { updateOutstanding, findCustomer } = customerSlice.actions;
 
 export default customerSlice.reducer;

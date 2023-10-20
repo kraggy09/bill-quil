@@ -109,7 +109,7 @@ export const getAllproduct = async (req, res) => {
     return res.status(200).json({
       success: true,
       msg: "These are the products",
-      data: products,
+      products,
     });
   } catch (error) {
     console.log(error.message);

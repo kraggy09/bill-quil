@@ -3,6 +3,7 @@ import { GrTransaction } from "react-icons/gr";
 import { BiSolidUser } from "react-icons/bi";
 import { FaMoneyBill } from "react-icons/fa";
 import { ImClock } from "react-icons/im";
+import { Link } from "react-router-dom";
 import {
   MdSpaceDashboard,
   MdOutlineProductionQuantityLimits,
@@ -18,9 +19,9 @@ const SideBar = () => {
     const min = date.getMinutes();
     const sec = date.getSeconds();
     setTime(
-      `${
-        hour > 12 ? "0" + (hour % 12) : hour < 12 ? "0" + hour : hour
-      }:${min}:${sec < 10 ? "0" + sec : sec} ${hour > 12 ? "PM" : "AM"}`
+      `${hour > 12 ? "0" + (hour % 12) : hour < 12 ? "0" + hour : hour}:${
+        min < 10 ? "0" + min : min
+      }:${sec < 10 ? "0" + sec : sec} ${hour > 12 ? "PM" : "AM"}`
     );
   };
 
@@ -60,6 +61,7 @@ min-h-[100vh] shadow-xl shadow-gray-400
 
               <p className="px-2">DashBoard</p>
             </span>
+
             <span className="flex hover:bg-green-500 hover:text-white items-center text-xl px-10 py-2 hover:cursor-pointer rounded-lg font-bold my-2 ">
               <BiSolidReport className="hover:text-white" />
 
@@ -104,7 +106,7 @@ min-h-[100vh] shadow-xl shadow-gray-400
             }}
             className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
           >
-            {<MdSpaceDashboard />}
+            <MdSpaceDashboard />
           </span>
           <span className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5">
             {<BiSolidReport />}

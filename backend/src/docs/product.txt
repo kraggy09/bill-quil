@@ -18,7 +18,3 @@ You will be sending this in the req body so to create a new product
 
 API=http://localhost:4000/api/v1/products/newItem
 
-
-GrTransaction
-BiSolidUser
-FaMoneyBill

@@ -24,6 +24,10 @@ const billSchema = mongoose.Schema({
         type: Number,
         required: true,
       },
+      dicount: {
+        type: Number,
+        required: true,
+      },
     },
   ],
   expires: {

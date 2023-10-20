@@ -43,10 +43,12 @@ const CustomerPage = () => {
     <div>
       <table>
         <thead>
-          <th>Home</th>
-          <th>Home</th>
-          <th>Home</th>
-          <th>Home</th>
+          <tr>
+            <th>Home</th>
+            <th>Home</th>
+            <th>Home</th>
+            <th>Home</th>
+          </tr>
         </thead>
         <tbody>
           {sortedCustomers.map((customer) => {
