@@ -1,6 +1,18 @@
 import mongoose from "mongoose";
+const getDate = () => {
+  const date = new Date();
+  const currentDate =
+    date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+  return currentDate;
+};
 
+const date = Date.now();
+const newDate = getDate();
 const transactionSchema = mongoose.Schema({
+  date: {
+    type: String,
+    default: newDate,
+  },
   name: {
     type: String,
     required: true,
@@ -16,9 +28,14 @@ const transactionSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: date,
     // Set to expire after 60 days (in seconds)
     expires: 60 * 60 * 24 * 60,
+  },
+  paymentMode: {
+    type: String,
+    enum: ["cash", "online"],
+    required: true,
   },
 });
 

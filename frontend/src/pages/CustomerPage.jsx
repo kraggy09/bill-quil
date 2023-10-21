@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { sortArray } from "../libs/constant";
 
 // Define a generic sorting function
-function sortArray(arr, compareFunction) {
-  return arr.slice().sort(compareFunction);
-}
 
 // Define the sorting function for sorting by name
 function sortCustomersByName(a, b) {

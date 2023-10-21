@@ -9,6 +9,7 @@ const initialState = {
   name: "",
   purpose: "",
   amount: "",
+  paymentMode: "",
 };
 
 const formReducer = (state, action) => {
@@ -237,6 +238,24 @@ const NewTransaction = () => {
                 disabled
                 onChange={handleField}
               />
+            </span>
+          )}
+          {!taken && (
+            <span className="mx-auto my-3">
+              <label className={css.label} htmlFor="payment">
+                PaymentMode:
+              </label>
+
+              <select
+                value={formData.paymentMode}
+                name="paymentMode" // Corrected the name attribute
+                className="max-w-[300px] font-bold px-2 text-xl min-w-[290px] mx-auto"
+                onChange={handleField}
+              >
+                <option value="none">Select the Payment Mode</option>
+                <option value="cash">Cash</option>
+                <option value="online">Online</option>
+              </select>
             </span>
           )}
 

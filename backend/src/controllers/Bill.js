@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import getDate from "../config/getDate.js";
 import Bill from "../models/Bill.js";
 import Customer from "../models/Customer.js";
@@ -7,22 +8,36 @@ import Transaction from "../models/Transaction.js";
 
 export const createBill = async (req, res) => {
   const currentDate = getDate();
-  const products = req.body.products;
-  const { customerId, total, payment = 0, discount = 0 } = req.body;
+  const products = req.body.purchased;
+  const {
+    customerId,
+    total,
+    payment = 0,
+    paymentMode,
+    discount = 0,
+  } = req.body;
 
   const items = await Promise.all(
     products.map(async (product) => {
+      const quantity =
+        product.piece +
+        product.packet * product.packetQuantity +
+        product.box * product.boxQuantity;
+      const id = new mongoose.Types.ObjectId(product.id);
       const updatedProduct = await Product.findByIdAndUpdate(
-        product._id,
+        id,
         {
-          $inc: { stock: -product.quantity },
+          $inc: { stock: -quantity },
         },
         { new: true }
       );
 
       return {
         product: updatedProduct._id,
-        quantity: product.quantity,
+        quantity: quantity,
+        discount: product.discount || 0,
+        type: product.type,
+        total: product.total,
       };
     })
   );
@@ -45,6 +60,7 @@ export const createBill = async (req, res) => {
         purpose: "Payment",
         amount: payment,
         taken: false,
+        paymentMode,
       });
 
       dailyReport = await DailyReport.findOneAndUpdate(
@@ -58,9 +74,11 @@ export const createBill = async (req, res) => {
 
     // Update the customer's bills array with the newly created bill
     const updatedCustomer = await Customer.findByIdAndUpdate(customerId, {
-      $push: { bills: newBill._id },
       outstanding: total - payment,
-      $push: { transactions: transaction ? transaction._id : null },
+      $push: {
+        transactions: transaction ? transaction._id : null,
+        bills: newBill._id,
+      },
     });
 
     if (updatedCustomer) {

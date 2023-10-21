@@ -30,15 +30,4 @@ const dailyReportSchema = mongoose.Schema({
 
 const DailyReport = mongoose.model("DailyReport", dailyReportSchema);
 
-// Schedule a daily task to create a new DailyReport document
-nodeCron.schedule("0 0 * * *", async () => {
-  try {
-    const newDailyReport = new DailyReport();
-    await newDailyReport.save();
-    console.log("New DailyReport created.");
-  } catch (error) {
-    console.error("Error creating DailyReport:", error);
-  }
-});
-
 export default DailyReport;

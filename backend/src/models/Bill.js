@@ -24,7 +24,16 @@ const billSchema = mongoose.Schema({
         type: Number,
         required: true,
       },
-      dicount: {
+      discount: {
+        type: Number,
+        required: true,
+      },
+      type: {
+        type: String,
+        required: true,
+        enum: ["wholesale", "retail"],
+      },
+      total: {
         type: Number,
         required: true,
       },

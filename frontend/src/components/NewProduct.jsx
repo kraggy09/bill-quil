@@ -2,8 +2,11 @@ import { useReducer } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
-
+import { IoArrowBackOutline } from "react-icons/io5";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchProducts } from "../store/productSlice";
 
 const initialState = {
   name: "",
@@ -31,6 +34,8 @@ const formReducer = (state, action) => {
 };
 
 const NewProduct = () => {
+  const navigate = useNavigate();
+  const dispatchR = useDispatch();
   const handleReset = () => {
     dispatch({ type: "reset" });
   };
@@ -80,7 +85,12 @@ const NewProduct = () => {
         console.log("Product created:", response.data);
         toast.success("Product Created Successfully");
 
+        toast.info("Naviagting to products page");
+        dispatchR(fetchProducts());
         handleReset();
+        setTimeout(() => {
+          navigate("/products");
+        }, 3500);
       })
       .catch((error) => {
         // Handle errors, e.g., validation errors from the server
@@ -94,11 +104,17 @@ const NewProduct = () => {
   };
 
   return (
-    <div className="flex items-center  justify-center pt-9">
+    <div className="flex items-center   justify-center pt-3 ">
       <form
-        className="shadow-xl shadow-gray-400 min-w-[80vw] rounded-2xl max-w-[80vw]"
+        className="shadow-xl shadow-gray-400 border-green-500 border-2 ml-3 min-w-[80vw] rounded-2xl max-w-[80vw]"
         onSubmit={handleSubmit}
       >
+        <span className="text-4xl">
+          <IoArrowBackOutline
+            onClick={() => navigate("/products")}
+            className="mx-6 mt-6 hover:cursor-pointer"
+          />
+        </span>
         <h1 className="text-center text-3xl font-bold">
           <p className="inline-block border-b-2 px-6 my-1 py-2 border-black">
             Create a New Product

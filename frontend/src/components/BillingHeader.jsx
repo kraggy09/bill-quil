@@ -40,6 +40,7 @@ class Product {
 }
 
 const findCustomer = (customers, val) => {
+  console.log("I am rendered ");
   return customers.filter((customer) => {
     // console.log(customer);
     return customer.name.toLowerCase().includes(val);

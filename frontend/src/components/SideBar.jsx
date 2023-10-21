@@ -1,18 +1,21 @@
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import { BiSolidReport } from "react-icons/bi";
 import { GrTransaction } from "react-icons/gr";
+import { useEffect } from "react";
 import { BiSolidUser } from "react-icons/bi";
 import { FaMoneyBill } from "react-icons/fa";
 import { ImClock } from "react-icons/im";
-import { Link } from "react-router-dom";
 import {
   MdSpaceDashboard,
   MdOutlineProductionQuantityLimits,
 } from "react-icons/md";
-import { useEffect, useState } from "react";
+import getDate from "../../../backend/src/config/getDate";
 
 const SideBar = () => {
   const [time, setTime] = useState("");
-  const [hidden, setHidden] = useState(true);
+  const [hidden, setHidden] = useState(false);
+
   const updateTime = () => {
     const date = new Date();
     const hour = date.getHours();
@@ -25,7 +28,6 @@ const SideBar = () => {
     );
   };
 
-  // console.log(time);
   useEffect(() => {
     updateTime();
     const intervalId = setInterval(updateTime, 1000);
@@ -34,62 +36,113 @@ const SideBar = () => {
       clearInterval(intervalId);
     };
   }, []);
+
   return (
     <div
-      className={`${hidden ? "max-w-[80px]" : "max-w-[250px]"}   
-min-h-[100vh] shadow-xl shadow-gray-400
-  
-  `}
+      className={`${
+        hidden ? "max-w-[80px]" : "max-w-[250px]"
+      } min-h-[100vh] shadow-xl shadow-gray-400`}
     >
       {!hidden ? (
         <>
-          {" "}
           <p className="text-xl font-bold px-8 py-3 bg-green-500 text-white p-2">
-            Date:20-10-2023
+            Date:{getDate()}
           </p>
           <h1 className="text-xl text-center font-bold p-5">
-            Sultan Communcation & General Stores
+            Sultan Communication & General Stores
           </h1>
-          <div id="navigation" className=" w-full grid-cols-1 grid">
-            <span
-              onClick={() => {
-                setHidden(!hidden);
-              }}
-              className="flex hover:bg-green-500 hover:text-white items-center text-xl px-10 py-2 hover:cursor-pointer rounded-lg font-bold my-2 "
+          <div id="navigation" className="w-full gap-y-6 grid-cols-1 grid">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
             >
-              <MdSpaceDashboard className="hover:text-white" />
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <MdSpaceDashboard className="hover:text-white" />
+                <p className="px-2">Dashboard</p>
+              </span>
+            </NavLink>
 
-              <p className="px-2">DashBoard</p>
-            </span>
+            <NavLink
+              to="/daily-report"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
+            >
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <BiSolidReport className="hover:text-white" />
+                <p className="px-2">Daily Report</p>
+              </span>
+            </NavLink>
 
-            <span className="flex hover:bg-green-500 hover:text-white items-center text-xl px-10 py-2 hover:cursor-pointer rounded-lg font-bold my-2 ">
-              <BiSolidReport className="hover:text-white" />
+            <NavLink
+              to="/transactions"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
+            >
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <GrTransaction />
+                <p className="px-2">Transactions</p>
+              </span>
+            </NavLink>
 
-              <p className="px-2">Daily Report</p>
-            </span>
+            <NavLink
+              to="/customers"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
+            >
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <BiSolidUser className="hover:text-white" />
+                <p className="px-2">Customers</p>
+              </span>
+            </NavLink>
 
-            <span className="flex hover:bg-green-500 hover:text-white items-center text-xl px-10 py-2 hover:cursor-pointer rounded-lg font-bold my-2 ">
-              <GrTransaction />
+            <NavLink
+              to="/bills"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
+            >
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <FaMoneyBill className="hover:text-white" />
+                <p className="px-2">Bills</p>
+              </span>
+            </NavLink>
 
-              <p className="px-2">Transactions</p>
-            </span>
+            <NavLink
+              to="/products"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
+            >
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <MdOutlineProductionQuantityLimits className="hover:text-white" />
+                <p className="px-2">Products</p>
+              </span>
+            </NavLink>
 
-            <span className="flex hover:bg-green-500 hover:text-white items-center text-xl px-10 py-2 hover:cursor-pointer rounded-lg font-bold my-2 ">
-              <BiSolidUser className="hover:text-white" />
-
-              <p className="px-2">Customers</p>
-            </span>
-            <span className="flex hover:bg-green-500 hover:text-white items-center text-xl px-10 py-2 hover:cursor-pointer rounded-lg font-bold my-2 ">
-              <FaMoneyBill className="hover:text-white" />
-
-              <p className="px-2">Bills</p>
-            </span>
-            <span className="flex hover:bg-green-500 hover:text-white items-center text-xl px-10 py-2 hover:cursor-pointer rounded-lg font-bold my-2 ">
-              <MdOutlineProductionQuantityLimits className="hover:text-white" />
-
-              <p className="px-2">Products</p>
-            </span>
-            <span className="absolute flex items-center justify-center bg-green-500 text-white rounded-xl px-6 py-2  text-xl font-bold bottom-10 left-8">
+            <span className="absolute flex items-center justify-center bg-green-500 text-white rounded-xl px-6 py-2 text-xl font-bold bottom-10 left-8">
               <ImClock className="mr-2" />
               {time}
             </span>
@@ -100,29 +153,54 @@ min-h-[100vh] shadow-xl shadow-gray-400
           <span className="text-sm mx-auto my-3 bg-green-600 px-2 rounded-xl py-1 text-white font-bold">
             {time.substring(0, 5) + " " + time.substring(9)}
           </span>
-          <span
-            onClick={() => {
-              setHidden(!hidden);
-            }}
+          <NavLink
+            to="/"
+            onClick={() => setHidden(false)}
             className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            activeClassName="bg-green-500 text-white"
           >
             <MdSpaceDashboard />
-          </span>
-          <span className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5">
-            {<BiSolidReport />}
-          </span>
-          <span className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5">
-            {<GrTransaction />}
-          </span>
-          <span className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5">
-            {<BiSolidUser />}
-          </span>
-          <span className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5">
-            {<FaMoneyBill />}
-          </span>
-          <span className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5">
-            {<MdOutlineProductionQuantityLimits />}
-          </span>
+          </NavLink>
+          <NavLink
+            to="/daily-report"
+            onClick={() => setHidden(true)}
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            activeClassName="bg-green-500 text-white"
+          >
+            <BiSolidReport />
+          </NavLink>
+          <NavLink
+            to="/transactions"
+            onClick={() => setHidden(true)}
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            activeClassName="bg-green-500 text-white"
+          >
+            <GrTransaction />
+          </NavLink>
+          <NavLink
+            to="/customers"
+            onClick={() => setHidden(true)}
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            activeClassName="bg-green-500 text-white"
+          >
+            <BiSolidUser />
+          </NavLink>
+          <NavLink
+            to="/bills"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            onClick={() => setHidden(true)}
+            activeClassName="bg-green-500 text-white"
+          >
+            <FaMoneyBill />
+          </NavLink>
+          <NavLink
+            to="/products"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            onClick={() => setHidden(true)}
+            activeClassName="bg-green-500 text-white"
+          >
+            <MdOutlineProductionQuantityLimits />
+          </NavLink>
         </div>
       )}
     </div>

@@ -42,7 +42,8 @@ export const createNewTransaction = async (req, res) => {
 
 export const createNewPayment = async (req, res) => {
   try {
-    let { name, id, amount } = req.body;
+    let { name, id, amount, paymentMode } = req.body;
+    name = name.toLowerCase();
     id = new mongoose.Types.ObjectId(id);
 
     amount = Number(amount);
@@ -51,6 +52,7 @@ export const createNewPayment = async (req, res) => {
       amount,
       taken: false,
       purpose: "Payment",
+      paymentMode,
     });
     const customer = await Customer.findByIdAndUpdate(
       id,

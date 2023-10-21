@@ -11,7 +11,7 @@ const Modal = ({ isOpen, setIsOpen, Component, componentProps }) => {
             <button
               onClick={() => {
                 setIsOpen(false);
-                navigate("/dashboard");
+                navigate("/");
               }}
               className="bg-gray-400 hover-bg-gray-600 text-white font-bold py-2 px-4 rounded mt-4"
             >

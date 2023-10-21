@@ -23,7 +23,7 @@ const reducer = (state, action) => {
   }
 };
 
-const BillProducts = ({ product }) => {
+const BillProducts = ({ product, index, purchased, setPurchased }) => {
   // Define an initial state
   const initialState = {
     piece: product.piece,
@@ -64,6 +64,29 @@ const BillProducts = ({ product }) => {
     // This effect will be triggered whenever state.piece, state.box, etc. change.
     calculateTotal();
   }, [state.piece, state.box, state.packet, state.price, state.discount]);
+
+  useEffect(() => {
+    if (index !== undefined) {
+      // Create a new product object with the updated fields
+      const updatedProduct = {
+        ...purchased[index],
+        piece: Number(state.piece),
+        price: Number(state.price),
+        packet: Number(state.packet),
+        box: Number(state.box),
+        discount: Number(state.discount),
+        type: state.type,
+        total: Number(state.total),
+      };
+
+      // Update the purchased array with the updated product
+      setPurchased((prevPurchased) => {
+        const newPurchased = [...prevPurchased];
+        newPurchased[index] = updatedProduct;
+        return newPurchased;
+      });
+    }
+  }, [state]);
 
   return (
     <tr key={product.id} className="mb-3">
@@ -149,6 +172,9 @@ BillProducts.propTypes = {
     wholesalePrice: PropTypes.number.isRequired,
     retailPrice: PropTypes.number.isRequired,
   }).isRequired,
+  index: PropTypes.number.isRequired,
+  purchased: PropTypes.array.isRequired,
+  setPurchased: PropTypes.func.isRequired,
 };
 
 export default BillProducts;
