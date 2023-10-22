@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
@@ -22,6 +23,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
       changePage(currentPage - 1);
     }
   };
+  const navigate = useNavigate();
 
   // Function to go to the next page
   const goToNextPage = () => {
@@ -55,7 +57,14 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                   <div className="">{product.barcode}</div>
                 </td>
                 <td className="text-start capitalize font-semibold text-xl py-2">
-                  <div className="">{product.name}</div>
+                  <div
+                    onClick={() =>
+                      navigate(`/products/${product._id}`, { state: product })
+                    }
+                    className=""
+                  >
+                    {product.name}
+                  </div>
                 </td>
                 <td className="text-start font-semibold text-xl py-2">
                   <div className="">{product.mrp}</div>
@@ -71,8 +80,13 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                 </td>
                 <td className="text-start  font-semibold text-xl py-2">
                   <span
+                    onClick={() => {
+                      navigate(`/products/updateStock/${product._id}`, {
+                        state: product,
+                      });
+                    }}
                     className={`px-2 rounded-xl ${
-                      product.stock < product.minQuantity
+                      product.stock <= product.minQuantity
                         ? "bg-red-500 text-white"
                         : ""
                     }`}

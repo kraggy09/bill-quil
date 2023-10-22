@@ -17,9 +17,9 @@ const initialState = {
   wp: "",
   barcode: "",
   stock: "",
-  packet: "",
-  box: "",
-  minQuantity: "",
+  packet: 0,
+  box: 0,
+  minQuantity: 2,
 };
 
 const formReducer = (state, action) => {
@@ -88,9 +88,10 @@ const NewProduct = () => {
         toast.info("Naviagting to products page");
         dispatchR(fetchProducts());
         handleReset();
-        setTimeout(() => {
-          navigate("/products");
-        }, 3500);
+        navigate("/products");
+
+        // setTimeout(() => {
+        // }, 3500);
       })
       .catch((error) => {
         // Handle errors, e.g., validation errors from the server

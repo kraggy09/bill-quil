@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { sortArray } from "../libs/constant";
+import NewCustomer from "../components/NewCustomer";
 
 // Define a generic sorting function
 
@@ -39,6 +40,7 @@ const CustomerPage = () => {
 
   return (
     <div>
+      <NewCustomer />
       <table>
         <thead>
           <tr>

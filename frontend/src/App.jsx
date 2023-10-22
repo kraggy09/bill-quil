@@ -15,6 +15,8 @@ import DailyReportPage from "./pages/DailyReportPage";
 import TransactionPage from "./pages/TransactionPage";
 import BillPage from "./pages/BillPage";
 import NewProduct from "./components/NewProduct";
+import EditProduct from "./components/EditProduct";
+import UpdateStock from "./components/UpdateStock";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -37,6 +39,8 @@ const App = () => {
           <Route path="newproduct" element={<NewProduct />} />
           <Route path="customers" element={<CustomerPage />} />
           <Route path="products" element={<ProductPage />} />
+          <Route path="products/:id" element={<EditProduct />} />
+          <Route path="/products/updateStock/:id" element={<UpdateStock />} />
         </Routes>
       </Router>
     </div>

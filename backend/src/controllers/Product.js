@@ -267,3 +267,72 @@ export const updateInventoryRequest = async (req, res) => {
     });
   }
 };
+
+export const updateProductDetails = async (req, res) => {
+  try {
+    const product = req.body;
+    console.log(product._id);
+    const updatedProduct = await Product.findByIdAndUpdate(
+      product._id,
+      product,
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      // Handle the case where the product was not found
+      return res.status(404).json({
+        success: false,
+        msg: "Product not found",
+      });
+    }
+
+    // Respond with the updated product data
+    res.status(200).json({
+      success: true,
+      msg: "Product Updated Successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    // Handle any potential errors
+    res.status(500).json({
+      success: false,
+      msg: "Server is down",
+    });
+  }
+};
+
+export const updateStock = async (req, res) => {
+  try {
+    const { quantity, id } = req.body;
+
+    // Use the $inc operator to increment the stock field by the given quantity
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      {
+        $inc: { stock: quantity },
+      },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      // Handle the case where the product was not found
+      return res.status(404).json({
+        success: false,
+        msg: "Product not found",
+      });
+    }
+
+    // Respond with the updated product data
+    res.status(200).json({
+      success: true,
+      msg: "Stock Updated Successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    // Handle any potential errors
+    res.status(500).json({
+      success: false,
+      msg: "Server is down",
+    });
+  }
+};

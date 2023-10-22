@@ -30,7 +30,14 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
 
   const searchProduct = () => {
     return originalProducts.filter((product) => {
-      return product.name.toLowerCase().includes(query);
+      const queryValue = Number(query);
+      if (isNaN(queryValue)) {
+        // Query is not a valid number, so search by name
+        return product.name.toLowerCase().includes(query);
+      } else {
+        // Query is a valid number, so search by barcode
+        return product.barcode === queryValue;
+      }
     });
   };
 
@@ -44,7 +51,7 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
   }, [query, originalProducts, setFilteredProducts]);
 
   useEffect(() => {
-    handleSortByName();
+    handleSortStock();
   }, []);
 
   const handleSortStock = () => {
@@ -64,7 +71,7 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
       <button onClick={handleSortByName}>Sort Name</button>
       <input
         type="text"
-        className="bg-gray-300 text-white"
+        className="bg-gray-300 text-black"
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
