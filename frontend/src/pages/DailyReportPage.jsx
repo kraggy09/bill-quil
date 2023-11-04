@@ -3,8 +3,20 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import store from "../store/store";
 const DailyReportPage = () => {
+  const [transactionAmount, setTransactionAmount] = useState();
   const daily = useSelector((store) => store.report.report);
   console.log(daily);
+  const calculateTransactionTotal = () => {
+    if (daily && daily.transactions) {
+      daily.transactions.reduce((accumulator, trans) => {
+        return accumulator + trans.amount;
+      });
+    }
+  };
+  useEffect(() => {
+    const total = calculateTransactionTotal();
+    setTransactionAmount(total);
+  }, []);
   return (
     <div className="flex">
       <div className="flex flex-col">

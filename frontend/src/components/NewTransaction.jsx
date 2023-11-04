@@ -3,6 +3,7 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
+import { fetchDailyReport } from "../store/reportSlice";
 
 import { fetchCustomers } from "../store/customerSlice";
 const initialState = {
@@ -89,6 +90,7 @@ const NewTransaction = () => {
         .catch((err) => console.log(err));
     }
     dispatchR(fetchCustomers());
+    dispatchR(fetchDailyReport());
     dispatch({ type: "reset" });
     setFoundCustomer(null);
   };

@@ -88,7 +88,8 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
   }, [state]);
   const handleRemoveProduct = () => {
     // Create a new purchased array that excludes the product at the specified index
-    const newPurchased = purchased.filter((pr) => pr.name !== product.name);
+    const newPurchased = purchased.filter((pr) => pr.id !== product.id);
+    console.log(newPurchased);
     setPurchased(newPurchased);
   };
 
