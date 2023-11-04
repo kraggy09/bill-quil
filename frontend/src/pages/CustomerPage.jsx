@@ -40,43 +40,45 @@ const CustomerPage = () => {
 
   return (
     <div>
-      <NewCustomer />
+      <div>
+        {" "}
+        <button
+          onClick={() => {
+            setSortingType("name");
+          }}
+        >
+          Sort by Name
+        </button>
+        <button
+          onClick={() => {
+            setSortingType("transaction");
+          }}
+        >
+          Sort by Number of Transaction
+        </button>
+      </div>
       <table>
         <thead>
           <tr>
-            <th>Home</th>
-            <th>Home</th>
-            <th>Home</th>
-            <th>Home</th>
+            <th>Name</th>
+            <th>Bills</th>
+            <th>Transactions</th>
+            <th>Outstanding</th>
           </tr>
         </thead>
         <tbody>
           {sortedCustomers.map((customer) => {
             return (
               <tr key={customer._id}>
-                <td className="text-start">{customer._id}</td>
-                <td className="text-start capitalize">{customer.name}</td>
-                <td className="text-start">{customer.bills.length}</td>
-                <td className="text-start">{customer.transactions.length}</td>
+                <td className="text-center capitalize">{customer.name}</td>
+                <td className="text-center">{customer.bills.length}</td>
+                <td className="text-center">{customer.transactions.length}</td>
+                <td className="text-center">{customer.outstanding}</td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <button
-        onClick={() => {
-          setSortingType("name");
-        }}
-      >
-        Sort by Name
-      </button>
-      <button
-        onClick={() => {
-          setSortingType("transaction");
-        }}
-      >
-        Sort by Number of Transaction
-      </button>
     </div>
   );
 };

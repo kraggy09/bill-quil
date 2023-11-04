@@ -51,7 +51,7 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
   }, [query, originalProducts, setFilteredProducts]);
 
   useEffect(() => {
-    handleSortStock();
+    handleSortByName();
   }, []);
 
   const handleSortStock = () => {

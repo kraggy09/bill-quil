@@ -59,7 +59,7 @@ const UpdateStock = () => {
     // Convert input values to numbers, or use 0 if conversion fails
     const boxValue = parseInt(box, 10) || 0;
     const packetsValue = parseInt(packets, 10) || 0;
-    const piecesValue = parseInt(pieces, 10) || 0;
+    const piecesValue = parseFloat(pieces, 10) || 0;
 
     setQuantity(
       boxValue * product.box + packetsValue * product.packet + piecesValue
@@ -102,7 +102,7 @@ const UpdateStock = () => {
               className="text-3xl outline-none border-b-2 border-green-600 pl-6 max-w-[150px] min-h-[50px]"
               type="number"
               value={pieces}
-              onChange={(e) => setPieces(parseInt(e.target.value))}
+              onChange={(e) => setPieces(parseFloat(e.target.value))}
             />
           </span>
         </div>

@@ -61,7 +61,6 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
   };
 
   useEffect(() => {
-    // This effect will be triggered whenever state.piece, state.box, etc. change.
     calculateTotal();
   }, [state.piece, state.box, state.packet, state.price, state.discount]);
 
@@ -87,10 +86,25 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
       });
     }
   }, [state]);
+  const handleRemoveProduct = () => {
+    // Create a new purchased array that excludes the product at the specified index
+    const newPurchased = purchased.filter((pr) => pr.name !== product.name);
+    setPurchased(newPurchased);
+  };
 
   return (
     <tr key={product.id} className="mb-3">
-      <td className="text-center font-semibold text-xl py-2">{product.name}</td>
+      <td
+        onClick={handleRemoveProduct}
+        className="text-center mx-auto  text-xl py-2"
+      >
+        <span className=" text-red-600 hover:cursor-pointer font-bold bg-gray-400 px-2 py-1 rounded-full hover:text-red-800">
+          X
+        </span>
+      </td>
+      <td className="text-center capitalize font-semibold text-xl py-2">
+        {product.name}
+      </td>
       <td className="text-center font-semibold text-xl py-2">{state.price}₹</td>
       <td className="text-center font-semibold text-xl py-2">
         <div className="max-w-fit mx-auto border-green-500 border rounded-xl">

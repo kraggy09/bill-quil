@@ -1,5 +1,11 @@
+import NewTransaction from "../components/NewTransaction";
+
 const TransactionPage = () => {
-  return <div>TransactionPage</div>;
+  return (
+    <div>
+      <NewTransaction />
+    </div>
+  );
 };
 
 export default TransactionPage;

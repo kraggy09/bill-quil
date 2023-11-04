@@ -40,6 +40,8 @@ const BillTable = ({
       <table className="min-w-full mt-6">
         <thead>
           <tr>
+            <th className="text-2xl">Action</th>
+
             <th className="text-2xl">Name</th>
             <th className="text-2xl">Price</th>
             <th className="text-2xl">Toggle</th>
@@ -52,6 +54,7 @@ const BillTable = ({
         </thead>
         <tbody className="mt-20">
           {purchased.map((product, productIndex) => {
+            console.log(product);
             return (
               <BillProducts
                 product={product}
@@ -66,13 +69,19 @@ const BillTable = ({
       </table>
       <div className="w-full flex-col items-end justify-end flex">
         <div className="mt-6 border border-black border-dashed border-spacing-2 min-w-[200px]"></div>
+
         <div className="min-w-[200px] ">
           <p className="text-end text-xl mr-9 font-bold">
-            <span className="px-16">OutStanding:</span>
-            {foundCustomer.outstanding}₹
+            <span className="px-16">Total Bill:</span>
+            {total - (foundCustomer.outstanding || 0)}₹
           </p>
-        </div>
-        <div className="min-w-[200px] ">
+          <div className="min-w-[200px] ">
+            <p className="text-end text-xl mr-9 font-bold">
+              <span className="px-16">OutStanding:</span>
+              {foundCustomer.outstanding}₹
+            </p>
+          </div>
+
           <p className="text-end text-xl mr-9 font-bold">
             <span className="px-16">Discount:</span>
             <input

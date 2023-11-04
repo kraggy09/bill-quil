@@ -17,33 +17,38 @@ export const createBill = async (req, res) => {
     discount = 0,
   } = req.body;
 
-  const items = await Promise.all(
-    products.map(async (product) => {
-      const quantity =
-        product.piece +
-        product.packet * product.packetQuantity +
-        product.box * product.boxQuantity;
-      const id = new mongoose.Types.ObjectId(product.id);
-      const updatedProduct = await Product.findByIdAndUpdate(
-        id,
-        {
-          $inc: { stock: -quantity },
-        },
-        { new: true }
-      );
-
-      return {
-        product: updatedProduct._id,
-        quantity: quantity,
-        discount: product.discount || 0,
-        type: product.type,
-        total: product.total,
-      };
-    })
-  );
-
   try {
+    // Check if the customer exists
     const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return res.status(404).json({ error: "Customer not found" });
+    }
+
+    const items = await Promise.all(
+      products.map(async (product) => {
+        const quantity =
+          product.piece +
+          product.packet * product.packetQuantity +
+          product.box * product.boxQuantity;
+        const id = new mongoose.Types.ObjectId(product.id);
+        const updatedProduct = await Product.findByIdAndUpdate(
+          id,
+          {
+            $inc: { stock: -quantity },
+          },
+          { new: true }
+        );
+
+        return {
+          product: updatedProduct._id,
+          quantity: quantity,
+          discount: product.discount || 0,
+          type: product.type,
+          total: product.total,
+        };
+      })
+    );
+
     const newBill = await Bill.create({
       customer: customerId,
       items: items,
@@ -62,14 +67,6 @@ export const createBill = async (req, res) => {
         taken: false,
         paymentMode,
       });
-
-      dailyReport = await DailyReport.findOneAndUpdate(
-        { date: currentDate },
-        {
-          $push: { transactions: transaction._id, bills: newBill._id },
-        },
-        { upsert: true, new: true }
-      );
     }
 
     // Update the customer's bills array with the newly created bill
@@ -80,6 +77,17 @@ export const createBill = async (req, res) => {
         bills: newBill._id,
       },
     });
+
+    dailyReport = await DailyReport.findOneAndUpdate(
+      { date: currentDate },
+      {
+        $push: {
+          transactions: transaction ? transaction._id : null,
+          bills: newBill ? newBill._id : null,
+        },
+      },
+      { upsert: true, new: true }
+    );
 
     if (updatedCustomer) {
       return res.status(201).json({
@@ -97,4 +105,21 @@ export const createBill = async (req, res) => {
   }
 };
 
-export const getBillDetails = () => {};
+export const getBillDetails = (req, res) => {};
+
+export const getAllBillsOfToday = async (req, res) => {
+  try {
+    const bills = await Bill.find();
+
+    if (bills) {
+      return res.status(200).json({
+        msg: "Bills Found",
+        bills,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      msg: "Server error",
+    });
+  }
+};

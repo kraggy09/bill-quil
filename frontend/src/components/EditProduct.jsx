@@ -75,7 +75,7 @@ const EditProduct = () => {
       retailPrice: parseInt(formData.rp),
       wholesalePrice: parseFloat(formData.wp),
       barcode: parseInt(formData.barcode),
-      stock: parseInt(formData.stock),
+      stock: parseFloat(formData.stock),
       packet: parseInt(formData.packet),
       box: parseInt(formData.box),
       minQuantity: parseInt(formData.minQuantity),

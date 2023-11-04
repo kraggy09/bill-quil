@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
@@ -11,24 +10,36 @@ import Modal from "../components/Modal";
 import BillingHeader from "../components/BillingHeader";
 import BillTable from "../components/BillTable";
 import { fetchProducts } from "../store/productSlice";
+import { fetchCustomers } from "../store/customerSlice";
+
+import BillModal from "../components/BillModal";
+import { fetchDailyReport } from "../store/reportSlice";
 
 // Constants
 const API_URL = "http://localhost:4000/api/v1/createBill";
 
 const NewBillPage = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [billType, setBillType] = useState("");
+  const [print, setPrint] = useState(false);
   const [paymentMode, setPaymentMode] = useState("cash");
   const [isOpen, setIsOpen] = useState(true);
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
   const [discount, setDiscount] = useState(0);
-  const [payment, setPayment] = useState(100);
-  const [total, setTotal] = useState(100);
+  const [payment, setPayment] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [disabled, setDisabled] = useState(true);
 
   // Handle form submission
+  useEffect(() => {
+    if (purchased.length > 0) {
+      setDisabled(false);
+    }
+  }, [purchased]);
   const submitHandle = async () => {
+    setDisabled(true);
+
     try {
       const response = await axios.post(API_URL, {
         purchased,
@@ -38,14 +49,15 @@ const NewBillPage = () => {
         paymentMode,
         customerId: foundCustomer._id,
       });
+      setPrint(true);
       console.log(response);
       dispatch(fetchProducts());
+      dispatch(fetchCustomers());
+      dispatch(fetchDailyReport());
       toast.success("Bill created successfully"); // Display success message
-      setTimeout(() => {
-        navigate("/");
-      }, 5000);
     } catch (error) {
       console.error(error);
+      setDisabled(false);
       toast.error("Error creating the bill"); // Display error message
     }
   };
@@ -58,6 +70,7 @@ const NewBillPage = () => {
         Component={BillType}
         componentProps={{ billType: billType, setBillType: setBillType }}
       />
+
       <BillingHeader
         billType={billType}
         purchased={purchased}
@@ -81,10 +94,21 @@ const NewBillPage = () => {
         <button
           className="bg-green-600 mr-10 p-5 text-2xl text-white hover:bg-green-600 rounded-xl font-bold my-6"
           onClick={submitHandle}
-          disabled={purchased.length > 0 ? false : true}
+          disabled={disabled}
+          // onClick={() => setPrint(true)}
         >
           Create bill
         </button>
+        <button onClick={() => setPrint(true)}>Print</button>
+        <BillModal
+          isOpen={print}
+          purchased={purchased}
+          foundCustomer={foundCustomer}
+          setIsOpen={setPrint}
+          total={total}
+          payment={payment}
+          discount={discount}
+        />
       </div>
       <ToastContainer autoClose={3000} />
     </div>

@@ -17,12 +17,14 @@ import BillPage from "./pages/BillPage";
 import NewProduct from "./components/NewProduct";
 import EditProduct from "./components/EditProduct";
 import UpdateStock from "./components/UpdateStock";
+import { fetchDailyReport } from "./store/reportSlice";
 
 const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchCustomers());
     dispatch(fetchProducts());
+    dispatch(fetchDailyReport());
   }, []);
 
   return (
