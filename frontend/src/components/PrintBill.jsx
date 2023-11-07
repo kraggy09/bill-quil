@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import getDate from "../../../backend/src/config/getDate";
+import getDate from "../libs/constant";
 
 const PrintBill = React.forwardRef(
   ({ foundCustomer, setIsOpen, purchased, payment, total, discount }, ref) => {

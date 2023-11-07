@@ -10,8 +10,7 @@ import {
   MdSpaceDashboard,
   MdOutlineProductionQuantityLimits,
 } from "react-icons/md";
-import getDate from "../../../backend/src/config/getDate";
-
+import getDate from "../libs/constant";
 const SideBar = () => {
   const [time, setTime] = useState("");
   const [hidden, setHidden] = useState(false);
