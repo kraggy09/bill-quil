@@ -12,7 +12,7 @@ const ProductPage = () => {
   const calculateStock = () => {
     let total = 0;
     for (let i = 0; i < products.length; i++) {
-      let temp = products[i].stock * products[i].wholesalePrice;
+      let temp = products[i].stock * products[i].costPrice;
       total += temp;
     }
     return total;

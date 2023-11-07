@@ -79,6 +79,7 @@ const CustomerPage = () => {
           })}
         </tbody>
       </table>
+      <NewCustomer />
     </div>
   );
 };

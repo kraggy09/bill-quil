@@ -4,8 +4,9 @@ import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { fetchProducts } from "../store/productSlice";
 import { ToastContainer, toast } from "react-toastify";
+import { apiUrl } from "../constant";
 
-const apiUrl = "http://localhost:4000/api/v1/products/updateStock";
+const apiUrl1 = "/products/updateStock";
 
 const calculateStock = (product) => {
   let boxes = 0;
@@ -42,7 +43,7 @@ const UpdateStock = () => {
     const id = product._id;
     e.preventDefault();
     axios
-      .post(apiUrl, { quantity, id })
+      .post(apiUrl + apiUrl1, { quantity, id })
       .then((res) => {
         console.log(res);
         toast.success("Product updated successfully");

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import { fetchDailyReport } from "../store/reportSlice";
+import { apiUrl } from "../constant";
 
 import { fetchCustomers } from "../store/customerSlice";
 const initialState = {
@@ -24,8 +25,6 @@ const formReducer = (state, action) => {
       return state;
   }
 };
-
-const apiUrl = "http://localhost:4000/api/v1/";
 
 const findCustomer = (customers, val) => {
   return customers.filter((customer) => {
@@ -69,7 +68,7 @@ const NewTransaction = () => {
   const handleSubmit = async () => {
     if (!taken) {
       await axios
-        .post(apiUrl + "createPayment", {
+        .post(apiUrl + "/createPayment", {
           ...formData,
           id: foundCustomer._id,
         })
@@ -80,7 +79,7 @@ const NewTransaction = () => {
         .catch((err) => console.log(err));
     } else {
       await axios
-        .post(apiUrl + "createTransation", {
+        .post(apiUrl + "/createTransation", {
           ...formData,
         })
         .then((res) => {

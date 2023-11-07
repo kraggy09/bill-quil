@@ -1,10 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { apiUrl } from "../constant";
 const BillPage = () => {
   const [bills, setBills] = useState([]);
+  const apiUrl1 = "/getAllBills";
   const getBills = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/v1/getAllBills");
+      const res = await axios.get(apiUrl + apiUrl1);
       if (res) {
         const temp = res.data;
         console.log(temp);

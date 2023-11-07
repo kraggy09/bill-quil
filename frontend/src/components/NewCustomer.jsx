@@ -3,6 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css";
+import { apiUrl } from "../constant";
 
 const initialState = {
   name: "",
@@ -20,7 +21,7 @@ const formReducer = (state, action) => {
   }
 };
 
-const apiUrl = "http://localhost:4000/api/v1/newCustomer";
+const apiUrl1 = "/newCustomer";
 
 const NewCustomer = () => {
   const [formData, dispatch] = useReducer(formReducer, initialState);
@@ -54,7 +55,7 @@ const NewCustomer = () => {
       outstanding: Number.parseInt(formData.outstanding),
     };
     axios
-      .post(apiUrl, formData2)
+      .post(apiUrl + apiUrl1, formData2)
       .then((res) => {
         console.log("Response", res);
         toast.success("customer created successfully");

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
+  const navigate = useNavigate();
   const itemsPerPage = 10; // Number of items to display per page
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -23,7 +24,6 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
       changePage(currentPage - 1);
     }
   };
-  const navigate = useNavigate();
 
   // Function to go to the next page
   const goToNextPage = () => {
@@ -54,7 +54,14 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
             return (
               <tr key={product.id}>
                 <td className="text-start font-semibold text-xl py-2 ">
-                  <div className="">{product.barcode}</div>
+                  <div
+                    onClick={() => {
+                      navigate(`/products/barcode/${product.barcode}`);
+                    }}
+                    className=""
+                  >
+                    {product.barcode}
+                  </div>
                 </td>
                 <td className="text-start capitalize font-semibold text-xl py-2">
                   <div

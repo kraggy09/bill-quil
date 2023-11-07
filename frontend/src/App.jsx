@@ -18,6 +18,7 @@ import NewProduct from "./components/NewProduct";
 import EditProduct from "./components/EditProduct";
 import UpdateStock from "./components/UpdateStock";
 import { fetchDailyReport } from "./store/reportSlice";
+import BarcodePage from "./components/BarcodePage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -43,6 +44,7 @@ const App = () => {
           <Route path="products" element={<ProductPage />} />
           <Route path="products/:id" element={<EditProduct />} />
           <Route path="/products/updateStock/:id" element={<UpdateStock />} />
+          <Route path="/products/barcode/:id" element={<BarcodePage />} />
         </Routes>
       </Router>
     </div>

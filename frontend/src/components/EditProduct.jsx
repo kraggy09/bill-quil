@@ -7,6 +7,7 @@ import axios from "axios";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
+import { apiUrl } from "../constant";
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -45,7 +46,6 @@ const EditProduct = () => {
   };
   const [formData, dispatch] = useReducer(formReducer, initialState);
   //   const [submitted, setSubmitted] = useState(false);
-  const apiUrl = "http://localhost:4000/api/v1/products/updateProduct";
   const handleInputChange = (e) => {
     let { name, value } = e.target;
 
@@ -84,7 +84,7 @@ const EditProduct = () => {
 
     // Send a POST request to your server with the form data
     axios
-      .post(apiUrl, formData2)
+      .post(apiUrl + "/products/updateProduct", formData2)
       .then((response) => {
         // Handle a successful response from the server
         console.log("Product created:", response.data);

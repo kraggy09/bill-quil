@@ -11,12 +11,13 @@ import BillingHeader from "../components/BillingHeader";
 import BillTable from "../components/BillTable";
 import { fetchProducts } from "../store/productSlice";
 import { fetchCustomers } from "../store/customerSlice";
+import { apiUrl } from "../constant";
 
 import BillModal from "../components/BillModal";
 import { fetchDailyReport } from "../store/reportSlice";
 
 // Constants
-const API_URL = "http://localhost:4000/api/v1/createBill";
+const API_URL = "/createBill";
 
 const NewBillPage = () => {
   const dispatch = useDispatch();
@@ -41,7 +42,7 @@ const NewBillPage = () => {
     setDisabled(true);
 
     try {
-      const response = await axios.post(API_URL, {
+      const response = await axios.post(apiUrl + API_URL, {
         purchased,
         discount,
         payment,
