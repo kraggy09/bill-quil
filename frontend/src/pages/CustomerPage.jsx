@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { sortArray } from "../libs/constant";
-import NewCustomer from "../components/NewCustomer";
+import { Link, useNavigate } from "react-router-dom";
+import { AiOutlinePlus } from "react-icons/ai";
 
 // Define a generic sorting function
 
 // Define the sorting function for sorting by name
+function sortCustomerByOutStanding(a, b) {
+  return b.outstanding - a.outstanding;
+}
+
 function sortCustomersByName(a, b) {
   const nameA = a.name;
   const nameB = b.name;
@@ -27,6 +32,7 @@ function sortCustomerByTransaction(a, b) {
 }
 
 const CustomerPage = () => {
+  const navigate = useNavigate();
   const customers = useSelector((store) => store.customer.customers);
   const [sortingType, setSortingType] = useState(null);
   let sortedCustomers = [...customers];
@@ -34,6 +40,8 @@ const CustomerPage = () => {
     sortedCustomers = sortArray(sortedCustomers, sortCustomersByName);
   } else if (sortingType === "transaction") {
     sortedCustomers = sortArray(sortedCustomers, sortCustomerByTransaction);
+  } else if (sortingType === "outstanding") {
+    sortedCustomers = sortArray(sortedCustomers, sortCustomerByOutStanding);
   }
 
   console.log(customers);
@@ -43,6 +51,7 @@ const CustomerPage = () => {
       <div>
         {" "}
         <button
+          className="bg-green-500 p-5 text-xl font-bold text-white rounded-2xl mx-6 my-6"
           onClick={() => {
             setSortingType("name");
           }}
@@ -50,36 +59,63 @@ const CustomerPage = () => {
           Sort by Name
         </button>
         <button
+          className="bg-green-500 p-5 text-xl font-bold text-white rounded-2xl mx-6 my-6"
           onClick={() => {
             setSortingType("transaction");
           }}
         >
           Sort by Number of Transaction
         </button>
+        <button
+          className="bg-green-500 p-5 text-xl font-bold text-white rounded-2xl mx-6 my-6"
+          onClick={() => {
+            setSortingType("outstanding");
+          }}
+        >
+          Sort by Outstanding
+        </button>
       </div>
-      <table>
-        <thead>
+      <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
+        <thead className="text-2xl ">
           <tr>
-            <th>Name</th>
-            <th>Bills</th>
-            <th>Transactions</th>
-            <th>Outstanding</th>
+            <th className="border border-black mx-6 px-8">Name</th>
+            <th className="border border-black mx-6 px-8">Bills</th>
+            <th className="border border-black mx-6 px-8">Transactions</th>
+            <th className="border border-black mx-6 px-8">Outstanding</th>
           </tr>
         </thead>
         <tbody>
           {sortedCustomers.map((customer) => {
             return (
               <tr key={customer._id}>
-                <td className="text-center capitalize">{customer.name}</td>
-                <td className="text-center">{customer.bills.length}</td>
-                <td className="text-center">{customer.transactions.length}</td>
-                <td className="text-center">{customer.outstanding}</td>
+                <td
+                  onClick={() => {
+                    navigate(`/customers/${customer._id}`, { state: customer });
+                  }}
+                  className="text-center font-semibold text-xl capitalize px-16 py-3 "
+                >
+                  {customer.name}
+                </td>
+                <td className="text-center font-semibold text-xl px-16 py-3 ">
+                  {customer.bills.length}
+                </td>
+                <td className="text-center font-semibold text-xl px-16 py-3 ">
+                  {customer.transactions.length}
+                </td>
+                <td className="text-center font-semibold text-xl px-16 py-3 ">
+                  {customer.outstanding}
+                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <NewCustomer />
+      <Link to={"/newCustomer"}>
+        <button className="flex text-white text-2xl rounded-full absolute bottom-10 right-8 font-bold hover:bg-green-700 p-5 bg-green-500">
+          <AiOutlinePlus className="text-2xl text-white font-extrabold" />
+          New Customer
+        </button>
+      </Link>
     </div>
   );
 };

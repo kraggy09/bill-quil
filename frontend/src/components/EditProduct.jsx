@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
@@ -8,8 +8,10 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
 import { apiUrl } from "../constant";
+import Loading from "./Loading";
 
 const EditProduct = () => {
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const location = useLocation();
   const product = location.state;
@@ -41,9 +43,7 @@ const EditProduct = () => {
   console.log(id);
   const navigate = useNavigate();
   const dispatchR = useDispatch();
-  const handleReset = () => {
-    dispatch({ type: "reset" });
-  };
+
   const [formData, dispatch] = useReducer(formReducer, initialState);
   //   const [submitted, setSubmitted] = useState(false);
   const handleInputChange = (e) => {
@@ -65,7 +65,7 @@ const EditProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    setLoading(true);
     // Format the data to match your Mongoose schema
     const formData2 = {
       name: formData.name,
@@ -87,18 +87,18 @@ const EditProduct = () => {
       .post(apiUrl + "/products/updateProduct", formData2)
       .then((response) => {
         // Handle a successful response from the server
+        setLoading(false);
         console.log("Product created:", response.data);
         toast.success("Product Updated Successfully");
-
         toast.info("Naviagting to products page");
         dispatchR(fetchProducts());
-        handleReset();
         setTimeout(() => {
           navigate("/products");
         }, 3500);
       })
       .catch((error) => {
         // Handle errors, e.g., validation errors from the server
+        setLoading(false);
         toast.error(error.response.data.msg);
         console.log("Error creating product:", error);
       });
@@ -320,6 +320,7 @@ const EditProduct = () => {
           <ToastContainer autoClose={3000} />
         </div>
       </form>
+      {loading && <Loading />}
     </div>
   );
 };

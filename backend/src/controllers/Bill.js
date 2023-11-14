@@ -64,6 +64,8 @@ export const createBill = async (req, res) => {
         name: customer.name,
         purpose: "Payment",
         amount: payment,
+        previousOutstanding: customer.outstanding,
+        newOutstanding: total - payment,
         taken: false,
         paymentMode,
       });
@@ -100,17 +102,56 @@ export const createBill = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error creating bill:", error);
+    console.log("Error creating bill:", error);
     return res.status(500).json({ error: "Error creating bill" });
   }
 };
 
-export const getBillDetails = (req, res) => {};
+export const getBillDetails = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const bills = await Bill.findById(id)
+      .populate({
+        path: "items.product",
+      })
+      .populate("customer");
+
+    if (!bills) {
+      return res.status(404).json({
+        msg: "Failed to get the data of the bill",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      msg: "Found the bills",
+      success: true,
+      bills,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      msg: "Server error",
+      success: false,
+    });
+  }
+};
 
 export const getAllBillsOfToday = async (req, res) => {
   try {
-    const bills = await Bill.find();
-
+    const { startDate, endDate } = req.query;
+    const date = new Date();
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
+    console.log(start);
+    const end = new Date(endDate);
+    console.log(end);
+    end.setHours(23, 59, 59, 59);
+    const bills = await Bill.find({
+      createdAt: {
+        $gte: start,
+        $lte: end,
+      },
+    });
     if (bills) {
       return res.status(200).json({
         msg: "Bills Found",
@@ -118,6 +159,7 @@ export const getAllBillsOfToday = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       msg: "Server error",
     });

@@ -1,17 +1,23 @@
 import mongoose from "mongoose";
-const getDate = () => {
-  const date = new Date();
-  const currentDate =
-    date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-  return currentDate;
-};
+import moment from "moment-timezone";
+import getDate from "../config/getDate.js";
+import getCurrentDateAndTime from "../config/getCurrentTime.js";
 
-const date = Date.now();
+// Set the timezone to IST
+const IST = "Asia/Kolkata";
+
 const newDate = getDate();
+
 const transactionSchema = mongoose.Schema({
   date: {
     type: String,
     default: newDate,
+  },
+  previousOutstanding: {
+    type: Number,
+  },
+  newOutstanding: {
+    type: Number,
   },
   name: {
     type: String,
@@ -28,8 +34,7 @@ const transactionSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: date,
-    // Set to expire after 60 days (in seconds)
+    default: () => moment.tz(getCurrentDateAndTime(), IST),
     expires: 60 * 60 * 24 * 60,
   },
   paymentMode: {
@@ -37,6 +42,13 @@ const transactionSchema = mongoose.Schema({
     enum: ["cash", "online"],
     required: true,
   },
+  expires: {
+    type: Date,
+    expires: 30 * 24 * 60 * 60,
+    default: () => moment.tz(getCurrentDateAndTime(), IST),
+  },
 });
+
+transactionSchema.index({ expires: 1 }, { expireAfterSeconds: 0 });
 
 export default mongoose.model("Transaction", transactionSchema);

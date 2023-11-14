@@ -67,8 +67,12 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
   useEffect(() => {
     if (index !== undefined) {
       // Create a new product object with the updated fields
+      const product = purchased.filter((pr) => pr.id === index);
+      console.log(index);
+      console.log(product[0], "This is the product to mutate");
+
       const updatedProduct = {
-        ...purchased[index],
+        ...product[0],
         piece: Number(state.piece),
         price: Number(state.price),
         packet: Number(state.packet),
@@ -80,9 +84,19 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
 
       // Update the purchased array with the updated product
       setPurchased((prevPurchased) => {
-        const newPurchased = [...prevPurchased];
-        newPurchased[index] = updatedProduct;
-        return newPurchased;
+        const idx = prevPurchased.findIndex((product) => product.id === index);
+
+        if (idx !== -1) {
+          const newPurchased = [...prevPurchased];
+          newPurchased[idx] = updatedProduct;
+          return newPurchased;
+        }
+
+        // Handle the case where the product with the specified id is not found
+        console.error(
+          `Product with id ${updatedProduct.id} not found in purchased array.`
+        );
+        return prevPurchased;
       });
     }
   }, [state]);

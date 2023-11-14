@@ -53,13 +53,14 @@ const BillTable = ({
           </tr>
         </thead>
         <tbody className="mt-20">
-          {purchased.map((product, productIndex) => {
+          {[...purchased].reverse().map((product) => {
             console.log(product);
             return (
               <BillProducts
                 product={product}
-                key={productIndex}
-                index={productIndex}
+                //Never ever use index in mapping
+                key={product.id}
+                index={product.id}
                 purchased={purchased}
                 setPurchased={setPurchased}
               />
@@ -106,7 +107,7 @@ const BillTable = ({
             <span className="px-16">Payment:</span>
             <input
               type="number"
-              className="text-end max-w-[70px]"
+              className="text-end pr-2 outline-none border-2 border-green-500 rounded-xl max-w-[70px]"
               value={payment}
               onChange={(e) => {
                 setPayment(e.target.value);

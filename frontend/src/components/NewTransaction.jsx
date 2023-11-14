@@ -5,8 +5,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import { fetchDailyReport } from "../store/reportSlice";
 import { apiUrl } from "../constant";
+import Loading from "./Loading";
 
 import { fetchCustomers } from "../store/customerSlice";
+import { useNavigate } from "react-router-dom";
 const initialState = {
   name: "",
   purpose: "",
@@ -34,9 +36,11 @@ const findCustomer = (customers, val) => {
 };
 
 const NewTransaction = () => {
-  const [taken, setTaken] = useState(!false);
+  const navigate = useNavigate();
+  const [taken, setTaken] = useState(false);
   const [formData, dispatch] = useReducer(formReducer, initialState);
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [foundCustomer, setFoundCustomer] = useState({});
   console.log(foundCustomer);
 
@@ -66,6 +70,7 @@ const NewTransaction = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (!taken) {
       await axios
         .post(apiUrl + "/createPayment", {
@@ -74,9 +79,17 @@ const NewTransaction = () => {
         })
         .then((res) => {
           console.log(res);
+          setLoading(false);
           toast.success("Payment Recieved");
+          setTimeout(() => {
+            navigate("/");
+          }, 1000);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+          toast.error("Something went wrong");
+        });
     } else {
       await axios
         .post(apiUrl + "/createTransation", {
@@ -97,6 +110,7 @@ const NewTransaction = () => {
   // console.log(foundCustomer);
   return (
     <div className="w-full min-h-[100vh] flex items-center justify-center">
+      {loading && <Loading />}
       <form
         onSubmit={(e) => {
           e.preventDefault();

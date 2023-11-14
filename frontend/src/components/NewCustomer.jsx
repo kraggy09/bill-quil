@@ -1,9 +1,11 @@
 import { useEffect, useReducer, useRef } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
-import { AiOutlinePlus } from "react-icons/ai";
+import { IoArrowBackOutline } from "react-icons/io5";
+import { AiOutlineArrowLeft, AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css";
 import { apiUrl } from "../constant";
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
   name: "",
@@ -24,6 +26,7 @@ const formReducer = (state, action) => {
 const apiUrl1 = "/newCustomer";
 
 const NewCustomer = () => {
+  const navigate = useNavigate();
   const [formData, dispatch] = useReducer(formReducer, initialState);
   const myInputRef = useRef(null);
 
@@ -33,12 +36,20 @@ const NewCustomer = () => {
 
   const handleInputChange = (e) => {
     let { name, value } = e.target;
-    if (name == "name") {
+
+    if (name === "name") {
       dispatch({ type: "updateField", fieldName: name, fieldValue: value });
     } else {
+      // Parse the value as a number
       value = Number(value);
 
-      dispatch({ type: "updateField", fieldName: name, fieldValue: value });
+      if (typeof value === "number" && !isNaN(value) && value >= 0) {
+        // The value is a valid number greater than 0
+        dispatch({ type: "updateField", fieldName: name, fieldValue: value });
+      } else {
+        // Handle invalid input, e.g., show an error message
+        console.log("Please enter a valid number greater than 0.");
+      }
     }
   };
 
@@ -89,6 +100,14 @@ const NewCustomer = () => {
         className=" shadow-xl min-h-[20vw]  max-w-[50vw] shadow-gray-400 rounded-xl"
       >
         <h1 className="text-center text-3xl font-bold">
+          <AiOutlineArrowLeft
+            size={35}
+            className="mx-6 "
+            onClick={() => {
+              navigate("/customers");
+            }}
+          />
+
           <p className="inline-block border-b-2 px-6 my-6 py-2 border-black">
             Create a New Customer
           </p>

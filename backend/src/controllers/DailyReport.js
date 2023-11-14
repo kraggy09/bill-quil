@@ -3,9 +3,8 @@ import DailyReport from "../models/DailyReport.js";
 
 export const getDailyReport = async (req, res) => {
   try {
-    const date = getDate(); // You should define the 'getDate' function or use a valid date here
+    const date = getDate();
 
-    // Use await to make the code cleaner and handle async operations
     const dailyReport = await DailyReport.find({ date })
       .populate("bills")
       .populate("transactions")

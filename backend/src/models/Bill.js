@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
+import moment from "moment-timezone";
+import getCurrentDateAndTime from "../config/getCurrentTime.js";
 
-const currentDate = Date.now();
+// Set the timezone to IST
+const IST = "Asia/Kolkata";
+
 const billSchema = mongoose.Schema({
   date: {
     type: Date,
-    default: currentDate,
+    default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
   customer: {
     type: mongoose.Schema.Types.ObjectId,
@@ -12,7 +16,7 @@ const billSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: currentDate, // Set the default value to the current date
+    default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
   items: [
     {
@@ -41,8 +45,8 @@ const billSchema = mongoose.Schema({
   ],
   expires: {
     type: Date,
-    // Specify the TTL (Time to Live) value in seconds (30 days)
     expires: 30 * 24 * 60 * 60,
+    default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
   total: {
     type: Number,

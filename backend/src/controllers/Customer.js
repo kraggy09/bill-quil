@@ -55,24 +55,27 @@ export const getAllCustomers = async (req, res) => {
 };
 
 export const getSingleCustomer = async (req, res) => {
-  const customerId = req.body;
-  const customer = await Customer.findById({ customerId });
+  const customerId = req.params.customerId; // Access the customer ID from the route parameter
   try {
+    const customer = await Customer.findById(customerId)
+      .populate("bills")
+      .populate("transactions")
+      .exec();
+
     if (customer) {
       return res.status(200).json({
         msg: "Customer found successfully",
-        data: customer,
+        customer,
         success: true,
       });
     }
     return res.status(404).json({
-      msg: "Customer not found ",
-
+      msg: "Customer not found",
       success: false,
     });
   } catch (error) {
-    return res.status(404).json({
-      msg: "Server error",
+    return res.status(500).json({
+      msg: "Internal Server Error",
       success: false,
     });
   }

@@ -7,7 +7,7 @@ const DailyReportPage = () => {
   const daily = useSelector((store) => store.report.report);
   console.log(daily);
   const calculateTransactionTotal = () => {
-    if (daily && daily.transactions) {
+    if (daily && daily.transactions.length > 0) {
       daily.transactions.reduce((accumulator, trans) => {
         return accumulator + trans.amount;
       });

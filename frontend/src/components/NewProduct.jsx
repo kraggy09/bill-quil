@@ -1,13 +1,15 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
+
+import { AiOutlinePlus } from "react-icons/ai";
 import { IoArrowBackOutline } from "react-icons/io5";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
 import { apiUrl } from "../constant";
+import Loading from "./Loading";
 
 const initialState = {
   name: "",
@@ -20,7 +22,7 @@ const initialState = {
   stock: "",
   packet: 0,
   box: 0,
-  minQuantity: 2,
+  minQuantity: 1,
 };
 
 const formReducer = (state, action) => {
@@ -40,6 +42,7 @@ const NewProduct = () => {
   const handleReset = () => {
     dispatch({ type: "reset" });
   };
+  const [loading, setLoading] = useState(false);
   const [formData, dispatch] = useReducer(formReducer, initialState);
   //   const [submitted, setSubmitted] = useState(false);
   const apiUrl1 = "/products/newItem";
@@ -62,6 +65,7 @@ const NewProduct = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
 
     // Format the data to match your Mongoose schema
     const formData2 = {
@@ -84,17 +88,22 @@ const NewProduct = () => {
       .then((response) => {
         // Handle a successful response from the server
         console.log("Product created:", response.data);
+        setLoading(false);
         toast.success("Product Created Successfully");
 
         toast.info("Naviagting to products page");
         dispatchR(fetchProducts());
         handleReset();
-        navigate("/products");
+
+        setTimeout(() => {
+          navigate("/products");
+        }, 1500);
 
         // setTimeout(() => {
         // }, 3500);
       })
       .catch((error) => {
+        setLoading(false);
         // Handle errors, e.g., validation errors from the server
         toast.error(error.response.data.msg);
         console.log("Error creating product:", error);
@@ -107,6 +116,7 @@ const NewProduct = () => {
 
   return (
     <div className="flex items-center   justify-center pt-3 ">
+      {loading && <Loading />}
       <form
         className="shadow-xl shadow-gray-400 border-green-500 border-2 ml-3 min-w-[80vw] rounded-2xl max-w-[80vw]"
         onSubmit={handleSubmit}

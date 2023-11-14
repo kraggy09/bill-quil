@@ -47,9 +47,14 @@ export const createNewPayment = async (req, res) => {
     id = new mongoose.Types.ObjectId(id);
 
     amount = Number(amount);
+    let customer1 = await Customer.findById(id);
+    const previousOutstanding = customer1.outstanding;
+    const newOutstanding = customer1.outstanding - amount;
     const newTransaction = await Transaction.create({
       name,
+      previousOutstanding,
       amount,
+      newOutstanding,
       taken: false,
       purpose: "Payment",
       paymentMode,

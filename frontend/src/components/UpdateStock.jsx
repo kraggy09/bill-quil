@@ -1,4 +1,5 @@
 import axios from "axios";
+import Loading from "./Loading";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -37,30 +38,34 @@ const UpdateStock = () => {
   const [packets, setPackets] = useState(0);
   const [pieces, setPieces] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [loading, setLoading] = useState(false);
   console.log(product);
 
   const handleSubmit = (e) => {
+    setLoading(true);
     const id = product._id;
     e.preventDefault();
     axios
       .post(apiUrl + apiUrl1, { quantity, id })
       .then((res) => {
         console.log(res);
+        setLoading(false);
         toast.success("Product updated successfully");
         navigate("/products");
         dispatch(fetchProducts());
       })
       .then((err) => {
         console.log(err);
+        setLoading(false);
         toast.error("Error", err.msg);
       });
   };
 
   useEffect(() => {
     // Convert input values to numbers, or use 0 if conversion fails
-    const boxValue = parseInt(box, 10) || 0;
-    const packetsValue = parseInt(packets, 10) || 0;
-    const piecesValue = parseFloat(pieces, 10) || 0;
+    const boxValue = Math.max(0, parseInt(box, 10)) || 0;
+    const packetsValue = Math.max(0, parseInt(packets, 10)) || 0;
+    const piecesValue = Math.max(0, parseFloat(pieces, 10)) || 0;
 
     setQuantity(
       boxValue * product.box + packetsValue * product.packet + piecesValue
@@ -119,6 +124,7 @@ const UpdateStock = () => {
           <ToastContainer autoClose={3000} />
         </div>
       </div>
+      {loading && <Loading />}
     </div>
   );
 };

@@ -15,6 +15,7 @@ import { apiUrl } from "../constant";
 
 import BillModal from "../components/BillModal";
 import { fetchDailyReport } from "../store/reportSlice";
+import Loading from "../components/Loading";
 
 // Constants
 const API_URL = "/createBill";
@@ -28,9 +29,10 @@ const NewBillPage = () => {
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
   const [discount, setDiscount] = useState(0);
-  const [payment, setPayment] = useState(0);
+  const [payment, setPayment] = useState(null);
   const [total, setTotal] = useState(0);
   const [disabled, setDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Handle form submission
   useEffect(() => {
@@ -40,16 +42,18 @@ const NewBillPage = () => {
   }, [purchased]);
   const submitHandle = async () => {
     setDisabled(true);
+    setLoading(true);
 
     try {
       const response = await axios.post(apiUrl + API_URL, {
         purchased,
         discount,
-        payment,
+        payment: payment === null ? 0 : payment,
         total,
         paymentMode,
         customerId: foundCustomer._id,
       });
+      setLoading(false);
       setPrint(true);
       console.log(response);
       dispatch(fetchProducts());
@@ -57,6 +61,7 @@ const NewBillPage = () => {
       dispatch(fetchDailyReport());
       toast.success("Bill created successfully"); // Display success message
     } catch (error) {
+      setLoading(false);
       console.error(error);
       setDisabled(false);
       toast.error("Error creating the bill"); // Display error message
@@ -112,6 +117,7 @@ const NewBillPage = () => {
         />
       </div>
       <ToastContainer autoClose={3000} />
+      {loading && <Loading />}
     </div>
   );
 };
