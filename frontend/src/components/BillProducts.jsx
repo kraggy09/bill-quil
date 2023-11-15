@@ -125,6 +125,17 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
         <div className="max-w-fit mx-auto border-green-500 border rounded-xl">
           <span
             onClick={() => {
+              handleChange("type", "superWholesale");
+              handleChange("price", product.superWholesalePrice);
+            }}
+            className={`px-3 rounded-xl ${
+              state.type === "superWholesale" ? "bg-green-500 text-white" : ""
+            }`}
+          >
+            SWP
+          </span>
+          <span
+            onClick={() => {
               handleChange("type", "wholesale");
               handleChange("price", product.wholesalePrice);
             }}
@@ -132,7 +143,7 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
               state.type === "wholesale" ? "bg-green-500 text-white" : ""
             }`}
           >
-            Wholesale
+            WP
           </span>
           <span
             onClick={() => {
@@ -143,7 +154,7 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
               state.type === "retail" ? "bg-green-500 text-white" : ""
             }`}
           >
-            Retail
+            RP
           </span>
         </div>
       </td>
@@ -200,6 +211,7 @@ BillProducts.propTypes = {
     type: PropTypes.string.isRequired,
     wholesalePrice: PropTypes.number.isRequired,
     retailPrice: PropTypes.number.isRequired,
+    superWholesalePrice: PropTypes.number.isRequired,
   }).isRequired,
   index: PropTypes.number.isRequired,
   purchased: PropTypes.array.isRequired,

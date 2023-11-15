@@ -133,7 +133,7 @@ PrintBill.propTypes = {
   setIsOpen: PropTypes.func,
   purchased: PropTypes.array,
   total: PropTypes.number,
-  payment: PropTypes.number,
+  payment: PropTypes.string,
   discount: PropTypes.number,
 };
 

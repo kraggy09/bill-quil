@@ -16,6 +16,8 @@ const billSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
+    expires: 60 * 60 * 24 * 60,
+
     default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
   items: [
@@ -35,7 +37,7 @@ const billSchema = mongoose.Schema({
       type: {
         type: String,
         required: true,
-        enum: ["wholesale", "retail"],
+        enum: ["wholesale", "retail", "superWholesale"],
       },
       total: {
         type: Number,
@@ -45,7 +47,8 @@ const billSchema = mongoose.Schema({
   ],
   expires: {
     type: Date,
-    expires: 30 * 24 * 60 * 60,
+    default: () => moment.tz(getCurrentDateAndTime(), IST),
+    expires: 60 * 24 * 60 * 60,
     default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
   total: {

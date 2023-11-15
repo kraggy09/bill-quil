@@ -22,6 +22,7 @@ const EditProduct = () => {
     cp: product.costPrice,
     rp: product.retailPrice,
     wp: product.wholesalePrice,
+    swp: product.superWholesalePrice,
     barcode: product.barcode,
     stock: product.stock,
     packet: product.packet,
@@ -74,6 +75,7 @@ const EditProduct = () => {
       measuring: formData.measuring,
       retailPrice: parseInt(formData.rp),
       wholesalePrice: parseFloat(formData.wp),
+      superWholesalePrice: parseFloat(formData.swp),
       barcode: parseInt(formData.barcode),
       stock: parseFloat(formData.stock),
       packet: parseInt(formData.packet),
@@ -224,6 +226,21 @@ const EditProduct = () => {
               id="wp"
               name="wp"
               value={formData.wp}
+              onChange={handleInputChange}
+              placeholder="Enter the WholeSale Price"
+            />
+          </div>
+          <div className={css.holder}>
+            <label className={css.label} htmlFor="">
+              Super Sale
+            </label>
+            <input
+              className={css.input}
+              required
+              type="number"
+              id="swp"
+              name="swp"
+              value={formData.swp}
               onChange={handleInputChange}
               placeholder="Enter the WholeSale Price"
             />

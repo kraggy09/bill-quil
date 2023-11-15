@@ -18,6 +18,7 @@ const initialState = {
   cp: "",
   rp: "",
   wp: "",
+  swp: "",
   barcode: "",
   stock: "",
   packet: 0,
@@ -75,6 +76,7 @@ const NewProduct = () => {
       measuring: formData.measuring,
       retailPrice: parseInt(formData.rp),
       wholesalePrice: parseFloat(formData.wp),
+      superWholesalePrice: parseFloat(formData.swp),
       barcode: parseInt(formData.barcode),
       stock: parseFloat(formData.stock),
       packet: parseInt(formData.packet),
@@ -200,6 +202,16 @@ const NewProduct = () => {
             value={formData.wp}
             onChange={handleInputChange}
             placeholder="Enter the WholeSale Price"
+          />
+          <input
+            className={css.input}
+            required
+            type="number"
+            id="swp"
+            name="swp"
+            value={formData.swp}
+            onChange={handleInputChange}
+            placeholder="Enter the Super WholeSale Price"
           />
 
           <input

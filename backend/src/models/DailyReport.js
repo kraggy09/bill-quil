@@ -35,7 +35,7 @@ const dailyReportSchema = mongoose.Schema({
   },
   expires: {
     type: Date,
-    expires: 30 * 24 * 60 * 60, // Set TTL index for 30 days
+    expires: 60 * 24 * 60 * 60, // Set TTL index for 60 days
     default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
 });

@@ -26,6 +26,10 @@ const productSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  superWholesalePrice: {
+    type: Number,
+    required: true,
+  },
   barcode: {
     type: Number,
     required: true,

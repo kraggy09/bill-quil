@@ -44,7 +44,7 @@ const transactionSchema = mongoose.Schema({
   },
   expires: {
     type: Date,
-    expires: 30 * 24 * 60 * 60,
+    expires: 60 * 24 * 60 * 60,
     default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
 });

@@ -44,6 +44,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
             <th className="text-start text-xl">Cost ₹</th>
             <th className="text-start text-xl">Retail ₹</th>
             <th className="text-start text-xl">Wholesale ₹</th>
+            <th className="text-start text-xl">Super Sale ₹</th>
             <th className="text-start text-xl">Stock</th>
             <th className="text-start text-xl">Packet</th>
             <th className="text-start text-xl">Box</th>
@@ -83,7 +84,18 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                   <div className="">{product.retailPrice}</div>
                 </td>
                 <td className="text-start font-semibold text-xl py-2">
-                  <div className="">{product.wholesalePrice}</div>
+                  <div className="">
+                    {product.wholesalePrice % 1 != 0
+                      ? product.wholesalePrice.toPrecision(3)
+                      : product.wholesalePrice}
+                  </div>
+                </td>
+                <td className="text-start font-semibold text-xl py-2">
+                  <div className="">
+                    {product.superWholesalePrice % 1 != 0
+                      ? product.superWholesalePrice.toPrecision(3)
+                      : product.superWholesalePrice}
+                  </div>
                 </td>
                 <td className="text-start  font-semibold text-xl py-2">
                   <span
@@ -98,7 +110,9 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                         : ""
                     }`}
                   >
-                    {product.stock}
+                    {product.stock % 1 != 0
+                      ? product.stock.toPrecision(3)
+                      : product.stock}
                   </span>
                 </td>
                 <td className="text-start font-semibold text-xl py-2">

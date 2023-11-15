@@ -9,6 +9,7 @@ class Product {
     boxQuantity,
     wholesalePrice,
     retailPrice,
+    superWholesalePrice,
     barcode,
     name,
     price,
@@ -26,7 +27,7 @@ class Product {
     this.retailPrice = retailPrice;
     this.barcode = barcode;
     this.wholesalePrice = wholesalePrice;
-
+    this.superWholesalePrice = superWholesalePrice;
     this.name = name;
     this.price = price;
     this.mrp = mrp;
@@ -118,6 +119,23 @@ const BillingHeader = ({
   const handleProductSelection = (product) => {
     setProductName("");
     const existingProduct = purchased.find((p) => p.name === product.name);
+
+    // id,
+    // packetQuantity,
+    // boxQuantity,
+    // wholesalePrice,
+    // retailPrice,
+    // superWholesalePrice,
+    // barcode,
+    // name,
+    // price,
+    // mrp,
+    // type,
+    // piece,
+    // packet,
+    // box,
+    // discount,
+    // total
     if (!existingProduct) {
       const newProduct = new Product(
         product._id,
@@ -125,9 +143,14 @@ const BillingHeader = ({
         product.box,
         product.wholesalePrice,
         product.retailPrice,
+        product.superWholesalePrice,
         product.barcode,
         product.name,
-        billType === "wholesale" ? product.wholesalePrice : product.retailPrice,
+        billType === "wholesale"
+          ? product.wholesalePrice
+          : billType === "superWholesale"
+          ? product.superWholesalePrice
+          : product.retailPrice,
         product.mrp,
         billType,
         1,
@@ -136,6 +159,8 @@ const BillingHeader = ({
         0,
         (billType === "wholesale"
           ? product.wholesalePrice
+          : billType === "superWholesale"
+          ? product.superWholesalePrice
           : product.retailPrice) * 1
       );
       setPurchased([...purchased, newProduct]);

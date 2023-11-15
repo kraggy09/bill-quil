@@ -111,9 +111,7 @@ export const getBillDetails = async (req, res) => {
   try {
     const id = req.query.id;
     const bills = await Bill.findById(id)
-      .populate({
-        path: "items.product",
-      })
+      .populate("items.product")
       .populate("customer");
 
     if (!bills) {
@@ -151,7 +149,7 @@ export const getAllBillsOfToday = async (req, res) => {
         $gte: start,
         $lte: end,
       },
-    });
+    }).populate("items.product");
     if (bills) {
       return res.status(200).json({
         msg: "Bills Found",

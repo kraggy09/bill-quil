@@ -6,7 +6,12 @@ export const getDailyReport = async (req, res) => {
     const date = getDate();
 
     const dailyReport = await DailyReport.find({ date })
-      .populate("bills")
+      .populate({
+        path: "bills",
+        populate: {
+          path: "items.product",
+        },
+      })
       .populate("transactions")
       .exec();
 

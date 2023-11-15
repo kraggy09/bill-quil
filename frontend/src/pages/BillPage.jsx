@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { apiUrl } from "../constant";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
-import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
+import { AiOutlineArrowUp } from "react-icons/ai";
+import { FaPercentage } from "react-icons/fa";
+
+import { FaIndianRupeeSign } from "react-icons/fa6";
 import Loading from "../components/Loading";
 import { useSelector } from "react-redux";
 import BillStrap from "../components/BillStrap";
@@ -28,7 +31,7 @@ const BillPage = () => {
       });
       if (res) {
         const temp = res.data;
-        console.log(temp);
+        console.log("Data", temp);
         setBills(temp.bills);
         toast.success(`Bills Found Successfully`);
         setLoading(false);
@@ -41,20 +44,27 @@ const BillPage = () => {
   };
 
   useEffect(() => {
-    const temp = bills.reduce(
+    let temp = bills.reduce(
       (acc, currentBill) => {
-        const billAmount = currentBill.items.reduce((ac, item) => {
-          return ac + item.total;
-        }, 0);
+        const temp = currentBill.items.reduce(
+          (ac, item) => {
+            return {
+              billAmount: ac.billAmount + item.total,
+              investment:
+                ac.investment + item.quantity * item.product.costPrice,
+            };
+          },
+          { billAmount: 0, investment: 0 }
+        );
 
-        console.log(currentBill.payment);
         const payment = currentBill.payment || 0;
         return {
-          totalBillAmount: acc.totalBillAmount + billAmount,
+          totalBillAmount: acc.totalBillAmount + temp.billAmount, // Fixed property name
           totalPayment: acc.totalPayment + payment,
+          totalInvestment: acc.totalInvestment + temp.investment,
         };
       },
-      { totalBillAmount: 0, totalPayment: 0 }
+      { totalBillAmount: 0, totalPayment: 0, totalInvestment: 0 }
     );
     setDataObj(temp);
     console.log(temp);
@@ -93,7 +103,7 @@ const BillPage = () => {
               className="bg-gray-300 px-3 rounded-xl hover:cursor-pointer"
               value={endDate}
               onChange={(e) => {
-                console.log(e.target.value);
+                // console.log(e.target.value);
                 setEndDate(e.target.value);
               }}
             />
@@ -108,12 +118,22 @@ const BillPage = () => {
       </header>
       <article className="flex min-w-full items-center justify-center my-6">
         <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 rounded-3xl text-3xl font-bold text-green-500 flex items-center justify-center shadow-lg px-6 mx-6 shadow-green-400">
-          <AiOutlineArrowDown className="mx-1 font-extrabold" />₹
-          {dataObj && dataObj.totalPayment}
+          <FaIndianRupeeSign className="mx-1 font-extrabold" />
+          {dataObj &&
+            (dataObj.totalBillAmount - dataObj.totalInvestment).toFixed(1)}
         </div>
         <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-red-500 rounded-3xl text-3xl font-bold text-red-500 flex items-center justify-center px-6 shadow-lg shadow-red-400">
           <AiOutlineArrowUp className="mx-1 font-extrabold" />₹
           {dataObj && dataObj.totalBillAmount.toFixed(1)}
+        </div>
+        <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-yellow-300 rounded-3xl text-3xl font-bold text-yellow-500 flex items-center justify-center px-6 shadow-lg shadow-yellow-400">
+          <FaPercentage className="mx-1 font-extrabold" />
+          {dataObj &&
+            (
+              ((dataObj.totalBillAmount - dataObj.totalInvestment) /
+                dataObj.totalBillAmount) *
+              100
+            ).toFixed(1)}
         </div>
       </article>
       <main>
