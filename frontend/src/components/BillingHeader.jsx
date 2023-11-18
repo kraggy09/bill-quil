@@ -119,23 +119,7 @@ const BillingHeader = ({
   const handleProductSelection = (product) => {
     setProductName("");
     const existingProduct = purchased.find((p) => p.name === product.name);
-
-    // id,
-    // packetQuantity,
-    // boxQuantity,
-    // wholesalePrice,
-    // retailPrice,
-    // superWholesalePrice,
-    // barcode,
-    // name,
-    // price,
-    // mrp,
-    // type,
-    // piece,
-    // packet,
-    // box,
-    // discount,
-    // total
+    console.log(existingProduct);
     if (!existingProduct) {
       const newProduct = new Product(
         product._id,
@@ -164,7 +148,19 @@ const BillingHeader = ({
           : product.retailPrice) * 1
       );
       setPurchased([...purchased, newProduct]);
+    } else {
+      const newPurchased = purchased.map((el) => {
+        if (el.id === existingProduct.id) {
+          // Create a new object with the updated piece property
+          return { ...el, piece: el.piece + 1 };
+        }
+        return el;
+      });
+
+      // Set the state with the new array
+      setPurchased(newPurchased);
     }
+
     setProductVisible(false);
     setProductName("");
   };

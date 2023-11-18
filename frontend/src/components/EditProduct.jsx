@@ -4,6 +4,8 @@ import { AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import { IoArrowBackOutline } from "react-icons/io5";
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchProducts } from "../store/productSlice";

@@ -137,7 +137,7 @@ export const getBillDetails = async (req, res) => {
 export const getAllBillsOfToday = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
-    const date = new Date();
+
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
     console.log(start);

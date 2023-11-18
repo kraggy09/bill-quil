@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import ReactToPrint from "react-to-print";
 import PrintBill from "./PrintBill";
 import { useNavigate } from "react-router-dom";

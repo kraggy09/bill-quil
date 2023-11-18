@@ -82,14 +82,21 @@ const PrintBill = React.forwardRef(
                         <p className="text-center"> {product.mrp}</p>
                       </td>
                       <td>
-                        <p className="text-center"> {total.toFixed(3)}</p>
-                      </td>
-                      <td>
-                        <p className="text-center">{price.toFixed(2)}</p>
+                        <p className="text-center">
+                          {" "}
+                          {total % 1 != 0 ? total.toFixed(3) : total}
+                        </p>
                       </td>
                       <td>
                         <p className="text-center">
-                          {price * total - product.discount}
+                          {price % 1 != 0 ? price.toFixed(2) : price}
+                        </p>
+                      </td>
+                      <td>
+                        <p className="text-center">
+                          {(price * total - product.discount) % 1 != 0
+                            ? (price * total - product.discount).toFixed(2)
+                            : price * total - product.discount}
                         </p>
                       </td>
                     </tr>
@@ -119,7 +126,7 @@ const PrintBill = React.forwardRef(
               )}
             </div>
             <div className="mt-6 font-bold text-2xl">
-              You Saved:{calculateSave(purchased)}
+              You Saved:{calculateSave(purchased).toFixed(3)}
             </div>
           </div>
         </div>

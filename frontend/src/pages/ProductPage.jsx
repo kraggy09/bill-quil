@@ -8,6 +8,7 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const products = useSelector((store) => store.product.products);
   const [filteredProducts, setFilteredProducts] = useState(products);
+  const user = useSelector((store) => store.user);
 
   const calculateStock = () => {
     let total = 0;
@@ -19,7 +20,7 @@ const ProductPage = () => {
   };
   return (
     <div>
-      <div>{calculateStock()}</div>
+      <div>{user.isAdmin && calculateStock()}</div>
       <div className="relative min-h-[100vh]  min-w-[85vw]">
         <ProductHeader
           setFilteredProducts={setFilteredProducts}

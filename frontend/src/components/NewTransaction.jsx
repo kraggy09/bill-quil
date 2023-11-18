@@ -1,5 +1,7 @@
 import { useReducer, useState } from "react";
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling

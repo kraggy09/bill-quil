@@ -23,8 +23,12 @@ const BillStrap = ({ bill }) => {
     <tr className="font-medium text-xl ">
       <td className="px-16 py-3 ">{calculateDate(date)}</td>
       <td className="px-16 py-3 ">{calculateTime(date)}</td>
-      <td className="px-16 py-3 "> {billAmount}</td>
-      <td className="px-16 py-3 ">{bill.total - billAmount}</td>
+      <td className="px-16 py-3 "> {billAmount.toFixed(3)}</td>
+      <td className="px-16 py-3 ">
+        {(bill.total - billAmount) % 1 != 0
+          ? (bill.total - billAmount).toFixed(1)
+          : bill.total - billAmount}
+      </td>
       <td className="px-16 py-3 ">{bill.payment}</td>
       <td className="px-16 py-3 ">{bill.total - bill.payment}</td>
       <td

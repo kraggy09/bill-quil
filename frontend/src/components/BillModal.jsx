@@ -1,4 +1,3 @@
-import React from "react";
 import { PrintButton } from "../components/PrintTest";
 
 const BillModal = ({

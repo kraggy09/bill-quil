@@ -1,4 +1,6 @@
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import Loading from "./Loading";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";

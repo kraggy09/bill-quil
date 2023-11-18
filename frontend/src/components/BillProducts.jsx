@@ -23,7 +23,7 @@ const reducer = (state, action) => {
   }
 };
 
-const BillProducts = ({ product, index, purchased, setPurchased }) => {
+const BillProducts = ({ product, purchased, setPurchased }) => {
   // Define an initial state
   const initialState = {
     piece: product.piece,
@@ -48,62 +48,95 @@ const BillProducts = ({ product, index, purchased, setPurchased }) => {
       type === "price" ||
       type === "discount"
     ) {
-      calculateTotal();
+      calculateTotal(
+        state.piece,
+        state.box,
+        state.packet,
+        state.price,
+        state.discount
+      );
     }
   };
-  const calculateTotal = () => {
+
+  const calculateTotal = (piece, box, packet, price, discount) => {
     const total =
-      state.piece * state.price +
-      state.box * product.boxQuantity * state.price +
-      state.packet * product.packetQuantity * state.price -
-      state.discount;
+      piece * price +
+      box * product.boxQuantity * price +
+      packet * product.packetQuantity * price -
+      discount;
     handleChange("total", total.toFixed(2));
   };
 
   useEffect(() => {
-    calculateTotal();
-  }, [state.piece, state.box, state.packet, state.price, state.discount]);
+    console.log("Useffect total", 3);
+
+    calculateTotal(
+      state.piece,
+      state.box,
+      state.packet,
+      state.price,
+      state.discount
+    );
+  }, [state.piece, state.box, state.packet, state.discount, state.price]);
 
   useEffect(() => {
-    if (index !== undefined) {
-      // Create a new product object with the updated fields
-      const product = purchased.filter((pr) => pr.id === index);
-      console.log(index);
-      console.log(product[0], "This is the product to mutate");
+    console.log("Useffect ", 1);
+    console.log("state:", state);
+    console.log("product:", product);
+    console.log("purchased:", purchased);
 
-      const updatedProduct = {
-        ...product[0],
-        piece: Number(state.piece),
-        price: Number(state.price),
-        packet: Number(state.packet),
-        box: Number(state.box),
-        discount: Number(state.discount),
-        type: state.type,
-        total: Number(state.total),
-      };
+    const updatedProduct = purchased.find((p) => p.id === product.id);
 
-      // Update the purchased array with the updated product
-      setPurchased((prevPurchased) => {
-        const idx = prevPurchased.findIndex((product) => product.id === index);
-
-        if (idx !== -1) {
-          const newPurchased = [...prevPurchased];
-          newPurchased[idx] = updatedProduct;
-          return newPurchased;
-        }
-
-        // Handle the case where the product with the specified id is not found
-        console.error(
-          `Product with id ${updatedProduct.id} not found in purchased array.`
-        );
-        return prevPurchased;
+    if (updatedProduct && state.piece !== updatedProduct.piece) {
+      // Only update the local state if the piece property has changed
+      dispatch({
+        type: "CHANGE_PIECE",
+        value: updatedProduct.piece,
       });
     }
+  }, [purchased, state.piece, product.id]);
+
+  useEffect(() => {
+    console.log("Useffect ", 2);
+
+    if (product !== undefined) {
+      // Create a new product object with the updated fields
+      const foundProduct = purchased.find((pr) => pr.id === product.id);
+      if (foundProduct) {
+        const updatedProduct = {
+          ...foundProduct,
+          piece: Number(state.piece),
+          price: Number(state.price),
+          packet: Number(state.packet),
+          box: Number(state.box),
+          discount: Number(state.discount),
+          type: state.type,
+          total: Number(state.total),
+        };
+
+        // Update the purchased array with the updated product
+        setPurchased((prevPurchased) => {
+          const idx = prevPurchased.findIndex((pr) => pr.id === product.id);
+
+          if (idx !== -1) {
+            const newPurchased = [...prevPurchased];
+            newPurchased[idx] = updatedProduct;
+            return newPurchased;
+          }
+
+          // Handle the case where the product with the specified id is not found
+          console.error(
+            `Product with id ${updatedProduct.id} not found in purchased array.`
+          );
+          return prevPurchased;
+        });
+      }
+    }
   }, [state]);
+
   const handleRemoveProduct = () => {
     // Create a new purchased array that excludes the product at the specified index
     const newPurchased = purchased.filter((pr) => pr.id !== product.id);
-    console.log(newPurchased);
     setPurchased(newPurchased);
   };
 
@@ -213,7 +246,6 @@ BillProducts.propTypes = {
     retailPrice: PropTypes.number.isRequired,
     superWholesalePrice: PropTypes.number.isRequired,
   }).isRequired,
-  index: PropTypes.number.isRequired,
   purchased: PropTypes.array.isRequired,
   setPurchased: PropTypes.func.isRequired,
 };

@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { apiUrl } from "../constant";
+axios.defaults.withCredentials = true;
 
 const initialState = {
   customers: [],

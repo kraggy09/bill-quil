@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { useSelector } from "react-redux";
 
 const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
+  const user = useSelector((store) => store.user);
   const navigate = useNavigate();
   const itemsPerPage = 10; // Number of items to display per page
 
@@ -41,10 +43,10 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
             <th className="text-start text-xl">Barcode</th>
             <th className="text-start text-xl">Name</th>
             <th className="text-start text-xl">MRP ₹</th>
-            <th className="text-start text-xl">Cost ₹</th>
-            <th className="text-start text-xl">Retail ₹</th>
-            <th className="text-start text-xl">Wholesale ₹</th>
-            <th className="text-start text-xl">Super Sale ₹</th>
+            {user.isAdmin && <th className="text-start text-xl">CP ₹</th>}
+            <th className="text-start text-xl">RP ₹</th>
+            <th className="text-start text-xl">WP ₹</th>
+            <th className="text-start text-xl">SWP ₹</th>
             <th className="text-start text-xl">Stock</th>
             <th className="text-start text-xl">Packet</th>
             <th className="text-start text-xl">Box</th>
@@ -59,12 +61,12 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                     onClick={() => {
                       navigate(`/products/barcode/${product.barcode}`);
                     }}
-                    className=""
+                    className="hover:cursor-pointer"
                   >
                     {product.barcode}
                   </div>
                 </td>
-                <td className="text-start capitalize font-semibold text-xl py-2">
+                <td className="text-start hover:cursor-pointer capitalize font-semibold text-xl py-2">
                   <div
                     onClick={() =>
                       navigate(`/products/${product._id}`, { state: product })
@@ -77,9 +79,11 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                 <td className="text-start font-semibold text-xl py-2">
                   <div className="">{product.mrp}</div>
                 </td>
-                <td className="text-start font-semibold text-xl py-2">
-                  <div className="">{product.costPrice}</div>
-                </td>
+                {user.isAdmin && (
+                  <td className="text-start font-semibold text-xl py-2">
+                    <div className="">{product.costPrice}</div>
+                  </td>
+                )}
                 <td className="text-start font-semibold text-xl py-2">
                   <div className="">{product.retailPrice}</div>
                 </td>
@@ -97,7 +101,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                       : product.superWholesalePrice}
                   </div>
                 </td>
-                <td className="text-start  font-semibold text-xl py-2">
+                <td className="text-start hover:cursor-pointer font-semibold text-xl py-2">
                   <span
                     onClick={() => {
                       navigate(`/products/updateStock/${product._id}`, {

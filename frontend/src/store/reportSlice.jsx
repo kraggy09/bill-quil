@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { apiUrl } from "../constant";
+axios.defaults.withCredentials = true;
 
 const initialState = {
   report: null,

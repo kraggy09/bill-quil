@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiUrl } from "../constant";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 
 import { toast, ToastContainer } from "react-toastify";
 import Loading from "./Loading";

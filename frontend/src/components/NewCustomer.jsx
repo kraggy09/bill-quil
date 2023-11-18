@@ -1,7 +1,8 @@
 import { useEffect, useReducer, useRef } from "react";
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import { ToastContainer, toast } from "react-toastify";
-import { IoArrowBackOutline } from "react-icons/io5";
 import { AiOutlineArrowLeft, AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css";
 import { apiUrl } from "../constant";

@@ -5,6 +5,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import BillType from "../components/BillType";
 import Modal from "../components/Modal";
 import BillingHeader from "../components/BillingHeader";

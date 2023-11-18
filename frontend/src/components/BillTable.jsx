@@ -16,10 +16,8 @@ const BillTable = ({
   setPaymentMode,
 }) => {
   console.log(purchased);
-  console.log("Component is rendered");
   useEffect(() => {
     let total = purchased.reduce((accumulator, product) => {
-      console.log("useEffect is working");
       const productTotal = parseFloat(product.total);
       if (!isNaN(productTotal)) {
         return accumulator + productTotal;
@@ -54,13 +52,10 @@ const BillTable = ({
         </thead>
         <tbody className="mt-20">
           {[...purchased].reverse().map((product) => {
-            console.log(product);
             return (
               <BillProducts
                 product={product}
-                //Never ever use index in mapping
-                key={product.id}
-                index={product.id}
+                key={product.id} // Use the id property as the key
                 purchased={purchased}
                 setPurchased={setPurchased}
               />

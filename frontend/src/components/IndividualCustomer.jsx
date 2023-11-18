@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { apiUrl } from "../constant";
 import axios from "axios";
+axios.defaults.withCredentials = true;
+
 import Loading from "./Loading";
 import BillStrap from "./BillStrap";
 import { calculateDate, calculateTime } from "../libs/constant";
@@ -49,7 +51,7 @@ const IndividualCustomer = () => {
                   setTab("bills");
                   setLoading(false);
                 }}
-                className={`min-w-[150px] rounded-full px-3 mx-auto flex items-center justify-center text-xl font-bold  py-2 ${
+                className={`min-w-[150px] hover:cursor-pointer rounded-full px-3  mx-auto flex items-center justify-center text-xl font-bold  py-2 ${
                   tab === "bills"
                     ? "bg-green-500 text-white"
                     : "bg-white text-black"
@@ -63,7 +65,7 @@ const IndividualCustomer = () => {
                   setTab("transaction");
                   setLoading(false);
                 }}
-                className={`min-w-[160px]  rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+                className={`min-w-[160px]  hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
                   tab === "transaction"
                     ? "bg-green-500 text-white"
                     : "bg-white text-black"

@@ -1,11 +1,11 @@
 import axios from "axios";
+axios.defaults.withCredentials = true;
 import { useEffect, useState } from "react";
 import { apiUrl } from "../constant";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import { AiOutlineArrowUp } from "react-icons/ai";
 import { FaPercentage } from "react-icons/fa";
-
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import Loading from "../components/Loading";
 import { useSelector } from "react-redux";
@@ -19,6 +19,7 @@ const BillPage = () => {
   const [loading, setLoading] = useState(false);
   const [dataObj, setDataObj] = useState(null);
   const daily = useSelector((store) => store.report.report);
+  const user = useSelector((store) => store.user);
 
   const getBills = async () => {
     try {
@@ -86,7 +87,7 @@ const BillPage = () => {
         <p className="text-2xl text-center my-3 font-bold">
           Search the bills here
         </p>
-        <div className="flex min-w-[50vw] my-3 justify-around">
+        <div className="flex min-w-[90vw] my-3 justify-around">
           <span className="flex items-center justify-center text-xl">
             <p className="mr-3">Start Date: </p>
             <input
@@ -116,27 +117,29 @@ const BillPage = () => {
           </button>
         </div>
       </header>
-      <article className="flex min-w-full items-center justify-center my-6">
-        <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 rounded-3xl text-3xl font-bold text-green-500 flex items-center justify-center shadow-lg px-6 mx-6 shadow-green-400">
-          <FaIndianRupeeSign className="mx-1 font-extrabold" />
-          {dataObj &&
-            (dataObj.totalBillAmount - dataObj.totalInvestment).toFixed(1)}
-        </div>
-        <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-red-500 rounded-3xl text-3xl font-bold text-red-500 flex items-center justify-center px-6 shadow-lg shadow-red-400">
-          <AiOutlineArrowUp className="mx-1 font-extrabold" />₹
-          {dataObj && dataObj.totalBillAmount.toFixed(1)}
-        </div>
-        <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-yellow-300 rounded-3xl text-3xl font-bold text-yellow-500 flex items-center justify-center px-6 shadow-lg shadow-yellow-400">
-          <FaPercentage className="mx-1 font-extrabold" />
-          {dataObj &&
-            (
-              ((dataObj.totalBillAmount - dataObj.totalInvestment) /
-                dataObj.totalBillAmount) *
-              100
-            ).toFixed(1)}
-        </div>
-      </article>
-      <main>
+      {user.isAdmin && (
+        <article className="flex min-w-full items-center justify-center my-6">
+          <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 rounded-3xl text-3xl font-bold text-green-500 flex items-center justify-center shadow-lg px-6 mx-6 shadow-green-400">
+            <FaIndianRupeeSign className="mx-1 font-extrabold" />
+            {dataObj &&
+              (dataObj.totalBillAmount - dataObj.totalInvestment).toFixed(1)}
+          </div>
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-red-500 rounded-3xl text-3xl font-bold text-red-500 flex items-center justify-center px-6 shadow-lg shadow-red-400">
+            <AiOutlineArrowUp className="mx-1 font-extrabold" />₹
+            {dataObj && dataObj.totalBillAmount.toFixed(1)}
+          </div>
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-yellow-300 rounded-3xl text-3xl font-bold text-yellow-500 flex items-center justify-center px-6 shadow-lg shadow-yellow-400">
+            <FaPercentage className="mx-1 font-extrabold" />
+            {dataObj &&
+              (
+                ((dataObj.totalBillAmount - dataObj.totalInvestment) /
+                  dataObj.totalBillAmount) *
+                100
+              ).toFixed(1)}
+          </div>
+        </article>
+      )}
+      <main className="min-w-[90vw] flex items-center justify-center">
         {
           <table className="table-auto border-spacing-x-60 text-2xl border border-black ml-6 ">
             <thead className="border border-black">
