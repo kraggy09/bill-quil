@@ -30,29 +30,31 @@ import { setUser } from "./store/userSlice";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
+  // console.log(user);
 
-  const checkAuthentication = async () => {
-    try {
-      const res = await axios.get(apiUrl + "/checkAuth"); // Replace with your actual endpoint
-      console.log(res);
-      if (res) {
-        dispatch(
-          setUser({
-            username: res.data.user.username,
-            isAdmin: res.data.user.isAdmin,
-          })
-        );
-      }
-    } catch (error) {
-      console.error("Authentication check failed:", error);
-      // Handle authentication failure
-    }
-  };
+  // const checkAuthentication = async () => {
+  //   try {
+  //     const res = await axios.get(apiUrl + "/checkAuth"); // Replace with your actual endpoint
+  //     console.log(res);
+  //     if (res) {
+  //       dispatch(
+  //         setUser({
+  //           username: res.data.user.username,
+  //           isAdmin: res.data.user.isAdmin,
+  //           id: res.data.user._id,
+  //         })
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Authentication check failed:", error);
+  //     // Handle authentication failure
+  //   }
+  // };
 
-  useEffect(() => {
-    console.log("I was called");
-    checkAuthentication();
-  }, []);
+  // useEffect(() => {
+  //   console.log("I was called");
+  //   checkAuthentication();
+  // }, []);
   // console.log(user);
   useEffect(() => {
     if (user.username) {

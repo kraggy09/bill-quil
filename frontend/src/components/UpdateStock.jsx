@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { fetchProducts } from "../store/productSlice";
 import { ToastContainer, toast } from "react-toastify";
 import { apiUrl } from "../constant";
+import { fetchDailyReport } from "../store/reportSlice";
 
 const apiUrl1 = "/products/updateStock";
 
@@ -32,6 +33,7 @@ const calculateStock = (product) => {
 };
 
 const UpdateStock = () => {
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const product = location.state;
@@ -53,6 +55,7 @@ const UpdateStock = () => {
         console.log(res);
         setLoading(false);
         toast.success("Product updated successfully");
+        dispatch(fetchDailyReport());
         navigate("/products");
         dispatch(fetchProducts());
       })

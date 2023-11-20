@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
@@ -24,6 +24,7 @@ const API_URL = "/createBill";
 
 const NewBillPage = () => {
   const dispatch = useDispatch();
+  const user = useSelector((store) => store.user);
   const [billType, setBillType] = useState("");
   const [print, setPrint] = useState(false);
   const [paymentMode, setPaymentMode] = useState("cash");
@@ -31,7 +32,7 @@ const NewBillPage = () => {
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
   const [discount, setDiscount] = useState(0);
-  const [payment, setPayment] = useState(null);
+  const [payment, setPayment] = useState("");
   const [total, setTotal] = useState(0);
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -50,14 +51,15 @@ const NewBillPage = () => {
       const response = await axios.post(apiUrl + API_URL, {
         purchased,
         discount,
-        payment: payment === null ? 0 : payment,
+        payment: payment === "" ? 0 : payment,
         total,
         paymentMode,
         customerId: foundCustomer._id,
+        createdBy: user.id,
       });
       setLoading(false);
       setPrint(true);
-      console.log(response);
+      console.log(response.data);
       dispatch(fetchProducts());
       dispatch(fetchCustomers());
       dispatch(fetchDailyReport());

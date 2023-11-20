@@ -22,6 +22,7 @@ app.use(
   cors({
     credentials: true,
     origin: "https://dreamy-cuchufli-66a35d.netlify.app/",
+    // origin: "http://localhost:5173",
   })
 );
 app.use(express.urlencoded({ extended: true }));

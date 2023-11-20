@@ -52,6 +52,7 @@ const BillTable = ({
         </thead>
         <tbody className="mt-20">
           {[...purchased].reverse().map((product) => {
+            console.log(product);
             return (
               <BillProducts
                 product={product}

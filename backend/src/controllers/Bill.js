@@ -15,6 +15,7 @@ export const createBill = async (req, res) => {
     payment = 0,
     paymentMode,
     discount = 0,
+    createdBy,
   } = req.body;
 
   try {
@@ -55,6 +56,7 @@ export const createBill = async (req, res) => {
       total,
       payment,
       discount,
+      createdBy,
     });
 
     let transaction = null;

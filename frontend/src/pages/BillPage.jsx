@@ -45,29 +45,47 @@ const BillPage = () => {
   };
 
   useEffect(() => {
-    let temp = bills.reduce(
-      (acc, currentBill) => {
-        const temp = currentBill.items.reduce(
-          (ac, item) => {
-            return {
-              billAmount: ac.billAmount + item.total,
-              investment:
-                ac.investment + item.quantity * item.product.costPrice,
-            };
-          },
-          { billAmount: 0, investment: 0 }
-        );
+    let temp =
+      bills &&
+      bills.reduce(
+        (acc, currentBill) => {
+          const temp = currentBill.items.reduce(
+            (ac, item) => {
+              if (item.product?.costPrice === undefined) {
+                console.log(
+                  `Item without product.costPrice in bill ID ${currentBill._id},total:${currentBill.total}`
+                );
+              }
 
-        const payment = currentBill.payment || 0;
-        return {
-          totalBillAmount: acc.totalBillAmount + temp.billAmount, // Fixed property name
-          totalPayment: acc.totalPayment + payment,
-          totalInvestment: acc.totalInvestment + temp.investment,
-        };
-      },
-      { totalBillAmount: 0, totalPayment: 0, totalInvestment: 0 }
+              return {
+                billAmount: ac.billAmount + item.total,
+                investment:
+                  ac.investment +
+                  item.quantity * (item.product?.costPrice ?? 0),
+              };
+            },
+            { billAmount: 0, investment: 0 }
+          );
+
+          const payment = currentBill.payment ?? 0;
+          if (currentBill._id === undefined) {
+            console.log("Bill without _id");
+          }
+
+          return {
+            totalBillAmount: acc.totalBillAmount + temp.billAmount,
+            totalPayment: acc.totalPayment + payment,
+            totalInvestment: acc.totalInvestment + temp.investment,
+          };
+        },
+        { totalBillAmount: 0, totalPayment: 0, totalInvestment: 0 }
+      );
+
+    // Optional chaining check for setDataObj
+    setDataObj(
+      temp ?? { totalBillAmount: 0, totalPayment: 0, totalInvestment: 0 }
     );
-    setDataObj(temp);
+
     console.log(temp);
   }, [bills]);
 

@@ -10,6 +10,7 @@ class Product {
     wholesalePrice,
     retailPrice,
     superWholesalePrice,
+    measuring,
     barcode,
     name,
     price,
@@ -26,6 +27,7 @@ class Product {
     this.packetQuantity = packetQuantity;
     this.retailPrice = retailPrice;
     this.barcode = barcode;
+    this.measuring = measuring;
     this.wholesalePrice = wholesalePrice;
     this.superWholesalePrice = superWholesalePrice;
     this.name = name;
@@ -128,6 +130,7 @@ const BillingHeader = ({
         product.wholesalePrice,
         product.retailPrice,
         product.superWholesalePrice,
+        product.measuring,
         product.barcode,
         product.name,
         billType === "wholesale"
@@ -150,9 +153,13 @@ const BillingHeader = ({
       setPurchased([...purchased, newProduct]);
     } else {
       const newPurchased = purchased.map((el) => {
-        if (el.id === existingProduct.id) {
+        if (el.id === product._id) {
           // Create a new object with the updated piece property
-          return { ...el, piece: el.piece + 1 };
+          return {
+            ...el,
+            piece: Number(el.piece) + 1,
+            total: Number(el.total) + Number(el.price),
+          };
         }
         return el;
       });

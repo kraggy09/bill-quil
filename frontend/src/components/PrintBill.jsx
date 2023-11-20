@@ -56,16 +56,17 @@ const PrintBill = React.forwardRef(
           <table className="min-w-full">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>MRP</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
+                <th className="border border-black">Sr No.</th>
+                <th className="border border-black">Name</th>
+                <th className="border border-black">MRP</th>
+                <th className="border border-black">Quantity</th>
+                <th className="border border-black">Price</th>
+                <th className="border border-black">Total</th>
               </tr>
             </thead>
             <tbody>
               {purchased &&
-                [...purchased].reverse().map((product) => {
+                [...purchased].reverse().map((product, idx) => {
                   console.log(product);
                   const total =
                     product.piece +
@@ -74,7 +75,10 @@ const PrintBill = React.forwardRef(
                   const price = product.price;
 
                   return (
-                    <tr key={product._id}>
+                    <tr key={product._id} className="border border-black">
+                      <td>
+                        <p className="text-center capitalize">{idx + 1}</p>
+                      </td>
                       <td>
                         <p className="text-center capitalize">{product.name}</p>
                       </td>
@@ -105,7 +109,6 @@ const PrintBill = React.forwardRef(
             </tbody>
           </table>
           <div className="min-w-full mt-6 flex flex-col pr-6 justify-end items-end">
-            {}
             {discount > 0 && <div>Discount:{discount}</div>}
 
             <div className="">

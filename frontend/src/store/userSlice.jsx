@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   username: null,
   isAdmin: false,
+  id: "",
 };
 
 const userSlice = createSlice({
@@ -11,6 +12,7 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.username = action.payload.username;
       state.isAdmin = action.payload.isAdmin;
+      state.id = action.payload.id;
     },
   },
 });

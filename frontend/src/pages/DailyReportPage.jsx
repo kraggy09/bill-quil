@@ -69,9 +69,10 @@ const DailyReportPage = () => {
           const temp = currentBill.items.reduce(
             (ac, item) => {
               return {
-                billAmount: ac.billAmount + item.total,
+                billAmount: ac.billAmount + (item.total ?? 0),
                 investment:
-                  ac.investment + item.quantity * item.product.costPrice,
+                  ac.investment +
+                  (item.quantity ?? 0) * (item.product?.costPrice ?? 0),
               };
             },
             { billAmount: 0, investment: 0 }
@@ -79,17 +80,21 @@ const DailyReportPage = () => {
 
           const payment = currentBill.payment || 0;
           return {
-            totalBillAmount: acc.totalBillAmount + temp.billAmount, // Fixed property name
+            totalBillAmount: acc.totalBillAmount + temp.billAmount,
             totalPayment: acc.totalPayment + payment,
             totalInvestment: acc.totalInvestment + temp.investment,
           };
         },
         { totalBillAmount: 0, totalPayment: 0, totalInvestment: 0 }
       );
+
       let totalPayment = dailyReport.transactions.reduce((ac, item) => {
         return (ac += item.amount);
       }, 0);
-      // console.log(temp);
+
+      // Apply optional chaining and nullish coalescing for totalPayment as well
+      totalPayment = totalPayment ?? 0;
+
       const newDataObj = { ...temp, totalPayment };
       setDataObj(newDataObj);
     }
@@ -171,6 +176,7 @@ const DailyReportPage = () => {
           >
             Bills
           </div>
+
           <div
             onClick={() => {
               setType("transaction");
@@ -183,6 +189,20 @@ const DailyReportPage = () => {
           >
             Transactions
           </div>
+          {dailyReport && dailyReport.updatedToday && (
+            <div
+              onClick={() => {
+                setType("updatedProduct");
+              }}
+              className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+                type === "updatedProduct"
+                  ? "bg-green-500 text-white"
+                  : "bg-white text-black"
+              }`}
+            >
+              Updated
+            </div>
+          )}
         </div>
       </div>
       <div className="min-w-[90vw] mb-16 flex items-center justify-center">
@@ -206,7 +226,7 @@ const DailyReportPage = () => {
                 })}
             </tbody>
           </table>
-        ) : (
+        ) : type === "transactions" ? (
           <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
@@ -238,6 +258,50 @@ const DailyReportPage = () => {
                       </td>
                       <td className="px-16 py-3 font-semibold">
                         {transaction.newOutstanding || 0}{" "}
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        ) : (
+          <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
+            <thead className="border border-black">
+              <tr className="border border-black">
+                <th className="border border-black mx-6">Date</th>
+                <th className="border border-black mx-6">Time</th>
+                <th className="border border-black">Product</th>
+                <th className="border border-black px-0">Previous Quantity</th>
+                <th className="border border-black px-6">Purchased</th>
+                <th className="border border-black px-6">New Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dailyReport &&
+                [...dailyReport.updatedToday].reverse().map((updated) => {
+                  return (
+                    <tr className="text-xl" key={updated._id}>
+                      {updated.createdAt && (
+                        <td className="px-16 py-3 font-semibold">
+                          {calculateDate(new Date(updated.createdAt))}
+                        </td>
+                      )}
+                      {updated.createdAt && (
+                        <td className="px-16 py-3 font-semibold">
+                          {calculateTime(new Date(updated.createdAt))}
+                        </td>
+                      )}
+                      <td className="px-16 py-3 capitalize font-semibold">
+                        {updated.product.name}
+                      </td>
+                      <td className="px-16 py-3 font-semibold">
+                        {updated.previousQuantity}
+                      </td>
+                      <td className="px-16 py-3 font-semibold">
+                        {updated.quantity}{" "}
+                      </td>
+                      <td className="px-16 py-3 font-semibold">
+                        {updated.quantity + updated.previousQuantity}{" "}
                       </td>
                     </tr>
                   );

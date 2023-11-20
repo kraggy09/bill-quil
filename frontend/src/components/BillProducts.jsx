@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import PropTypes from "prop-types";
 
 // Reducer function to manage state changes
@@ -17,7 +17,7 @@ const reducer = (state, action) => {
     case "CHANGE_TYPE":
       return { ...state, type: action.value };
     case "CHANGE_TOTAL":
-      return { ...state, total: action.value };
+      return { ...state, total: Number(action.value) };
     default:
       return state;
   }
@@ -37,9 +37,11 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
 
   // Use the reducer to manage state
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  const [change, setChange] = useState(false);
   // Function to handle changes and dispatch actions
   const handleChange = (type, value) => {
+    setChange(true);
+
     dispatch({ type: `CHANGE_${type.toUpperCase()}`, value });
     if (
       type === "piece" ||
@@ -59,17 +61,17 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   };
 
   const calculateTotal = (piece, box, packet, price, discount) => {
-    const total =
+    let total =
       piece * price +
       box * product.boxQuantity * price +
       packet * product.packetQuantity * price -
       discount;
-    handleChange("total", total.toFixed(2));
+    total = Number(total);
+    dispatch({ type: "CHANGE_TOTAL", value: total.toFixed() });
   };
 
   useEffect(() => {
-    console.log("Useffect total", 3);
-
+    console.log(1);
     calculateTotal(
       state.piece,
       state.box,
@@ -80,27 +82,22 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   }, [state.piece, state.box, state.packet, state.discount, state.price]);
 
   useEffect(() => {
-    console.log("Useffect ", 1);
-    console.log("state:", state);
-    console.log("product:", product);
-    console.log("purchased:", purchased);
-
+    console.log(2);
     const updatedProduct = purchased.find((p) => p.id === product.id);
 
     if (updatedProduct && state.piece !== updatedProduct.piece) {
-      // Only update the local state if the piece property has changed
-      dispatch({
-        type: "CHANGE_PIECE",
-        value: updatedProduct.piece,
-      });
+      // handleChange("piece", updatedProduct.piece);
+      setChange(false);
+
+      dispatch({ type: "CHANGE_PIECE", value: updatedProduct.piece });
     }
-  }, [purchased, state.piece, product.id]);
+  }, [product]);
 
   useEffect(() => {
-    console.log("Useffect ", 2);
-
-    if (product !== undefined) {
+    console.log(3);
+    if (product !== undefined && change) {
       // Create a new product object with the updated fields
+      console.log("Mujhe bulaye the");
       const foundProduct = purchased.find((pr) => pr.id === product.id);
       if (foundProduct) {
         const updatedProduct = {
@@ -113,23 +110,13 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           type: state.type,
           total: Number(state.total),
         };
-
-        // Update the purchased array with the updated product
-        setPurchased((prevPurchased) => {
-          const idx = prevPurchased.findIndex((pr) => pr.id === product.id);
-
-          if (idx !== -1) {
-            const newPurchased = [...prevPurchased];
-            newPurchased[idx] = updatedProduct;
-            return newPurchased;
+        const newPurchased = purchased.map((pr) => {
+          if (pr.id === product.id) {
+            return updatedProduct;
           }
-
-          // Handle the case where the product with the specified id is not found
-          console.error(
-            `Product with id ${updatedProduct.id} not found in purchased array.`
-          );
-          return prevPurchased;
+          return pr;
         });
+        setPurchased(newPurchased);
       }
     }
   }, [state]);
@@ -159,7 +146,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           <span
             onClick={() => {
               handleChange("type", "superWholesale");
-              handleChange("price", product.superWholesalePrice);
+              handleChange("price", Number(product.superWholesalePrice));
             }}
             className={`px-3 rounded-xl ${
               state.type === "superWholesale" ? "bg-green-500 text-white" : ""
@@ -170,7 +157,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           <span
             onClick={() => {
               handleChange("type", "wholesale");
-              handleChange("price", product.wholesalePrice);
+              handleChange("price", Number(product.wholesalePrice));
             }}
             className={`px-2 rounded-xl ${
               state.type === "wholesale" ? "bg-green-500 text-white" : ""
@@ -181,7 +168,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           <span
             onClick={() => {
               handleChange("type", "retail");
-              handleChange("price", product.retailPrice);
+              handleChange("price", Number(product.retailPrice));
             }}
             className={`px-3 rounded-xl ${
               state.type === "retail" ? "bg-green-500 text-white" : ""
@@ -195,7 +182,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         <input
           type="number"
           value={state.piece}
-          onChange={(e) => handleChange("piece", e.target.value)}
+          onChange={(e) => handleChange("piece", Number(e.target.value))}
           className="max-w-[50px]"
         />
       </td>
@@ -203,7 +190,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         <input
           type="number"
           value={state.packet}
-          onChange={(e) => handleChange("packet", e.target.value)}
+          onChange={(e) => handleChange("packet", Number(e.target.value))}
           className="max-w-[50px]"
         />
       </td>
@@ -211,7 +198,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         <input
           type="number"
           value={state.box}
-          onChange={(e) => handleChange("box", e.target.value)}
+          onChange={(e) => handleChange("box", Number(e.target.value))}
           className="max-w-[50px]"
         />
       </td>
@@ -219,7 +206,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         <input
           type="number"
           value={state.discount}
-          onChange={(e) => handleChange("discount", e.target.value)}
+          onChange={(e) => handleChange("discount", Number(e.target.value))}
           className="max-w-[50px]"
         />
         ₹

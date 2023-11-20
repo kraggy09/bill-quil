@@ -19,6 +19,24 @@ const dailyReportSchema = mongoose.Schema({
       ref: "Transaction",
     },
   ],
+  updatedToday: [
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+      previousQuantity: {
+        type: Number,
+        required: true,
+      },
+      quantity: { type: Number, required: true },
+
+      createdAt: {
+        type: Date,
+        default: () => moment.tz(getCurrentDateAndTime(), IST),
+      },
+    },
+  ],
   bills: [
     {
       type: mongoose.Schema.Types.ObjectId,

@@ -25,14 +25,22 @@ const Login = () => {
     // console.log({ username, password });
     try {
       const res = await axios.post(apiUrl + "/login", { username, password });
-      console.log(res.data);
-      dispatch(setUser({ username, isAdmin: res.data.user.isAdmin }));
+      // console.log(res.data);
+      dispatch(
+        setUser({
+          username,
+          isAdmin: res.data.user.isAdmin,
+          id: res.data.user._id,
+        })
+      );
       setLoading(false);
       toast.success("Login Successfull");
       navigate("/");
     } catch (error) {
-      console.log(error);
-      toast.error;
+      // console.log(error);
+      setLoading(false);
+
+      toast.error("Please check your credentials");
     }
   };
   return (

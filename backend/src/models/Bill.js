@@ -20,6 +20,10 @@ const billSchema = mongoose.Schema({
 
     default: () => moment.tz(getCurrentDateAndTime(), IST),
   },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   items: [
     {
       product: {

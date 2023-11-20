@@ -1,3 +1,5 @@
+import getDate from "../config/getDate.js";
+import DailyReport from "../models/DailyReport.js";
 import Product from "../models/Product.js";
 import UpdateProducts from "../models/UpdateProducts.js";
 
@@ -305,6 +307,8 @@ export const updateProductDetails = async (req, res) => {
 
 export const updateStock = async (req, res) => {
   try {
+    const currentDate = getDate();
+
     const { quantity, id } = req.body;
 
     // Use the $inc operator to increment the stock field by the given quantity
@@ -314,6 +318,22 @@ export const updateStock = async (req, res) => {
         $inc: { stock: quantity },
       },
       { new: true }
+    );
+
+    const product = {
+      product: updatedProduct._id,
+      quantity: quantity,
+      previousQuantity: updatedProduct.stock - quantity,
+    };
+
+    const dailyReport = await DailyReport.findOneAndUpdate(
+      { date: currentDate },
+      {
+        $push: {
+          updatedToday: product,
+        },
+      },
+      { upsert: true, new: true }
     );
 
     if (!updatedProduct) {

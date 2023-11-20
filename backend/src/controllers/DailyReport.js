@@ -13,6 +13,10 @@ export const getDailyReport = async (req, res) => {
         },
       })
       .populate("transactions")
+      .populate({
+        path: "updatedToday.product",
+        model: "Product",
+      })
       .exec();
 
     if (!dailyReport) {
@@ -60,6 +64,10 @@ export const getDailyReportOfDays = async (req, res) => {
         },
       })
       .populate("transactions")
+      .populate({
+        path: "updatedToday.product",
+        model: "Product",
+      })
       .exec();
 
     const newDaily = {
