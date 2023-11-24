@@ -1,4 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
+import { FaCalculator } from "react-icons/fa";
+import Calculator from "./Calculator";
+
 import PropTypes from "prop-types";
 
 // Reducer function to manage state changes
@@ -38,6 +41,8 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   // Use the reducer to manage state
   const [state, dispatch] = useReducer(reducer, initialState);
   const [change, setChange] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [quantity, setQuantity] = useState(0);
   // Function to handle changes and dispatch actions
   const handleChange = (type, value) => {
     setChange(true);
@@ -138,7 +143,23 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         </span>
       </td>
       <td className="text-center capitalize font-semibold text-xl py-2">
-        {product.name}
+        <span className="flex items-center justify-center ">
+          {product.name}{" "}
+          {product.measuring === "kg" && (
+            <FaCalculator
+              onClick={() => setOpen(true)}
+              className="mx-3 hover:cursor-pointer hover:text-green-500"
+            />
+          )}
+          {open && (
+            <Calculator
+              product={product}
+              setIsOpen={setOpen}
+              handleChange={handleChange}
+              setQuantity={setQuantity}
+            />
+          )}
+        </span>
       </td>
       <td className="text-center font-semibold text-xl py-2">{state.price}₹</td>
       <td className="text-center font-semibold text-xl py-2">
@@ -231,6 +252,7 @@ BillProducts.propTypes = {
     type: PropTypes.string.isRequired,
     wholesalePrice: PropTypes.number.isRequired,
     retailPrice: PropTypes.number.isRequired,
+    measuring: PropTypes.string.isRequired,
     superWholesalePrice: PropTypes.number.isRequired,
   }).isRequired,
   purchased: PropTypes.array.isRequired,

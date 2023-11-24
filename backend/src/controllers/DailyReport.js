@@ -84,9 +84,9 @@ export const getDailyReportOfDays = async (req, res) => {
       }
     }
 
-    if (!dailyReport) {
+    if (!dailyReport || dailyReport.length == 0) {
       return res.status(404).json({
-        data: "You fucked up",
+        data: "You messed up",
         msg: "Daily Reports not found",
         success: false,
       });
@@ -95,6 +95,7 @@ export const getDailyReportOfDays = async (req, res) => {
     return res.status(200).json({
       msg: "Daily Reports found",
       success: true,
+      dailyReport,
       newDaily,
     });
   } catch (error) {

@@ -226,7 +226,7 @@ const DailyReportPage = () => {
                 })}
             </tbody>
           </table>
-        ) : type === "transactions" ? (
+        ) : type === "transaction" ? (
           <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
@@ -278,6 +278,7 @@ const DailyReportPage = () => {
             </thead>
             <tbody>
               {dailyReport &&
+                dailyReport.updatedToday &&
                 [...dailyReport.updatedToday].reverse().map((updated) => {
                   return (
                     <tr className="text-xl" key={updated._id}>
@@ -292,7 +293,7 @@ const DailyReportPage = () => {
                         </td>
                       )}
                       <td className="px-16 py-3 capitalize font-semibold">
-                        {updated.product.name}
+                        {updated.product && updated.product.name}
                       </td>
                       <td className="px-16 py-3 font-semibold">
                         {updated.previousQuantity}

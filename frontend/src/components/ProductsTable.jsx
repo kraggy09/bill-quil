@@ -69,6 +69,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                 <td className="text-start hover:cursor-pointer capitalize font-semibold text-xl py-2">
                   <div
                     onClick={() =>
+                      user.isAdmin &&
                       navigate(`/products/${product._id}`, { state: product })
                     }
                     className=""
@@ -104,9 +105,10 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                 <td className="text-start hover:cursor-pointer font-semibold text-xl py-2">
                   <span
                     onClick={() => {
-                      navigate(`/products/updateStock/${product._id}`, {
-                        state: product,
-                      });
+                      user.isAdmin &&
+                        navigate(`/products/updateStock/${product._id}`, {
+                          state: product,
+                        });
                     }}
                     className={`px-2 rounded-xl ${
                       product.stock <= product.minQuantity
