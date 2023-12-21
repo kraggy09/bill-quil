@@ -2,16 +2,20 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiUrl } from "../constant";
 import axios from "axios";
+import { FaPrint } from "react-icons/fa";
+
 axios.defaults.withCredentials = true;
 
 import { toast, ToastContainer } from "react-toastify";
 import Loading from "./Loading";
 import { calculateDate, calculateTime } from "../libs/constant";
+import BillModal from "./BillModal";
 
 const SingleBill = () => {
   const apiEndPoint = "/getBillDetails";
   const [loading, setLoading] = useState(false);
   const [bill, setBill] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
   const params = useParams();
   console.log(params);
   console.log(params.id);
@@ -74,14 +78,51 @@ const SingleBill = () => {
                 {bill.customer.phone}
               </span>
             </p>
-            <p>
-              Date:
+            <p className="flex items-center justify-between">
               <span className="border-b-2 border-green-500 px-3">
+                Date:
                 {calculateDate(new Date(bill.createdAt)) +
                   "   " +
                   calculateTime(new Date(bill.createdAt))}
               </span>
+              <span
+                onClick={() => setIsOpen(true)}
+                className="flex hover:cursor-pointer flex-col items-center justify-center"
+              >
+                <FaPrint />
+                Click to Reprint
+              </span>
             </p>
+            <BillModal
+              isOpen={isOpen}
+              purchased={
+                bill &&
+                bill.items.map((item) => {
+                  console.log(
+                    item.total,
+                    item.total / item.quantity,
+                    item.discount
+                  );
+                  return {
+                    name: item.product.name,
+                    mrp: item.product.mrp,
+                    piece: item.quantity,
+                    box: 0,
+                    boxQuantity: 0,
+                    packet: 0,
+                    packetQuantity: 0,
+                    price: item.total / item.quantity,
+                    total: item.total,
+                    discount: item.discount,
+                  };
+                })
+              }
+              foundCustomer={bill && bill.customer}
+              setIsOpen={setIsOpen}
+              total={bill && bill.total}
+              payment={bill && bill.payment}
+              discount={bill && bill.discount}
+            />
           </header>
           <table className="table-auto my-6 mx-16">
             <thead>

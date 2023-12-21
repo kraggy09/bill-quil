@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { BiSolidUser } from "react-icons/bi";
 import { FaMoneyBill } from "react-icons/fa";
 import { ImClock } from "react-icons/im";
+import { MdBarcodeReader } from "react-icons/md";
+
 import {
   MdSpaceDashboard,
   MdOutlineProductionQuantityLimits,
@@ -38,7 +40,9 @@ const SideBar = () => {
 
   return (
     <div
-      className={`${
+      onMouseEnter={() => setHidden(false)}
+      onMouseLeave={() => setHidden(true)}
+      className={`transition-all duration-100 ease-in-out ${
         hidden ? "max-w-[80px]" : "max-w-[250px]"
       } min-h-[100vh] shadow-xl shadow-gray-400`}
     >
@@ -47,9 +51,7 @@ const SideBar = () => {
           <p className="text-xl font-bold px-8 py-3 bg-green-500 text-white p-2">
             Date:{getDate()}
           </p>
-          <h1 className="text-xl text-center font-bold p-5">
-            Sultan Communication & General Stores
-          </h1>
+
           <div id="navigation" className="w-full gap-y-6 grid-cols-1 grid">
             <NavLink
               to="/"
@@ -140,6 +142,20 @@ const SideBar = () => {
                 <p className="px-2">Products</p>
               </span>
             </NavLink>
+            <NavLink
+              to="/print-barcode"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
+            >
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <MdBarcodeReader className="hover:text-white" />
+                <p className="px-2">Barcode</p>
+              </span>
+            </NavLink>
 
             <span className="absolute flex items-center justify-center bg-green-500 text-white rounded-xl px-6 py-2 text-xl font-bold bottom-10 left-8">
               <ImClock className="mr-2" />
@@ -148,14 +164,17 @@ const SideBar = () => {
           </div>
         </>
       ) : (
-        <div className="grid grid-cols-1 text-4xl">
-          <span className="text-sm mx-auto my-3 bg-green-600 px-2 rounded-xl py-1 text-white font-bold">
+        <div
+          // onMouseEnter={() => setHidden(false)}
+          className="grid grid-cols-1 text-3xl gap-y-6"
+        >
+          <span className="text-sm mx-auto my-3 bg-green-600 px-2 rounded-xl  text-white font-bold">
             {time.substring(0, 5) + " " + time.substring(9)}
           </span>
           <NavLink
             to="/"
             onClick={() => setHidden(false)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white "
             activeClassName="bg-green-500 text-white"
           >
             <MdSpaceDashboard />
@@ -163,7 +182,7 @@ const SideBar = () => {
           <NavLink
             to="/daily-report"
             onClick={() => setHidden(true)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
             activeClassName="bg-green-500 text-white"
           >
             <BiSolidReport />
@@ -171,7 +190,7 @@ const SideBar = () => {
           <NavLink
             to="/transactions"
             onClick={() => setHidden(true)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
             activeClassName="bg-green-500 text-white"
           >
             <GrTransaction />
@@ -179,14 +198,14 @@ const SideBar = () => {
           <NavLink
             to="/customers"
             onClick={() => setHidden(true)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
             activeClassName="bg-green-500 text-white"
           >
             <BiSolidUser />
           </NavLink>
           <NavLink
             to="/bills"
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
             onClick={() => setHidden(true)}
             activeClassName="bg-green-500 text-white"
           >
@@ -194,11 +213,19 @@ const SideBar = () => {
           </NavLink>
           <NavLink
             to="/products"
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white px-2 py-2 my-5"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
             onClick={() => setHidden(true)}
             activeClassName="bg-green-500 text-white"
           >
             <MdOutlineProductionQuantityLimits />
+          </NavLink>
+          <NavLink
+            to="/print-barcode"
+            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
+            onClick={() => setHidden(true)}
+            activeClassName="bg-green-500 text-white"
+          >
+            <MdBarcodeReader />
           </NavLink>
         </div>
       )}

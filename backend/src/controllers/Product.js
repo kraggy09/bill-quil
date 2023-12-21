@@ -20,11 +20,12 @@ export const createNewProduct = async (req, res) => {
       minQuantity,
     } = req.body;
 
+    const newBarcode = [barcode];
     name = name.toLowerCase();
     const productBarcode = await Product.findOne({ barcode });
     const productName = await Product.findOne({ name });
     if (productBarcode) {
-      if (barcode == productBarcode.barcode) {
+      if (productBarcode.barcode.includes(barcode)) {
         return res.status(400).json({
           success: false,
           msg: `The barcode is already being used by the product `,
@@ -43,7 +44,7 @@ export const createNewProduct = async (req, res) => {
     }
     const newProduct = await Product.create({
       name,
-      barcode,
+      barcode: newBarcode,
       mrp,
       costPrice,
       retailPrice,
@@ -109,7 +110,7 @@ export const getProduct = async (req, res) => {
 
 export const getAllproduct = async (req, res) => {
   try {
-    const products = await Product.find().sort({ name: 1, mrp: 1 });
+    const products = await Product.find().sort({ name: 1 });
     return res.status(200).json({
       success: true,
       msg: "These are the products",
@@ -275,12 +276,43 @@ export const updateInventoryRequest = async (req, res) => {
 export const updateProductDetails = async (req, res) => {
   try {
     const product = req.body;
+    const newProduct = {
+      name: product.name,
+      mrp: product.mrp,
+      costPrice: product.costPrice,
+      measuring: product.measuring,
+      retailPrice: product.retailPrice,
+      wholesalePrice: product.wholesalePrice,
+      superWholesalePrice: product.superWholesalePrice,
+      stock: product.stock,
+      packet: product.packet,
+      box: product.box,
+      minQuantity: product.minQuantity,
+    };
+
+    const barcode = product.barcode;
+    console.log("barcode", barcode);
+    console.log(newProduct);
     console.log(product._id);
+
+    const existingProduct = await Product.findOne({ barcode: barcode });
+
+    if (existingProduct && existingProduct.name != newProduct.name) {
+      return res.status(404).json({
+        success: false,
+        msg: "Barcode in use for other product",
+      });
+    }
+
     const updatedProduct = await Product.findByIdAndUpdate(
       product._id,
-      product,
+      {
+        $set: newProduct,
+        $addToSet: { barcode: existingProduct ? [] : barcode },
+      },
       { new: true }
     );
+    console.log("updatedProduct", updatedProduct);
 
     if (!updatedProduct) {
       // Handle the case where the product was not found

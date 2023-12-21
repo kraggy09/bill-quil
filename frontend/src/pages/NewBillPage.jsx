@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { IoRefresh } from "react-icons/io5";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
@@ -36,6 +37,18 @@ const NewBillPage = () => {
   const [total, setTotal] = useState(0);
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+
+    try {
+      await dispatch(fetchProducts()); // Wait for the fetchProducts operation to complete
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+    }
+  };
 
   // Handle form submission
   useEffect(() => {
@@ -87,6 +100,17 @@ const NewBillPage = () => {
         setPurchased={setPurchased}
         setFoundCustomer={setFoundCustomer}
       />
+      <div
+        onClick={() => {
+          handleRefresh();
+        }}
+        className="min-w-full  flex items-center justify-end"
+      >
+        <button className="flex items-center justify-center text-2xl bg-green-500 text-white rounded-xl font-bold px-3 py-1">
+          <IoRefresh className={loading && "animate-spin"} />
+          Refresh
+        </button>
+      </div>
       <BillTable
         foundCustomer={foundCustomer}
         purchased={purchased}
@@ -100,16 +124,15 @@ const NewBillPage = () => {
         setPaymentMode={setPaymentMode}
         paymentMode={paymentMode}
       />
-      <div className="w-full flex justify-end items-end">
+      <div className="max-w-[75vw] flex justify-end items-end">
         <button
-          className="bg-green-600 mr-10 p-5 text-2xl text-white hover:bg-green-600 rounded-xl font-bold my-6"
+          className="bg-green-600 mr-10 p-2 text-xl text-white hover:bg-green-600 rounded-xl font-bold my-6"
           onClick={submitHandle}
           disabled={disabled}
           // onClick={() => setPrint(true)}
         >
           Create bill
         </button>
-        <button onClick={() => setPrint(true)}>Print</button>
         <BillModal
           isOpen={print}
           purchased={purchased}

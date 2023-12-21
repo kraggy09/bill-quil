@@ -11,6 +11,7 @@ import Loading from "./Loading";
 
 import { fetchCustomers } from "../store/customerSlice";
 import { useNavigate } from "react-router-dom";
+import TransactionModal from "./TransactionModal";
 const initialState = {
   name: "",
   purpose: "",
@@ -40,6 +41,7 @@ const findCustomer = (customers, val) => {
 const NewTransaction = () => {
   const navigate = useNavigate();
   const [taken, setTaken] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [formData, dispatch] = useReducer(formReducer, initialState);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -83,9 +85,7 @@ const NewTransaction = () => {
           console.log(res);
           setLoading(false);
           toast.success("Payment Recieved");
-          setTimeout(() => {
-            navigate("/");
-          }, 1000);
+          setIsOpen(true);
         })
         .catch((err) => {
           console.log(err);
@@ -99,14 +99,19 @@ const NewTransaction = () => {
         })
         .then((res) => {
           console.log(res);
+          setLoading(false);
+          navigate("/");
           toast.success("Cashout Done");
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          setLoading(false);
+          console.log(err);
+        });
     }
     dispatchR(fetchCustomers());
     dispatchR(fetchDailyReport());
-    dispatch({ type: "reset" });
-    setFoundCustomer(null);
+    // dispatch({ type: "reset" });
+    // setFoundCustomer(null);
   };
 
   // console.log(foundCustomer);
@@ -116,7 +121,6 @@ const NewTransaction = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleSubmit();
         }}
         className="shadow-xl shadow-gray-400 min-w-[80vw] rounded-2xl max-w-[80vw]"
       >
@@ -125,6 +129,14 @@ const NewTransaction = () => {
             Create a New {taken ? "Transaction" : "Payment"}
           </p>
         </h1>
+        <TransactionModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          name={formData.name}
+          outstanding={foundCustomer && foundCustomer.outstanding}
+          amount={formData.amount}
+          paymentMode={formData.paymentMode}
+        />
         <div id="container" className="grid grid-cols-1 ">
           <div
             id="selector"
@@ -276,7 +288,7 @@ const NewTransaction = () => {
             </span>
           )}
 
-          <button className={css.button} type="submit">
+          <button className={css.button} onClick={handleSubmit}>
             Create {taken ? "Transaction" : "Payment"}
           </button>
         </div>

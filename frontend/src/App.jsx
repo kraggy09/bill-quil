@@ -123,6 +123,10 @@ const App = () => {
             path="/bills/:id"
             element={<Protected Component={SingleBill} />}
           />
+          <Route
+            path="/print-barcode"
+            element={<Protected Component={BarcodePage} />}
+          />
         </Routes>
       </Router>
     </div>

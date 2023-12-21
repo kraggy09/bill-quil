@@ -133,7 +133,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   };
 
   return (
-    <tr key={product.id} className="mb-3">
+    <tr key={product.id} className="mb-3 border border-black">
       <td
         onClick={handleRemoveProduct}
         className="text-center mx-auto  text-xl py-2"

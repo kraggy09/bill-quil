@@ -34,11 +34,11 @@ const BillTable = ({
   }, [purchased, foundCustomer, discount]);
 
   return (
-    <div className="relative">
-      <table className="min-w-full mt-6">
-        <thead>
+    <div className="relative min-w-full items-center justify-center flex flex-col">
+      <table className="min-w-[60vw]  mt-6">
+        <thead className="border border-black rounded-xl">
           <tr>
-            <th className="text-2xl">Action</th>
+            <th className="text-2xl ">Action</th>
 
             <th className="text-2xl">Name</th>
             <th className="text-2xl">Price</th>
@@ -64,22 +64,22 @@ const BillTable = ({
           })}
         </tbody>
       </table>
-      <div className="w-full flex-col items-end justify-end flex">
+      <div className="min-w-[60vw] flex-col items-end justify-end flex">
         <div className="mt-6 border border-black border-dashed border-spacing-2 min-w-[200px]"></div>
 
         <div className="min-w-[200px] ">
-          <p className="text-end text-xl mr-9 font-bold">
+          <p className="text-end text-xl  font-bold">
             <span className="px-16">Total Bill:</span>
             {total - (foundCustomer.outstanding || 0)}₹
           </p>
           <div className="min-w-[200px] ">
-            <p className="text-end text-xl mr-9 font-bold">
+            <p className="text-end text-xl  font-bold">
               <span className="px-16">OutStanding:</span>
               {foundCustomer.outstanding}₹
             </p>
           </div>
 
-          <p className="text-end text-xl mr-9 font-bold">
+          <p className="text-end text-xl  font-bold">
             <span className="px-16">Discount:</span>
             <input
               type="number"
@@ -93,13 +93,13 @@ const BillTable = ({
           </p>
         </div>
         <div className="min-w-[200px] ">
-          <p className="text-end text-xl mr-9 font-bold">
+          <p className="text-end text-xl  font-bold">
             <span className="px-16">Total:</span>
             {total}₹
           </p>
         </div>
         <div className="min-w-[200px] ">
-          <p className="text-end text-xl mr-9 font-bold">
+          <p className="text-end text-xl  font-bold">
             <span className="px-16">Payment:</span>
             <input
               type="number"
@@ -113,7 +113,7 @@ const BillTable = ({
           </p>
         </div>
         <div className="min-w-[200px] ">
-          <p className="text-end text-xl mr-9 font-bold">
+          <p className="text-end text-xl font-bold">
             <span className="px-16">Payment Mode:</span>
             <select
               name="paymentMode" // Set the name attribute to "paymentMode"

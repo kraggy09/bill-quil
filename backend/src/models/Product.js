@@ -30,10 +30,12 @@ const productSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  barcode: {
-    type: Number,
-    required: true,
-  },
+  barcode: [
+    {
+      type: Number,
+      required: true,
+    },
+  ],
   stock: {
     type: Number,
     required: true,

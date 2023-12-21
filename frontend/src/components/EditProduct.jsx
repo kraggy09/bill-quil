@@ -88,7 +88,10 @@ const EditProduct = () => {
 
     // Send a POST request to your server with the form data
     axios
-      .post(apiUrl + "/products/updateProduct", formData2)
+      .post(apiUrl + "/products/updateProduct", {
+        ...formData2,
+        barcode: formData.barcode,
+      })
       .then((response) => {
         // Handle a successful response from the server
         setLoading(false);
@@ -248,20 +251,35 @@ const EditProduct = () => {
             />
           </div>
 
-          <div className={css.holder}>
-            <label className={css.label} htmlFor="">
-              Barcode
-            </label>
-            <input
-              className={css.input}
-              required
-              type="number"
-              id="barcode"
-              name="barcode"
-              value={formData.barcode}
-              onChange={handleInputChange}
-              placeholder="Enter the Barcode"
-            />
+          <div className="flex flex-col items-center justify-center">
+            <div className={`${css.holder} my-3`}>
+              <label className={css.label} htmlFor="">
+                Barcode
+              </label>
+
+              <input
+                className={css.input}
+                required
+                type="number"
+                id="barcode"
+                name="barcode"
+                value={formData.barcode[0]}
+                onChange={handleInputChange}
+                placeholder="Enter the Barcode"
+              />
+            </div>
+            <div>
+              {product.barcode.map((bar) => {
+                return (
+                  <span
+                    className="bg-green-300 rounded-xl px-3 py-2 mx-2 font-bold"
+                    key={bar}
+                  >
+                    {bar}
+                  </span>
+                );
+              })}
+            </div>
           </div>
 
           <div className={css.holder}>

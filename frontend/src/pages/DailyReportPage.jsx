@@ -89,7 +89,8 @@ const DailyReportPage = () => {
       );
 
       let totalPayment = dailyReport.transactions.reduce((ac, item) => {
-        return (ac += item.amount);
+        console.log("Items", item);
+        return ac + (item.taken === false ? item.amount : 0);
       }, 0);
 
       // Apply optional chaining and nullish coalescing for totalPayment as well
@@ -163,7 +164,7 @@ const DailyReportPage = () => {
         </button>
       </div>
       <div className="min-w-[90vw] flex my-6 justify-center">
-        <div className="flex rounded-full  max-w-[320px] border-2">
+        <div className="flex rounded-full   border-2">
           <div
             onClick={() => {
               setType("bills");
@@ -188,6 +189,18 @@ const DailyReportPage = () => {
             }`}
           >
             Transactions
+          </div>
+          <div
+            onClick={() => {
+              setType("payment");
+            }}
+            className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+              type === "payment"
+                ? "bg-green-500 text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            Payment
           </div>
           {dailyReport && dailyReport.updatedToday && (
             <div
@@ -243,28 +256,30 @@ const DailyReportPage = () => {
               {dailyReport &&
                 [...dailyReport.transactions].reverse().map((transaction) => {
                   return (
-                    <tr className="text-xl" key={transaction._id}>
-                      <td className="px-16 py-3 font-semibold">
-                        {calculateDate(new Date(transaction.createdAt))}
-                      </td>
-                      <td className="px-16 py-3 font-semibold">
-                        {calculateTime(new Date(transaction.createdAt))}
-                      </td>
-                      <td className="px-16 py-3 font-semibold">
-                        {transaction.previousOutstanding || 0}
-                      </td>
-                      <td className="px-16 py-3 font-semibold">
-                        {transaction.amount}
-                      </td>
-                      <td className="px-16 py-3 font-semibold">
-                        {transaction.newOutstanding || 0}{" "}
-                      </td>
-                    </tr>
+                    !transaction.taken && (
+                      <tr className="text-xl" key={transaction._id}>
+                        <td className="px-16 py-3 font-semibold">
+                          {calculateDate(new Date(transaction.createdAt))}
+                        </td>
+                        <td className="px-16 py-3 font-semibold">
+                          {calculateTime(new Date(transaction.createdAt))}
+                        </td>
+                        <td className="px-16 py-3 font-semibold">
+                          {transaction.previousOutstanding || 0}
+                        </td>
+                        <td className="px-16 py-3 font-semibold">
+                          {transaction.amount}
+                        </td>
+                        <td className="px-16 py-3 font-semibold">
+                          {transaction.newOutstanding || 0}{" "}
+                        </td>
+                      </tr>
+                    )
                   );
                 })}
             </tbody>
           </table>
-        ) : (
+        ) : type === "updatedProduct" ? (
           <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
@@ -305,6 +320,40 @@ const DailyReportPage = () => {
                         {updated.quantity + updated.previousQuantity}{" "}
                       </td>
                     </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        ) : (
+          <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
+            <thead className="border border-black">
+              <tr className="border border-black">
+                <th className="border border-black mx-6">Date</th>
+                <th className="border border-black mx-6">Time</th>
+                <th className="border border-black">Party Name</th>
+                <th className="border border-black px-0">Payment ₹</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dailyReport &&
+                [...dailyReport.transactions].reverse().map((transaction) => {
+                  return (
+                    transaction.taken && (
+                      <tr className="text-xl" key={transaction._id}>
+                        <td className="px-16 py-3 font-semibold">
+                          {calculateDate(new Date(transaction.createdAt))}
+                        </td>
+                        <td className="px-16 py-3 font-semibold">
+                          {calculateTime(new Date(transaction.createdAt))}
+                        </td>
+                        <td className="px-16 py-3 capitalize font-semibold">
+                          {transaction.name}
+                        </td>
+                        <td className="px-16 py-3 font-semibold">
+                          {transaction.amount}
+                        </td>
+                      </tr>
+                    )
                   );
                 })}
             </tbody>

@@ -13,17 +13,16 @@ export const createNewTransaction = async (req, res) => {
       amount,
       taken: true,
       purpose,
+      paymentMode: "cash",
     });
 
-    // const dailyReport = await DailyReport.findOneAndUpdate(
-    //   { date: currentDate },
-    //   {
-    //     $push: { transactions: newTransaction._id },
-    //   },
-    //   { upsert: true, new: true }
-    // );
-
-    //Logic to be written for adding this transaction in the dailyreport
+    const dailyReport = await DailyReport.findOneAndUpdate(
+      { date: currentDate },
+      {
+        $push: { transactions: newTransaction._id },
+      },
+      { upsert: true, new: true }
+    );
 
     return res.status(201).json({
       msg: "Transaction added successfully",
@@ -31,7 +30,7 @@ export const createNewTransaction = async (req, res) => {
       newTransaction,
     });
   } catch (error) {
-    console.log("Error");
+    console.log("Error", error);
 
     return res.status(500).json({
       msg: "Server error",

@@ -87,10 +87,7 @@ const BillingHeader = ({
         if (val === "") {
           return false; // Don't filter if the search value is empty
         }
-        if (
-          product.stock > 0 &&
-          product.barcode.toString() === temp.toString()
-        ) {
+        if (product.stock > 0 && product.barcode.includes(temp)) {
           return true;
         } else {
           // alert("Product is finished");

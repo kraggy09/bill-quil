@@ -43,13 +43,13 @@ export const getDailyReport = async (req, res) => {
 
 export const getDailyReportOfDays = async (req, res) => {
   const { startDate, endDate } = req.query;
-  console.log(startDate, endDate);
+  // console.log(startDate, endDate);
   try {
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
-    console.log(start);
+    // console.log(start);
     const end = new Date(endDate);
-    console.log(end);
+    // console.log(end);
     end.setHours(23, 59, 59, 59);
     const dailyReport = await DailyReport.find({
       createdAt: {
@@ -73,6 +73,7 @@ export const getDailyReportOfDays = async (req, res) => {
     const newDaily = {
       bills: [],
       transactions: [],
+      updatedToday: [],
     };
 
     for (const daily of dailyReport) {
@@ -81,6 +82,9 @@ export const getDailyReportOfDays = async (req, res) => {
       }
       for (const transaction of daily.transactions) {
         newDaily.transactions.push(transaction);
+      }
+      for (const updatedToday of daily.updatedToday) {
+        newDaily.updatedToday.push(updatedToday);
       }
     }
 
