@@ -110,20 +110,20 @@ const DailyReportPage = () => {
       </div>
       {user.isAdmin && (
         <article className="flex min-w-full items-center justify-center my-6">
-          <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 rounded-3xl text-3xl font-bold text-green-500 flex items-center justify-center shadow-lg px-6 mx-6 shadow-green-400">
+          <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 bg-green-300  rounded-3xl text-3xl font-bold text-green-900 flex items-center justify-center shadow-lg px-6 mx-6 ">
             <FaIndianRupeeSign className="mx-1 font-extrabold" />
             {dataObj &&
               (dataObj.totalBillAmount - dataObj.totalInvestment).toFixed(1)}
           </div>
-          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-green-500 rounded-3xl text-3xl font-bold text-green-500 flex items-center justify-center px-6 shadow-lg shadow-green-400">
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-green-500 bg-green-200 rounded-3xl text-3xl font-bold text-green-800 flex items-center justify-center px-6 ">
             <AiOutlineArrowDown className="mx-1 font-extrabold" />₹
             {dataObj && dataObj.totalPayment.toFixed(1)}
           </div>
-          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-red-500 rounded-3xl text-3xl font-bold text-red-500 flex items-center justify-center px-6 shadow-lg shadow-red-400">
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-red-500 rounded-3xl text-3xl font-bold text-red-800 flex items-center justify-center px-6 bg-red-200">
             <AiOutlineArrowUp className="mx-1 font-extrabold" />₹
             {dataObj && dataObj.totalBillAmount.toFixed(1)}
           </div>
-          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-yellow-300 rounded-3xl text-3xl font-bold text-yellow-500 flex items-center justify-center px-6 shadow-lg shadow-yellow-400">
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-yellow-300 rounded-3xl text-3xl font-bold text-yellow-700 flex items-center justify-center px-6 bg-yellow-200">
             <FaPercentage className="mx-1 font-extrabold" />
             {dataObj &&
               (
