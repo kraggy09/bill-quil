@@ -19,7 +19,7 @@ const ProductPage = () => {
     return total;
   };
   return (
-    <div className="ml-6">
+    <div className="ml-24 min-w-[80vw]">
       {user.isAdmin && (
         <div className="px-20 pt-3 min-w-full font-bold text-2xl ">
           Your Current Stock Value: ₹{calculateStock().toFixed(3)}
@@ -35,7 +35,7 @@ const ProductPage = () => {
           setFilteredProducts={setFilteredProducts}
         />
         <button
-          className="rounded-full absolute bottom-28 right-8 font-bold hover:bg-green-700 p-5 bg-green-500 text-white text-3xl"
+          className="rounded-full absolute bottom-28 right-8 font-bold hover:bg-green-200 p-5 bg-green-100 text-green-800 border border-green-100 text-3xl"
           onClick={() => navigate("/newProduct")}
         >
           +

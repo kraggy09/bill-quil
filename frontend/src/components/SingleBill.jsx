@@ -54,7 +54,7 @@ const SingleBill = () => {
     handleOnLoad();
   }, []);
   return (
-    <div>
+    <div className="ml-24">
       {loading && <Loading />}
       {bill && (
         <div className="relative">

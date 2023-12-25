@@ -47,7 +47,7 @@ const CustomerPage = () => {
   console.log(customers);
 
   return (
-    <div className="min-w-[80vw] flex flex-col  justify-center">
+    <div className="min-w-[90vw]  ml-24 flex flex-col mb-36  justify-center">
       <div>
         {" "}
         <button

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { sortArray } from "../libs/constant";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const sortByLessStock = (a, b) => {
   const diffA = Number(a.minQuantity - a.stock);
@@ -27,6 +28,7 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
   const [query, setQuery] = useState("");
   const product = useSelector((store) => store.product.products);
   const originalProducts = product; // Store the original products
+  const navigate = useNavigate();
 
   const searchProduct = () => {
     return originalProducts.filter((product) => {
@@ -88,6 +90,12 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
           onClick={handleSortByName}
         >
           Sort Name
+        </button>
+        <button
+          className="bg-green-200 border border-green-500 text-green-800 mx-6  p-2 rounded-xl font-bold"
+          onClick={() => navigate("/updateStock")}
+        >
+          Update Stock
         </button>
       </div>
     </div>

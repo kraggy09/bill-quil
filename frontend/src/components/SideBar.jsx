@@ -15,7 +15,7 @@ import {
 import getDate from "../libs/constant";
 const SideBar = () => {
   const [time, setTime] = useState("");
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(true);
 
   const updateTime = () => {
     const date = new Date();
@@ -42,9 +42,9 @@ const SideBar = () => {
     <div
       onMouseEnter={() => setHidden(false)}
       onMouseLeave={() => setHidden(true)}
-      className={`transition-all duration-100 ease-in-out ${
-        hidden ? "max-w-[80px]" : "max-w-[250px]"
-      } min-h-[100vh] shadow-xl shadow-gray-400`}
+      className={`transition-all absolute z-10 bg-white  duration-100 ease-in-out ${
+        hidden ? "max-w-[100px] min-w-[90px]" : "max-w-[250px]"
+      } min-h-full shadow-xl shadow-gray-400`}
     >
       {!hidden ? (
         <>
@@ -157,7 +157,7 @@ const SideBar = () => {
               </span>
             </NavLink>
 
-            <span className="absolute flex items-center justify-center bg-green-500 text-white rounded-xl px-6 py-2 text-xl font-bold bottom-10 left-8">
+            <span className="flex items-center justify-center bg-green-500 text-white rounded-xl px-6 py-2 text-xl font-bold ">
               <ImClock className="mr-2" />
               {time}
             </span>

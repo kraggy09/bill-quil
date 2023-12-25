@@ -23,10 +23,7 @@ import IndividualCustomer from "./components/IndividualCustomer";
 import SingleBill from "./components/SingleBill";
 import Protected from "./components/Protected";
 import Login from "./components/Login";
-import axios from "axios";
-import { apiUrl } from "./constant";
-import { setUser } from "./store/userSlice";
-
+import UpdateStockRequest from "./components/UpdateStockRequest";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
@@ -126,6 +123,10 @@ const App = () => {
           <Route
             path="/print-barcode"
             element={<Protected Component={BarcodePage} />}
+          />
+          <Route
+            path="/updateStock"
+            element={<Protected Component={UpdateStockRequest} />}
           />
         </Routes>
       </Router>

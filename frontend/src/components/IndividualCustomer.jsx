@@ -41,7 +41,7 @@ const IndividualCustomer = () => {
       {loading ? (
         <Loading />
       ) : (
-        <div className="min-w-[85vw]">
+        <div className="min-w-[85vw] ml-24">
           <div className="min-w-full my-6 flex items-center justify-center">
             {" "}
             <div className="flex rounded-full max-w-[320px] border-2">

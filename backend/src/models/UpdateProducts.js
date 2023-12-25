@@ -1,44 +1,29 @@
 import mongoose from "mongoose";
+import moment from "moment-timezone";
+import getCurrentDateAndTime from "../config/getCurrentTime.js";
+
+// Set the timezone to IST
+const IST = "Asia/Kolkata";
 
 const updateProductSchema = mongoose.Schema({
-  name: {
+  date: {
+    type: Date,
+    default: () => moment.tz(getCurrentDateAndTime(), IST),
+  },
+  createdBy: {
     type: String,
-    reuired: true,
-  },
-  mrp: {
-    type: Number,
-    reuired: true,
-  },
-  costPrice: {
-    type: Number,
-    reuired: true,
-  },
-  measuring: {
-    type: String,
-    enum: ["kg", "piece"],
     required: true,
   },
-  retailPrice: {
-    type: Number,
-    reuired: true,
+
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Product",
   },
-  wholesalePrice: {
-    type: Number,
-    reuired: true,
-  },
-  barcode: {
-    type: Number,
-    reuired: true,
-  },
-  stock: {
+  oldStock: {
     type: Number,
     required: true,
   },
-  packet: {
-    type: Number,
-    required: true,
-  },
-  box: {
+  quantity: {
     type: Number,
     required: true,
   },

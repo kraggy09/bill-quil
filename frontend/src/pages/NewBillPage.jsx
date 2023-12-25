@@ -43,6 +43,7 @@ const NewBillPage = () => {
 
     try {
       await dispatch(fetchProducts()); // Wait for the fetchProducts operation to complete
+      await dispatch(fetchCustomers());
       setLoading(false);
     } catch (error) {
       console.error(error);

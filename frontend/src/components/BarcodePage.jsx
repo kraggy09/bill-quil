@@ -39,7 +39,7 @@ const BarcodePage = () => {
   }, [query]);
 
   return (
-    <div className="min-w-[85vw]">
+    <div className="ml-16 min-w-[95vw]">
       {!hidden && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-md">
           <div className="bg-slate-100 min-h-[30vh] min-w-[30vw] px-3 rounded-xl">

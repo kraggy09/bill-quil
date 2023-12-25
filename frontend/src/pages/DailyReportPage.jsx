@@ -218,7 +218,7 @@ const DailyReportPage = () => {
           )}
         </div>
       </div>
-      <div className="min-w-[90vw] mb-16 flex items-center justify-center">
+      <div className="min-w-[90vw] mb-16 ml-24 flex items-center justify-center">
         {type === "bills" ? (
           <table className="table-auto border-spacing-x-60 text-2xl border border-black ml-6 ">
             <thead className="border border-black">
@@ -311,13 +311,19 @@ const DailyReportPage = () => {
                         {updated.product && updated.product.name}
                       </td>
                       <td className="px-16 py-3 font-semibold">
-                        {updated.previousQuantity}
+                        {updated.previousQuantity % 1 != 0
+                          ? updated.previousQuantity.toFixed(3)
+                          : updated.previousQuantity}
                       </td>
                       <td className="px-16 py-3 font-semibold">
                         {updated.quantity}{" "}
                       </td>
                       <td className="px-16 py-3 font-semibold">
-                        {updated.quantity + updated.previousQuantity}{" "}
+                        {(updated.quantity + updated.previousQuantity) % 1 == 0
+                          ? updated.quantity + updated.previousQuantity
+                          : (
+                              updated.quantity + updated.previousQuantity
+                            ).toFixed(3)}
                       </td>
                     </tr>
                   );

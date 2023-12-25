@@ -5,13 +5,13 @@ export function sortArray(arr, compareFunction) {
 export const getDate = () => {
   const date = new Date();
   const currentDate =
-    date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+    date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
   return currentDate;
 };
 
 export const calculateDate = (date) => {
   let str =
-    date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+    date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
   return str;
 };
 export const calculateTime = (date) => {

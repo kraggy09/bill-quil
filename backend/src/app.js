@@ -32,9 +32,9 @@ app.use("/api/v1", userRouter);
 
 app.use("/api/v1", productRouter);
 app.use("/api/v1", billRouter);
-app.use("/api/admin", productUpdateRouter);
 app.use("/api/v1", customerRouter);
 app.use("/api/v1", transactionRouter);
 app.use("/api/v1", dailyReportRouter);
+app.use("/api/v1", productUpdateRouter);
 
 export default app;
