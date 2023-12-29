@@ -39,7 +39,7 @@ const transactionSchema = mongoose.Schema({
   },
   paymentMode: {
     type: String,
-    enum: ["cash", "online"],
+    enum: ["cash", "online", "productReturn"],
     required: true,
   },
   expires: {

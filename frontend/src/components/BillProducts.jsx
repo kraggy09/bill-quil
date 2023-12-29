@@ -76,7 +76,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   };
 
   useEffect(() => {
-    console.log(1);
+    // console.log(1);
     calculateTotal(
       state.piece,
       state.box,
@@ -87,7 +87,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   }, [state.piece, state.box, state.packet, state.discount, state.price]);
 
   useEffect(() => {
-    console.log(2);
+    // console.log(2);
     const updatedProduct = purchased.find((p) => p.id === product.id);
 
     if (updatedProduct && state.piece !== updatedProduct.piece) {
@@ -99,10 +99,10 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   }, [product]);
 
   useEffect(() => {
-    console.log(3);
+    // console.log(3);
     if (product !== undefined && change) {
       // Create a new product object with the updated fields
-      console.log("Mujhe bulaye the");
+      // console.log("Mujhe bulaye the");
       const foundProduct = purchased.find((pr) => pr.id === product.id);
       if (foundProduct) {
         const updatedProduct = {

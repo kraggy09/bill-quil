@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -118,7 +118,7 @@ const BillingHeader = ({
   const handleProductSelection = (product) => {
     setProductName("");
     const existingProduct = purchased.find((p) => p.name === product.name);
-    console.log(existingProduct);
+    // console.log(existingProduct);
     if (!existingProduct) {
       const newProduct = new Product(
         product._id,
@@ -168,6 +168,12 @@ const BillingHeader = ({
     setProductVisible(false);
     setProductName("");
   };
+
+  useEffect(() => {
+    if (name.length == 0) {
+      setFoundCustomer(null);
+    }
+  }, [name]);
 
   return (
     <header className="py-4 ">

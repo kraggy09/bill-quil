@@ -1,7 +1,11 @@
 import getDate from "../config/getDate.js";
 import DailyReport from "../models/DailyReport.js";
 import Product from "../models/Product.js";
+import Customer from "../models/Customer.js";
+
 import UpdateProducts from "../models/UpdateProducts.js";
+import Transaction from "../models/Transaction.js";
+import mongoose from "mongoose";
 
 export const createNewProduct = async (req, res) => {
   try {
@@ -276,6 +280,112 @@ export const updateStock = async (req, res) => {
     res.status(500).json({
       success: false,
       msg: "Server is down",
+    });
+  }
+};
+
+export const returnProduct = async (req, res) => {
+  const abc = req.body;
+  const currentDate = getDate();
+  const { purchased, foundCustomer, returnType, total } = abc;
+  let transaction;
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const items = await Promise.all(
+      purchased.map(async (product) => {
+        const quantity =
+          product.piece +
+          product.packet * product.packetQuantity +
+          product.box * product.boxQuantity;
+        const id = new mongoose.Types.ObjectId(product.id);
+        const updatedProduct = await Product.findByIdAndUpdate(
+          id,
+          {
+            $inc: { stock: quantity },
+          },
+          { new: true, session }
+        );
+
+        return {
+          product: updatedProduct._id,
+          quantity: quantity,
+          previousQuantity: updatedProduct.stock - quantity,
+        };
+      })
+    );
+
+    if (returnType === "adjustment") {
+      const newOutstanding = foundCustomer.outstanding - total;
+
+      transaction = await Transaction.create(
+        [
+          {
+            name: foundCustomer.name,
+            previousOutstanding: foundCustomer.outstanding,
+            amount: total,
+            newOutstanding,
+            taken: false,
+            purpose: "Return Product",
+            paymentMode: "productReturn",
+          },
+          {
+            name: "Product Return",
+            amount: total,
+            taken: true,
+            purpose: "return",
+            paymentMode: "cash",
+          },
+        ],
+        { session }
+      );
+
+      const customer = await Customer.findByIdAndUpdate(
+        foundCustomer._id,
+        {
+          $inc: { outstanding: -total },
+          $push: { transactions: { $each: transaction.map((t) => t._id) } },
+        },
+        { session }
+      );
+    }
+
+    const productsForDailyReport = items.map((inv) => ({
+      product: inv.product,
+      quantity: inv.quantity,
+      previousQuantity: inv.previousQuantity,
+    }));
+
+    const dailyReport = await DailyReport.findOneAndUpdate(
+      { date: currentDate },
+      {
+        $push: {
+          updatedToday: { $each: productsForDailyReport },
+          transactions: { $each: transaction.map((t) => t._id) },
+        },
+      },
+      { upsert: true, new: true, session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    console.log("Everything done successfully");
+    return res.status(200).json({
+      success: true,
+      transaction,
+      msg: "Updated successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    console.error("Error during transaction:", error.message);
+    return res.status(500).json({
+      success: false,
+      msg: "Error during transaction",
     });
   }
 };

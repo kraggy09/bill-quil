@@ -4,6 +4,7 @@ import {
   deleteProduct,
   getAllproduct,
   getProduct,
+  returnProduct,
   // updateInventoryRequest,
   updateProductDetails,
   updateStock,
@@ -18,5 +19,6 @@ router.route("/products").get(getAllproduct);
 router.route("/products/delete").delete(deleteProduct);
 router.route("/products/updateProduct").post(updateProductDetails);
 router.route("/products/updateStock").post(updateStock);
+router.route("/products/return").post(returnProduct);
 
 export default router;

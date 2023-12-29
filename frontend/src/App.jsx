@@ -24,6 +24,7 @@ import SingleBill from "./components/SingleBill";
 import Protected from "./components/Protected";
 import Login from "./components/Login";
 import UpdateStockRequest from "./components/UpdateStockRequest";
+import ReturnProduct from "./components/ReturnProduct";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
@@ -127,6 +128,10 @@ const App = () => {
           <Route
             path="/updateStock"
             element={<Protected Component={UpdateStockRequest} />}
+          />
+          <Route
+            path="/return-product"
+            element={<Protected Component={ReturnProduct} />}
           />
         </Routes>
       </Router>

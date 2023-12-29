@@ -53,8 +53,10 @@ const NewBillPage = () => {
 
   // Handle form submission
   useEffect(() => {
-    if (purchased.length > 0) {
+    if (purchased.length > 0 && foundCustomer.name != null) {
       setDisabled(false);
+    } else {
+      setDisabled(true);
     }
   }, [purchased]);
   const submitHandle = async () => {
@@ -81,6 +83,10 @@ const NewBillPage = () => {
     } catch (error) {
       setLoading(false);
       console.error(error);
+
+      dispatch(fetchProducts());
+      dispatch(fetchCustomers());
+      dispatch(fetchDailyReport());
       setDisabled(false);
       toast.error("Error creating the bill"); // Display error message
     }

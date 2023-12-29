@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { BiSolidUser } from "react-icons/bi";
 import { FaMoneyBill } from "react-icons/fa";
 import { ImClock } from "react-icons/im";
+import { PiKeyReturnFill } from "react-icons/pi";
+
 import { MdBarcodeReader } from "react-icons/md";
 
 import {
@@ -156,6 +158,20 @@ const SideBar = () => {
                 <p className="px-2">Barcode</p>
               </span>
             </NavLink>
+            <NavLink
+              to="/return-product"
+              className={({ isActive }) =>
+                isActive ? "bg-green-500 text-white" : ""
+              }
+            >
+              <span
+                onClick={() => setHidden(true)}
+                className="text-2xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-center"
+              >
+                <PiKeyReturnFill className="hover:text-white" />
+                <p className="px-2">Returns</p>
+              </span>
+            </NavLink>
 
             <span className="flex items-center justify-center bg-green-500 text-white rounded-xl px-6 py-2 text-xl font-bold ">
               <ImClock className="mr-2" />
@@ -174,58 +190,91 @@ const SideBar = () => {
           <NavLink
             to="/"
             onClick={() => setHidden(false)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white "
-            activeClassName="bg-green-500 text-white"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
           >
             <MdSpaceDashboard />
           </NavLink>
           <NavLink
             to="/daily-report"
             onClick={() => setHidden(true)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
-            activeClassName="bg-green-500 text-white"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
           >
             <BiSolidReport />
           </NavLink>
           <NavLink
             to="/transactions"
             onClick={() => setHidden(true)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
-            activeClassName="bg-green-500 text-white"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
           >
             <GrTransaction />
           </NavLink>
           <NavLink
             to="/customers"
             onClick={() => setHidden(true)}
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
-            activeClassName="bg-green-500 text-white"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
           >
             <BiSolidUser />
           </NavLink>
           <NavLink
             to="/bills"
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
             onClick={() => setHidden(true)}
-            activeClassName="bg-green-500 text-white"
           >
             <FaMoneyBill />
           </NavLink>
           <NavLink
             to="/products"
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
             onClick={() => setHidden(true)}
-            activeClassName="bg-green-500 text-white"
           >
             <MdOutlineProductionQuantityLimits />
           </NavLink>
           <NavLink
             to="/print-barcode"
-            className="mx-auto rounded-full hover:bg-green-600 hover:text-white"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
             onClick={() => setHidden(true)}
-            activeClassName="bg-green-500 text-white"
           >
             <MdBarcodeReader />
+          </NavLink>
+
+          <NavLink
+            to="/return-product"
+            className={({ isActive }) =>
+              isActive
+                ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+            }
+            onClick={() => setHidden(true)}
+          >
+            <PiKeyReturnFill />
           </NavLink>
         </div>
       )}

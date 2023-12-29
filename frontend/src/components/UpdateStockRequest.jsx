@@ -70,6 +70,25 @@ const UpdateStockRequest = () => {
   useEffect(() => {
     const updatedOptions = searchProduct();
     setProductOptions(updatedOptions);
+    if (updatedOptions.length === 1) {
+      const newProduct = new Product(
+        updatedOptions[0]._id,
+        updatedOptions[0].name,
+        updatedOptions[0].barcode,
+        0,
+        updatedOptions[0].stock,
+        updatedOptions[0].piece,
+        updatedOptions[0].packet,
+        updatedOptions[0].box
+      );
+      const newProductList = {
+        createdBy: user.username,
+        update: updatedProducts.update.map((prevProduct) => prevProduct),
+      };
+      newProductList.update.push(newProduct);
+      setUpdatedProducts(newProductList);
+      setQuery("");
+    }
   }, [query]);
 
   const handleSubmit = async () => {

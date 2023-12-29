@@ -18,9 +18,12 @@ export const createBill = async (req, res) => {
     createdBy,
   } = req.body;
 
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     // Check if the customer exists
-    const customer = await Customer.findById(customerId);
+    const customer = await Customer.findById(customerId).session(session);
     if (!customer) {
       return res.status(404).json({ error: "Customer not found" });
     }
@@ -37,7 +40,7 @@ export const createBill = async (req, res) => {
           {
             $inc: { stock: -quantity },
           },
-          { new: true }
+          { new: true, session }
         );
 
         return {
@@ -50,62 +53,79 @@ export const createBill = async (req, res) => {
       })
     );
 
-    const newBill = await Bill.create({
-      customer: customerId,
-      items: items,
-      total,
-      payment,
-      discount,
-      createdBy,
-    });
+    const newBill = await Bill.create(
+      [
+        {
+          customer: customerId,
+          items: items,
+          total,
+          payment,
+          discount,
+          createdBy,
+        },
+      ],
+      { session }
+    );
 
     let transaction = null;
     let dailyReport = null;
     if (payment > 0) {
-      transaction = await Transaction.create({
-        name: customer.name,
-        purpose: "Payment",
-        amount: payment,
-        previousOutstanding: customer.outstanding,
-        newOutstanding: total - payment,
-        taken: false,
-        paymentMode,
-      });
+      transaction = await Transaction.create(
+        [
+          {
+            name: customer.name,
+            purpose: "Payment",
+            amount: payment,
+            previousOutstanding: customer.outstanding,
+            newOutstanding: total - payment,
+            taken: false,
+            paymentMode,
+          },
+        ],
+        { session }
+      );
     }
 
     // Update the customer's bills array with the newly created bill
-    const updatedCustomer = await Customer.findByIdAndUpdate(customerId, {
-      outstanding: total - payment,
-      $push: {
-        transactions: transaction ? transaction._id : null,
-        bills: newBill._id,
+    const updatedCustomer = await Customer.findByIdAndUpdate(
+      customerId,
+      {
+        outstanding: total - payment,
+        $push: {
+          transactions: transaction ? transaction._id : null,
+          bills: newBill[0]._id,
+        },
       },
-    });
+      { session }
+    );
 
     dailyReport = await DailyReport.findOneAndUpdate(
       { date: currentDate },
       {
         $push: {
-          transactions: transaction ? transaction._id : null,
-          bills: newBill ? newBill._id : null,
+          transactions: transaction ? transaction[0]._id : null,
+          bills: newBill ? newBill[0]._id : null,
         },
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true, session }
     );
 
-    if (updatedCustomer) {
-      return res.status(201).json({
-        message: "Bill created successfully",
-        data: {
-          bill: newBill,
-          updatedCustomer,
-          dailyReport,
-        },
-      });
-    }
+    await session.commitTransaction();
+
+    return res.status(201).json({
+      message: "Bill created successfully",
+      data: {
+        bill: newBill[0],
+        updatedCustomer,
+        dailyReport,
+      },
+    });
   } catch (error) {
-    console.log("Error creating bill:", error);
+    await session.abortTransaction();
+    console.error("Error creating bill:", error);
     return res.status(500).json({ error: "Error creating bill" });
+  } finally {
+    session.endSession();
   }
 };
 
