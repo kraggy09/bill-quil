@@ -117,7 +117,13 @@ const SingleBill = () => {
                   };
                 })
               }
-              foundCustomer={bill && bill.customer}
+              foundCustomer={
+                bill && {
+                  phone: bill.customer.phone,
+                  outstanding: bill.total - calculateBillAmount(),
+                  name: bill.customer.name,
+                }
+              }
               setIsOpen={setIsOpen}
               total={bill && bill.total}
               payment={bill && bill.payment}
