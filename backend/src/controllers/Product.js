@@ -288,10 +288,6 @@ export const returnProduct = async (req, res) => {
   const abc = req.body;
   const currentDate = getDate();
   const { purchased, foundCustomer, returnType, total } = abc;
-  let transaction;
-
-  const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
     const items = await Promise.all(
@@ -306,7 +302,7 @@ export const returnProduct = async (req, res) => {
           {
             $inc: { stock: quantity },
           },
-          { new: true, session }
+          { new: true }
         );
 
         return {
@@ -317,39 +313,33 @@ export const returnProduct = async (req, res) => {
       })
     );
 
+    let transaction, dailyReport;
+
     if (returnType === "adjustment") {
       const newOutstanding = foundCustomer.outstanding - total;
 
-      transaction = await Transaction.create(
-        [
-          {
-            name: foundCustomer.name,
-            previousOutstanding: foundCustomer.outstanding,
-            amount: total,
-            newOutstanding,
-            taken: false,
-            purpose: "Return Product",
-            paymentMode: "productReturn",
-          },
-          {
-            name: "Product Return",
-            amount: total,
-            taken: true,
-            purpose: "return",
-            paymentMode: "cash",
-          },
-        ],
-        { session }
-      );
+      transaction = await Transaction.create({
+        name: foundCustomer.name,
+        previousOutstanding: foundCustomer.outstanding,
+        amount: total,
+        newOutstanding,
+        taken: false,
+        purpose: "Return Product",
+        paymentMode: "productReturn",
+      });
 
-      const customer = await Customer.findByIdAndUpdate(
-        foundCustomer._id,
-        {
-          $inc: { outstanding: -total },
-          $push: { transactions: { $each: transaction.map((t) => t._id) } },
-        },
-        { session }
-      );
+      const customer = await Customer.findByIdAndUpdate(foundCustomer._id, {
+        $inc: { outstanding: -total },
+        $push: { transactions: transaction._id },
+      });
+    } else {
+      transaction = await Transaction.create({
+        name: "Product Return",
+        amount: total,
+        taken: true,
+        purpose: "return",
+        paymentMode: "cash",
+      });
     }
 
     const productsForDailyReport = items.map((inv) => ({
@@ -358,34 +348,139 @@ export const returnProduct = async (req, res) => {
       previousQuantity: inv.previousQuantity,
     }));
 
-    const dailyReport = await DailyReport.findOneAndUpdate(
+    dailyReport = await DailyReport.findOneAndUpdate(
       { date: currentDate },
       {
         $push: {
           updatedToday: { $each: productsForDailyReport },
-          transactions: { $each: transaction.map((t) => t._id) },
+          transactions: transaction._id,
         },
       },
-      { upsert: true, new: true, session }
+      { upsert: true, new: true }
     );
-
-    await session.commitTransaction();
-    session.endSession();
 
     console.log("Everything done successfully");
     return res.status(200).json({
       success: true,
       transaction,
+      dailyReport,
       msg: "Updated successfully",
     });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-
-    console.error("Error during transaction:", error.message);
+    console.error("Error:", error.message);
     return res.status(500).json({
       success: false,
-      msg: "Error during transaction",
+      msg: "Error during processing",
     });
   }
 };
+
+// export const returnProduct = async (req, res) => {
+//   const abc = req.body;
+//   const currentDate = getDate();
+//   const { purchased, foundCustomer, returnType, total } = abc;
+
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+
+//   try {
+//     const items = await Promise.all(
+//       purchased.map(async (product) => {
+//         const quantity =
+//           product.piece +
+//           product.packet * product.packetQuantity +
+//           product.box * product.boxQuantity;
+//         const id = new mongoose.Types.ObjectId(product.id);
+//         const updatedProduct = await Product.findByIdAndUpdate(
+//           id,
+//           {
+//             $inc: { stock: quantity },
+//           },
+//           { new: true, session }
+//         );
+
+//         return {
+//           product: updatedProduct._id,
+//           quantity: quantity,
+//           previousQuantity: updatedProduct.stock - quantity,
+//         };
+//       })
+//     );
+
+//     let transaction, dailyReport;
+
+//     if (returnType === "adjustment") {
+//       const newOutstanding = foundCustomer.outstanding - total;
+
+//       transaction = await Transaction.create(
+//         {
+//           name: foundCustomer.name,
+//           previousOutstanding: foundCustomer.outstanding,
+//           amount: total,
+//           newOutstanding,
+//           taken: false,
+//           purpose: "Return Product",
+//           paymentMode: "productReturn",
+//         },
+//         { session }
+//       );
+
+//       const customer = await Customer.findByIdAndUpdate(
+//         foundCustomer._id,
+//         {
+//           $inc: { outstanding: -total },
+//           $push: { transactions: transaction._id },
+//         },
+//         { session }
+//       );
+//     } else {
+//       transaction = await Transaction.create(
+//         {
+//           name: "Product Return",
+//           amount: total,
+//           taken: true,
+//           purpose: "return",
+//           paymentMode: "cash",
+//         },
+//         { session }
+//       );
+//     }
+
+//     const productsForDailyReport = items.map((inv) => ({
+//       product: inv.product,
+//       quantity: inv.quantity,
+//       previousQuantity: inv.previousQuantity,
+//     }));
+
+//     dailyReport = await DailyReport.findOneAndUpdate(
+//       { date: currentDate },
+//       {
+//         $push: {
+//           updatedToday: { $each: productsForDailyReport },
+//           transactions: transaction._id,
+//         },
+//       },
+//       { upsert: true, new: true, session }
+//     );
+
+//     await session.commitTransaction();
+//     session.endSession();
+
+//     console.log("Everything done successfully");
+//     return res.status(200).json({
+//       success: true,
+//       transaction,
+//       dailyReport,
+//       msg: "Updated successfully",
+//     });
+//   } catch (error) {
+//     await session.abortTransaction();
+//     session.endSession();
+
+//     console.error("Error:", error.message);
+//     return res.status(500).json({
+//       success: false,
+//       msg: "Error during processing",
+//     });
+//   }
+// };

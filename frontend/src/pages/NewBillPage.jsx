@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { IoRefresh } from "react-icons/io5";
 
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
-
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 
@@ -53,12 +52,12 @@ const NewBillPage = () => {
 
   // Handle form submission
   useEffect(() => {
-    if (purchased.length > 0 && foundCustomer.name != null) {
+    if (purchased.length > 0 && foundCustomer?.name != null) {
       setDisabled(false);
     } else {
       setDisabled(true);
     }
-  }, [purchased]);
+  }, [purchased, foundCustomer]);
   const submitHandle = async () => {
     setDisabled(true);
     setLoading(true);
@@ -70,7 +69,7 @@ const NewBillPage = () => {
         payment: payment === "" ? 0 : payment,
         total,
         paymentMode,
-        customerId: foundCustomer._id,
+        customerId: foundCustomer?._id,
         createdBy: user.id,
       });
       setLoading(false);

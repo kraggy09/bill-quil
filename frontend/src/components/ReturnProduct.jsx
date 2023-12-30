@@ -10,6 +10,7 @@ import { fetchDailyReport } from "../store/reportSlice";
 import axios from "axios";
 import { apiUrl } from "../constant";
 import { useDispatch } from "react-redux";
+import TransactionModal from "./TransactionModal";
 
 const ReturnProduct = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const ReturnProduct = () => {
   console.log("Hey, I am the total", total);
   const [foundCustomer, setFoundCustomer] = useState();
   const [purchased, setPurchased] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
   const [returnType, setReturnType] = useState("adjustment");
 
   const handleSubmit = async () => {
@@ -36,11 +38,14 @@ const ReturnProduct = () => {
       dispatch(fetchProducts());
       dispatch(fetchDailyReport());
       setLoading(false);
+
+      if (returnType === "adjustment") {
+        setIsOpen(true);
+      }
       toast.success("Product return successfull");
-      setPurchased([]);
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
+      if (returnType === "refund") {
+        setPurchased([]);
+      }
       console.log(res.data);
       // Additional logic based on the response if needed
     } catch (error) {
@@ -54,6 +59,16 @@ const ReturnProduct = () => {
   return (
     <div className="min-w-[90vw] ml-28">
       {loading && <Loading />}
+      {foundCustomer && (
+        <TransactionModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          name={foundCustomer.name}
+          outstanding={foundCustomer.outstanding}
+          amount={total}
+          paymentMode={"returnType"}
+        />
+      )}
       <ToastContainer autoClose={1500} />
       <div className="min-w-[90vw] flex my-6 justify-center">
         <div className="flex rounded-xl   border-2">

@@ -169,11 +169,11 @@ const BillingHeader = ({
     setProductName("");
   };
 
-  useEffect(() => {
-    if (name.length == 0) {
-      setFoundCustomer(null);
-    }
-  }, [name]);
+  // useEffect(() => {
+  //   if (name.length == 0) {
+  //     setFoundCustomer(null);
+  //   }
+  // }, [name]);
 
   return (
     <header className="py-4 ">

@@ -25,8 +25,8 @@ const BillTable = ({
         return accumulator; // Ignore invalid total values
       }
     }, 0);
-    if (foundCustomer.outstanding) {
-      total += Number(foundCustomer.outstanding);
+    if (foundCustomer?.outstanding) {
+      total += Number(foundCustomer?.outstanding);
     }
     total -= Number(discount);
 
@@ -70,12 +70,12 @@ const BillTable = ({
         <div className="min-w-[200px] ">
           <p className="text-end text-xl  font-bold">
             <span className="px-16">Total Bill:</span>
-            {total - (foundCustomer.outstanding || 0)}₹
+            {total - (foundCustomer?.outstanding || 0)}₹
           </p>
           <div className="min-w-[200px] ">
             <p className="text-end text-xl  font-bold">
               <span className="px-16">OutStanding:</span>
-              {foundCustomer.outstanding}₹
+              {foundCustomer?.outstanding}₹
             </p>
           </div>
 
