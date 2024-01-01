@@ -82,30 +82,58 @@ const BillingHeader = ({
 
   const findProduct = (val) => {
     let temp = Number(val);
-    if (!isNaN(temp)) {
-      return products.filter((product) => {
-        if (val === "") {
-          return false; // Don't filter if the search value is empty
-        }
-        if (product.stock > 0 && product.barcode.includes(temp)) {
-          return true;
-        } else {
-          // alert("Product is finished");
-          return false;
-        }
-      });
+    if (billType != "return") {
+      if (!isNaN(temp)) {
+        return products.filter((product) => {
+          if (val === "") {
+            return false; // Don't filter if the search value is empty
+          }
+          if (product.stock > 0 && product.barcode.includes(temp)) {
+            return true;
+          } else {
+            // alert("Product is finished");
+            return false;
+          }
+        });
+      } else {
+        return products.filter((product) => {
+          if (val === "") {
+            return false; // Don't filter if the search value is empty
+          }
+          if (product.stock > 0 && product.name.toLowerCase().includes(val)) {
+            return true;
+          } else {
+            // alert("Product is finished");
+            return false;
+          }
+        });
+      }
     } else {
-      return products.filter((product) => {
-        if (val === "") {
-          return false; // Don't filter if the search value is empty
-        }
-        if (product.stock > 0 && product.name.toLowerCase().includes(val)) {
-          return true;
-        } else {
-          // alert("Product is finished");
-          return false;
-        }
-      });
+      if (!isNaN(temp)) {
+        return products.filter((product) => {
+          if (val === "") {
+            return false; // Don't filter if the search value is empty
+          }
+          if (product.barcode.includes(temp)) {
+            return true;
+          } else {
+            // alert("Product is finished");
+            return false;
+          }
+        });
+      } else {
+        return products.filter((product) => {
+          if (val === "") {
+            return false; // Don't filter if the search value is empty
+          }
+          if (product.name.toLowerCase().includes(val)) {
+            return true;
+          } else {
+            // alert("Product is finished");
+            return false;
+          }
+        });
+      }
     }
   };
 
