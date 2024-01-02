@@ -18,6 +18,7 @@ import { apiUrl } from "../constant";
 import BillModal from "../components/BillModal";
 import { fetchDailyReport } from "../store/reportSlice";
 import Loading from "../components/Loading";
+import { fetchLastBillId } from "../store/billIdSlice";
 
 // Constants
 const API_URL = "/createBill";
@@ -36,6 +37,8 @@ const NewBillPage = () => {
   const [total, setTotal] = useState(0);
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const { id } = useSelector((store) => store.billId);
+  console.log(id);
 
   const handleRefresh = async () => {
     setLoading(true);
@@ -43,6 +46,8 @@ const NewBillPage = () => {
     try {
       await dispatch(fetchProducts()); // Wait for the fetchProducts operation to complete
       await dispatch(fetchCustomers());
+      await dispatch(fetchLastBillId());
+      await dispatch(fetchDailyReport());
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -66,6 +71,7 @@ const NewBillPage = () => {
       const response = await axios.post(apiUrl + API_URL, {
         purchased,
         discount,
+        billId: id,
         payment: payment === "" ? 0 : payment,
         total,
         paymentMode,
@@ -78,16 +84,18 @@ const NewBillPage = () => {
       dispatch(fetchProducts());
       dispatch(fetchCustomers());
       dispatch(fetchDailyReport());
+      dispatch(fetchLastBillId());
+
       toast.success("Bill created successfully"); // Display success message
     } catch (error) {
       setLoading(false);
-      console.error(error);
+      console.log("error", error);
 
       dispatch(fetchProducts());
       dispatch(fetchCustomers());
       dispatch(fetchDailyReport());
       setDisabled(false);
-      toast.error("Error creating the bill"); // Display error message
+      toast.error(error.response.data.msg); // Display error message
     }
   };
 
@@ -140,6 +148,7 @@ const NewBillPage = () => {
           Create bill
         </button>
         <BillModal
+          billId={id}
           isOpen={print}
           purchased={purchased}
           foundCustomer={foundCustomer}

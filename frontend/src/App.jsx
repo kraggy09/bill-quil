@@ -25,6 +25,7 @@ import Protected from "./components/Protected";
 import Login from "./components/Login";
 import UpdateStockRequest from "./components/UpdateStockRequest";
 import ReturnProduct from "./components/ReturnProduct";
+import { fetchLastBillId } from "./store/billIdSlice";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
@@ -59,6 +60,7 @@ const App = () => {
       dispatch(fetchCustomers());
       dispatch(fetchProducts());
       dispatch(fetchDailyReport());
+      dispatch(fetchLastBillId());
     }
   }, [user]);
 

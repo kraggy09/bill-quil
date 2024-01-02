@@ -6,6 +6,10 @@ import getCurrentDateAndTime from "../config/getCurrentTime.js";
 const IST = "Asia/Kolkata";
 
 const billSchema = mongoose.Schema({
+  id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "BillId",
+  },
   date: {
     type: Date,
     default: () => moment.tz(getCurrentDateAndTime(), IST),

@@ -5,24 +5,39 @@ import Customer from "../models/Customer.js";
 import DailyReport from "../models/DailyReport.js";
 import Product from "../models/Product.js";
 import Transaction from "../models/Transaction.js";
+import BillId from "../models/BillId.js";
 
 export const createBill = async (req, res) => {
   const currentDate = getDate();
   const products = req.body.purchased;
-  const {
+  let {
     customerId,
+    billId,
     total,
     payment = 0,
     paymentMode,
     discount = 0,
     createdBy,
   } = req.body;
+  console.log(billId);
+  let newBillId = billId;
+  newBillId = billId + 1;
+  console.log(newBillId);
 
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     // Check if the customer exists
+    const previousBillId = await BillId.findOne({ id: newBillId });
+    if (previousBillId) {
+      return res.status(409).json({
+        msg: "Duplicate bill detected pls check your history",
+        success: false,
+        previousBillId,
+      });
+    }
+
     const customer = await Customer.findById(customerId).session(session);
     if (!customer) {
       return res.status(404).json({ error: "Customer not found" });
@@ -52,6 +67,9 @@ export const createBill = async (req, res) => {
         };
       })
     );
+    const idS = await BillId.create({
+      id: newBillId,
+    });
 
     const newBill = await Bill.create(
       [
@@ -62,6 +80,7 @@ export const createBill = async (req, res) => {
           payment,
           discount,
           createdBy,
+          id: idS._id,
         },
       ],
       { session }
@@ -134,7 +153,8 @@ export const getBillDetails = async (req, res) => {
     const id = req.query.id;
     const bills = await Bill.findById(id)
       .populate("items.product")
-      .populate("customer");
+      .populate("customer")
+      .populate("id");
 
     if (!bills) {
       return res.status(404).json({
@@ -182,6 +202,29 @@ export const getAllBillsOfToday = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       msg: "Server error",
+    });
+  }
+};
+
+export const getLatestBillId = async (req, res) => {
+  try {
+    const latestBill = await BillId.findOne().sort({ expires: -1 }).exec();
+    if (latestBill) {
+      return res.status(200).json({
+        billId: latestBill.id,
+        msg: "Latest Bill Id",
+        success: true,
+      });
+    }
+    return res.status(404).json({
+      msg: "Bill Id not found restart",
+      success: false,
+    });
+  } catch (error) {
+    console.error("Error retrieving latest bill:", error);
+    return res.status(500).json({
+      success: false,
+      msg: error.message,
     });
   }
 };

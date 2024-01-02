@@ -10,6 +10,7 @@ export const getDailyReport = async (req, res) => {
         path: "bills",
         populate: {
           path: "items.product",
+          path: "id",
         },
       })
       .populate("transactions")
@@ -61,6 +62,7 @@ export const getDailyReportOfDays = async (req, res) => {
         path: "bills",
         populate: {
           path: "items.product",
+          path: "id",
         },
       })
       .populate("transactions")

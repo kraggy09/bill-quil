@@ -18,11 +18,13 @@ const BillStrap = ({ bill }) => {
   useEffect(() => {
     calculateBillAmount();
   }, [bill.items]);
+  // bill?.id && console.log("Id", bill);
 
   return (
     <tr className="font-medium text-xl ">
       <td className="px-16 py-3 ">{calculateDate(date)}</td>
       <td className="px-16 py-3 ">{calculateTime(date)}</td>
+      <td className="px-16 py-3 ">{bill?.id?.id ? bill.id.id : "Old Bill"}</td>
       <td className="px-16 py-3 "> {billAmount.toFixed(3)}</td>
       <td className="px-16 py-3 ">
         {(bill.total - billAmount) % 1 != 0

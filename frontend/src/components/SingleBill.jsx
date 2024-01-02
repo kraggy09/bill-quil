@@ -60,6 +60,12 @@ const SingleBill = () => {
         <div className="relative">
           <header className="ml-6 text-xl font-semibold italic capitalize">
             <p>
+              Bill Id:
+              <span className="border-b-2 border-green-500 px-3">
+                {bill?.id?.id}
+              </span>
+            </p>
+            <p>
               Name:
               <span className="border-b-2 border-green-500 px-3">
                 {bill.customer.name}
@@ -128,6 +134,7 @@ const SingleBill = () => {
               total={bill && bill.total}
               payment={bill && bill.payment}
               discount={bill && bill.discount}
+              billId={bill && bill.id.id}
             />
           </header>
           <table className="table-auto my-6 mx-16">

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 export const PrintButton = ({
   foundCustomer,
   purchased,
+  billId,
   setIsOpen,
   total,
   payment,
@@ -13,6 +14,7 @@ export const PrintButton = ({
 }) => {
   const componentRef = useRef();
   const navigate = useNavigate();
+  // console.log("test", id);
 
   return (
     <div>
@@ -43,6 +45,7 @@ export const PrintButton = ({
         }}
       />
       <PrintBill
+        billId={billId}
         total={total}
         discount={discount}
         payment={payment}

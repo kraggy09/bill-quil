@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import { calculateDate, calculateTime } from "../libs/constant";
 
 const PrintBill = React.forwardRef(
-  ({ foundCustomer, purchased, payment, total, discount }, ref) => {
+  ({ foundCustomer, purchased, payment, total, discount, billId }, ref) => {
+    console.log(billId);
     console.log(foundCustomer, purchased);
     const calculateSave = (product) => {
       let saved = 0;
@@ -31,6 +32,9 @@ const PrintBill = React.forwardRef(
 
               <p className="text-sm my-1 font-semibold text-gray-800">
                 Mob:9370564909 / 9145506000
+              </p>
+              <p className="text-sm my-1 font-semibold text-gray-800">
+                Bill No. {billId}
               </p>
             </div>
             <div className="pl-2">

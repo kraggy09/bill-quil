@@ -48,6 +48,7 @@ const BillingHeader = ({
   purchased,
   setPurchased,
 }) => {
+  const bill = useSelector((store) => store.billId);
   const [visible, setVisible] = useState(true);
   const [productvisible, setProductVisible] = useState(false);
   const [productName, setProductName] = useState("");
@@ -207,7 +208,7 @@ const BillingHeader = ({
     <header className="py-4 ">
       <div className="min-w-full mx-auto flex justify-around">
         <div className="flex flex-col mb-3">
-          <p className="text-xl font-bold">Bill No.:1</p>
+          <p className="text-xl font-bold">Bill No.:{bill.id + 1}</p>
           <p className="text-xl font-bold">
             Bill Type:{" "}
             <i className="capitalize bg-green-500 px-2 py-1 text-white rounded-xl">
