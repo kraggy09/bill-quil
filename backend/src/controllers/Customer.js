@@ -58,10 +58,12 @@ export const getSingleCustomer = async (req, res) => {
   const customerId = req.params.customerId; // Access the customer ID from the route parameter
   try {
     const customer = await Customer.findById(customerId)
-      .populate("bills")
+      .populate({
+        path: "bills",
+        populate: { path: "id", model: "BillId" }, // Assuming 'billid' is the field to populate in the 'bills' model
+      })
       .populate("transactions")
       .exec();
-
     if (customer) {
       return res.status(200).json({
         msg: "Customer found successfully",

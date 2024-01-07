@@ -6,6 +6,7 @@ import DailyReport from "../models/DailyReport.js";
 import Product from "../models/Product.js";
 import Transaction from "../models/Transaction.js";
 import BillId from "../models/BillId.js";
+import moment from "moment-timezone";
 
 export const createBill = async (req, res) => {
   const currentDate = getDate();
@@ -228,3 +229,106 @@ export const getLatestBillId = async (req, res) => {
     });
   }
 };
+
+const IST = "Asia/Kolkata"; // Update with the correct path
+
+export async function getBillsByProductNameAndDate(req, res) {
+  const { product, startDate, endDate } = req.query;
+
+  const barcode = product.barcode.map((code) => parseInt(code));
+
+  console.log(barcode);
+
+  try {
+    const startMoment = moment(startDate).startOf("day").tz(IST);
+    const endMoment = moment(endDate).endOf("day").tz(IST);
+
+    const result = await Bill.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startMoment.toDate(), $lte: endMoment.toDate() },
+        },
+      },
+      {
+        $unwind: "$items",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $match: {
+          "productDetails.barcode": { $in: barcode },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdByDetails",
+        },
+      },
+      {
+        $lookup: {
+          from: "customers",
+          localField: "customer",
+          foreignField: "_id",
+          as: "customerDetails",
+        },
+      },
+      {
+        $addFields: {
+          createdBy: { $arrayElemAt: ["$createdByDetails", 0] },
+          customer: { $arrayElemAt: ["$customerDetails", 0] },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          date: { $first: "$date" },
+          createdAt: { $first: "$createdAt" },
+          items: { $push: "$items" },
+          expires: { $first: "$expires" },
+          total: { $first: "$total" },
+          payment: { $first: "$payment" },
+          discount: { $first: "$discount" },
+          createdBy: { $first: "$createdBy" },
+          customer: { $first: "$customer" },
+        },
+      },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
+    ]);
+
+    // // Handling no bills found
+    // if (result.length === 0) {
+    //   return res.status(404).json({
+    //     msg: "No bills found for the given criteria",
+    //   });
+    // }
+
+    return res.status(200).json({
+      msg: "Received successfully",
+      result,
+    });
+  } catch (error) {
+    console.error(error);
+
+    // Handling errors and sending an error response
+    return res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+}

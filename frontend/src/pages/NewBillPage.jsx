@@ -95,7 +95,7 @@ const NewBillPage = () => {
       dispatch(fetchCustomers());
       dispatch(fetchDailyReport());
       setDisabled(false);
-      toast.error(error.response.data.msg); // Display error message
+      toast.error(error?.response?.data?.msg); // Display error message
     }
   };
 

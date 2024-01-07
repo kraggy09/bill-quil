@@ -4,8 +4,8 @@ import { calculateDate, calculateTime } from "../libs/constant";
 
 const PrintBill = React.forwardRef(
   ({ foundCustomer, purchased, payment, total, discount, billId }, ref) => {
-    console.log(billId);
-    console.log(foundCustomer, purchased);
+    // console.log(billId);
+    // console.log(foundCustomer, purchased);
     const calculateSave = (product) => {
       let saved = 0;
       for (let i = 0; i < product.length; i++) {

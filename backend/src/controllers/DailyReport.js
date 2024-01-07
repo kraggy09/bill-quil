@@ -8,10 +8,16 @@ export const getDailyReport = async (req, res) => {
     const dailyReport = await DailyReport.find({ date })
       .populate({
         path: "bills",
-        populate: {
-          path: "items.product",
-          path: "id",
-        },
+        populate: [
+          {
+            path: "items.product",
+            model: "Product",
+          },
+          {
+            path: "id",
+            model: "BillId",
+          },
+        ],
       })
       .populate("transactions")
       .populate({
@@ -60,10 +66,13 @@ export const getDailyReportOfDays = async (req, res) => {
     })
       .populate({
         path: "bills",
-        populate: {
-          path: "items.product",
-          path: "id",
-        },
+        populate: [
+          {
+            path: "items.product",
+            model: "Product",
+          },
+          { path: "id", model: "BillId" },
+        ],
       })
       .populate("transactions")
       .populate({

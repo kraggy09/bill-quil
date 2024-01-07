@@ -90,6 +90,7 @@ const IndividualCustomer = () => {
                 <tr className="border border-black">
                   <th className="border border-black mx-6">Date</th>
                   <th className="border border-black">Time</th>
+                  <th className="border border-black">Bill Id</th>
                   <th className="border border-black px-0">Bill Amount</th>
                   <th className="border border-black px-6">Outstanding</th>
                   <th className="border border-black px-6">Payment</th>

@@ -40,13 +40,13 @@ const DailyReportPage = () => {
       });
       if (res) {
         const temp = res.data;
-        console.log("Data", temp);
+        // console.log("Data", temp);
         setDailyReport(temp.newDaily);
         // toast.success(`Bills Found Successfully`);
         setLoading(false);
       }
     } catch (error) {
-      // console.log(error);
+      console.log(error);
       // toast.error("Error while getting bills", startDate);
       setLoading(false);
     }
@@ -54,14 +54,14 @@ const DailyReportPage = () => {
   const handleSubmit = () => {
     getBills();
   };
-  console.log(dailyReport);
+  // console.log(dailyReport);
   useEffect(() => {
     if (daily) {
       setDailyReport(daily);
     }
   }, [daily]);
 
-  console.log(dataObj);
+  // console.log(dataObj);
   useEffect(() => {
     if (dailyReport) {
       let temp = dailyReport.bills.reduce(
@@ -150,7 +150,7 @@ const DailyReportPage = () => {
             className="bg-gray-300 px-3 rounded-xl hover:cursor-pointer"
             value={endDate}
             onChange={(e) => {
-              console.log(e.target.value);
+              // console.log(e.target.value);
               setEndDate(e.target.value);
             }}
           />
