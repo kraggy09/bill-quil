@@ -201,6 +201,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       </td>
       <td className="text-center font-semibold text-xl py-2">
         <input
+          onWheel={(e) => e.target.blur()}
           type="number"
           value={state.piece}
           onChange={(e) => handleChange("piece", Number(e.target.value))}
@@ -209,6 +210,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       </td>
       <td className="text-center font-semibold text-xl py-2">
         <input
+          onWheel={(e) => e.target.blur()}
           type="number"
           value={state.packet}
           onChange={(e) => handleChange("packet", Number(e.target.value))}
@@ -217,6 +219,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       </td>
       <td className="text-center font-semibold text-xl py-2">
         <input
+          onWheel={(e) => e.target.blur()}
           type="number"
           value={state.box}
           onChange={(e) => handleChange("box", Number(e.target.value))}
@@ -225,6 +228,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       </td>
       <td className="text-center font-semibold text-xl py-2">
         <input
+          onWheel={(e) => e.target.blur()}
           type="number"
           value={state.discount}
           onChange={(e) => handleChange("discount", Number(e.target.value))}

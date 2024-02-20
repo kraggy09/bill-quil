@@ -5,7 +5,7 @@ import { apiUrl } from "../constant";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import { AiFillEye, AiOutlineArrowUp } from "react-icons/ai";
-import { FaPercentage, FaTheRedYeti } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaPercentage, FaTheRedYeti } from "react-icons/fa";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import Loading from "../components/Loading";
 import { useSelector } from "react-redux";
@@ -21,6 +21,7 @@ const BillPage = () => {
   const [loading, setLoading] = useState(false);
   const [dataObj, setDataObj] = useState(null);
   const [filter, setFilter] = useState(null);
+  const [show, setShow] = useState(false);
   const [isQueryProgrammaticChange, setIsQueryProgrammaticChange] =
     useState(false);
 
@@ -245,7 +246,7 @@ const BillPage = () => {
           </button>
         </div>
       </header>
-      {user.isAdmin && (
+      {user.isAdmin && show && (
         <article className="flex min-w-full items-center justify-center my-6">
           <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 rounded-3xl text-3xl font-bold text-green-900 flex items-center justify-center  px-6 mx-6 bg-green-200 ">
             <FaIndianRupeeSign className="mx-1 font-extrabold" />
@@ -266,6 +267,18 @@ const BillPage = () => {
               ).toFixed(1)}
           </div>
         </article>
+      )}
+      {user.isAdmin && (
+        <div
+          className="flex text-2xl mb-6 min-w-full items-center justify-center"
+          onClick={() => setShow((prev) => !prev)}
+        >
+          {!show ? (
+            <FaEye className="hover:text-green-500 hover:cursor-pointer" />
+          ) : (
+            <FaEyeSlash className="hover:text-red-500 hover:cursor-pointer" />
+          )}
+        </div>
       )}
       <main className="min-w-[90vw] flex items-center justify-center">
         {!filter ? (

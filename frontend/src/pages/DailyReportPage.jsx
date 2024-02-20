@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 // import toast from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 axios.defaults.withCredentials = true;
 import { apiUrl } from "../constant";
 import Loading from "../components/Loading";
@@ -23,6 +25,7 @@ const DailyReportPage = () => {
   const [endDate, setEndDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [dailyReport, setDailyReport] = useState(null);
+  const [show, setShow] = useState(false);
   // console.log("StartDate", startDate);
   // console.log(endDate);
 
@@ -107,7 +110,7 @@ const DailyReportPage = () => {
           Get the complete details here
         </h1>
       </div>
-      {user.isAdmin && (
+      {user.isAdmin && show && (
         <article className="flex min-w-full items-center justify-center my-6">
           <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 bg-green-300  rounded-3xl text-3xl font-bold text-green-900 flex items-center justify-center shadow-lg px-6 mx-6 ">
             <FaIndianRupeeSign className="mx-1 font-extrabold" />
@@ -132,6 +135,18 @@ const DailyReportPage = () => {
               ).toFixed(1)}
           </div>
         </article>
+      )}
+      {user.isAdmin && (
+        <div
+          className="flex text-2xl min-w-full items-center justify-center"
+          onClick={() => setShow((prev) => !prev)}
+        >
+          {!show ? (
+            <FaEye className="hover:text-green-500 hover:cursor-pointer" />
+          ) : (
+            <FaEyeSlash className="hover:text-red-500 hover:cursor-pointer" />
+          )}
+        </div>
       )}
       <div className="flex min-w-[50vw] my-3 justify-around">
         <span className="flex items-center justify-center text-xl">

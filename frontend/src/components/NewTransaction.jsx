@@ -88,9 +88,9 @@ const NewTransaction = () => {
           setIsOpen(true);
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.response.data.msg, "error");
           setLoading(false);
-          toast.error("Something went wrong");
+          toast.error(err.response.data.msg);
         });
     } else {
       await axios

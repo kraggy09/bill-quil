@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa";
-4;
+
 import { IoMdCheckmark } from "react-icons/io";
 
 import { IoCloseSharp } from "react-icons/io5";
@@ -24,6 +24,7 @@ const DashBoardPage = () => {
   const dispatch = useDispatch();
 
   const [inventoryRequests, setInventoryRequests] = useState(null);
+  const [days, setDays] = useState("1d");
   const handleRejection = async (id) => {
     try {
       const response = await axios.delete(
@@ -88,16 +89,84 @@ const DashBoardPage = () => {
     onLoad();
   }, []);
 
-  useEffect(() => {});
   return (
     <div className="ml-24 flex min-w-[90vw]">
       <ToastContainer autoClose={2000} />
       <div className="min-w-[70%]">
-        <div className=" min-w-[70%] min-h-[60vh] max-h-[60%] ">
+        <div className=" min-w-[70%]  min-h-[60vh] max-h-[60%] ">
           <div className="min-w-full flex items-center justify-center">
             <span className="text-xl font-bold bg-green-200 px-6 py-2 rounded-xl mt-16">
               Hello, Sultan Communication & General Stores
             </span>
+          </div>
+          <div className="min-w-full">
+            <div className="grid items-center max-w-[50%] my-3 mx-6 gap-x-12 gap-y-8 grid-cols-2">
+              <div className="min-h-[150px] max-h-64 max-w-[350px] border-2 border-cyan-500 bg-cyan-300  rounded-3xl text-3xl font-bold text-cyan-900 flex items-center justify-center shadow-lg px-6 mx-6">
+                SALES
+              </div>
+              <div className="min-h-[150px] max-h-64 max-w-[350px] border-2 border-red-500 bg-red-300  rounded-3xl text-3xl font-bold text-red-900 flex items-center justify-center shadow-lg px-6 mx-6">
+                PAYMENT
+              </div>
+              <div className="min-h-[150px] max-h-64 max-w-[350px] border-2 border-purple-500 bg-purple-300  rounded-3xl text-3xl font-bold text-purple-900 flex items-center justify-center shadow-lg px-6 mx-6">
+                PROFIT
+              </div>
+
+              <div className="min-h-[150px] max-h-64 max-w-[350px] border-2 border-green-500 bg-green-300  rounded-3xl text-3xl font-bold text-green-900 flex items-center justify-center shadow-lg px-6 mx-6">
+                TRANSACTION
+              </div>
+              <div className="min-h-[30px] min-w-64 col-span-2 flex justify-around items-center ">
+                <button
+                  onClick={() => setDays("1d")}
+                  className={`px-4 py-1 ${
+                    days === "1d"
+                      ? "bg-cyan-300 text-cyan-800 font-bold rounded-lg"
+                      : "bg-gray-300 text-gray-500 rounded-lg"
+                  }`}
+                >
+                  1d
+                </button>
+                <button
+                  onClick={() => setDays("7d")}
+                  className={`px-4 py-1 ${
+                    days === "7d"
+                      ? "bg-cyan-300 text-cyan-800 font-bold rounded-lg"
+                      : "bg-gray-300 text-gray-500 rounded-lg"
+                  }`}
+                >
+                  7d
+                </button>
+                <button
+                  onClick={() => setDays("15d")}
+                  className={`px-4 py-1 ${
+                    days === "15d"
+                      ? "bg-cyan-300 text-cyan-800 font-bold rounded-lg"
+                      : "bg-gray-300 text-gray-500 rounded-lg"
+                  }`}
+                >
+                  15d
+                </button>
+                <button
+                  onClick={() => setDays("25d")}
+                  className={`px-4 py-1 ${
+                    days === "25d"
+                      ? "bg-cyan-300 text-cyan-800 font-bold rounded-lg"
+                      : "bg-gray-300 text-gray-500 rounded-lg"
+                  }`}
+                >
+                  25d
+                </button>
+                <button
+                  onClick={() => setDays("30d")}
+                  className={`px-4 py-1 ${
+                    days === "30d"
+                      ? "bg-cyan-300 text-cyan-800 font-bold rounded-lg"
+                      : "bg-gray-300 text-gray-500 rounded-lg"
+                  }`}
+                >
+                  30d
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div className=" min-w-[70%] overflow-y-auto scrollbar-hide max-h-[40vh] min-h-[40%] bg-slate-100">
