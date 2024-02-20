@@ -29,13 +29,14 @@ const NewBillPage = () => {
   const [billType, setBillType] = useState("");
   const [print, setPrint] = useState(false);
   const [paymentMode, setPaymentMode] = useState("cash");
+  const [disabled, setDisabled] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
   const [discount, setDiscount] = useState(0);
   const [payment, setPayment] = useState("");
   const [total, setTotal] = useState(0);
-  const [disabled, setDisabled] = useState(true);
+  const [disabledRefresh, setDisabledRefresh] = useState(true);
   const [loading, setLoading] = useState(false);
   const { id } = useSelector((store) => store.billId);
   console.log(id);
@@ -115,12 +116,17 @@ const NewBillPage = () => {
         setFoundCustomer={setFoundCustomer}
       />
       <div
+        onMouseEnter={() => setDisabledRefresh(false)}
+        onMouseLeave={() => setDisabledRefresh(true)}
         onClick={() => {
           handleRefresh();
         }}
         className="min-w-full  flex items-center justify-end"
       >
-        <button className="flex items-center justify-center text-2xl bg-green-500 text-white rounded-xl font-bold px-3 py-1">
+        <button
+          disabled={disabledRefresh}
+          className="flex items-center justify-center text-2xl bg-green-500 text-white rounded-xl font-bold px-3 py-1"
+        >
           <IoRefresh className={loading && "animate-spin"} />
           Refresh
         </button>
