@@ -20,7 +20,9 @@ class Product {
     packet,
     box,
     discount,
-    total
+    total,
+    category,
+    hi
   ) {
     this.id = id;
     this.boxQuantity = boxQuantity;
@@ -39,11 +41,15 @@ class Product {
     this.box = box;
     this.discount = discount;
     this.total = total;
+    this.category = category;
+    this.hi = hi;
   }
 }
 
 const BillingHeader = ({
   billType,
+  foundCustomer,
+  reload,
   setFoundCustomer,
   purchased,
   setPurchased,
@@ -143,11 +149,24 @@ const BillingHeader = ({
     setVisible(false);
     setFoundCustomer(customer);
   };
+  useEffect(() => {
+    let name = foundCustomer?.name;
+    let id = foundCustomer?._id;
+    let updatedCustomer = findCustomer(name);
+    let finalCustomer = updatedCustomer.filter((a) => a._id === id);
+    console.log("Called after dispatch", finalCustomer);
+    setFoundCustomer(finalCustomer[0]);
+  }, [reload]);
+
+  useEffect(() => {
+    if (name.length == 0) {
+      setFoundCustomer({});
+    }
+  }, [name]);
 
   const handleProductSelection = (product) => {
     setProductName("");
     const existingProduct = purchased.find((p) => p.name === product.name);
-    // console.log(existingProduct);
     if (!existingProduct) {
       const newProduct = new Product(
         product._id,
@@ -174,7 +193,9 @@ const BillingHeader = ({
           ? product.wholesalePrice
           : billType === "superWholesale"
           ? product.superWholesalePrice
-          : product.retailPrice) * 1
+          : product.retailPrice) * 1,
+        product.category,
+        product.hi
       );
       setPurchased([...purchased, newProduct]);
     } else {
@@ -197,12 +218,6 @@ const BillingHeader = ({
     setProductVisible(false);
     setProductName("");
   };
-
-  // useEffect(() => {
-  //   if (name.length == 0) {
-  //     setFoundCustomer(null);
-  //   }
-  // }, [name]);
 
   return (
     <header className="py-4 ">
@@ -286,6 +301,8 @@ BillingHeader.propTypes = {
   setFoundCustomer: PropTypes.func.isRequired,
   purchased: PropTypes.array.isRequired,
   setPurchased: PropTypes.func.isRequired,
+  foundCustomer: PropTypes.object.isRequired,
+  reload: PropTypes.bool.isRequired,
 };
 
 export default BillingHeader;

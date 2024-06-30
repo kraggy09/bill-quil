@@ -104,11 +104,7 @@ const SingleBill = () => {
               purchased={
                 bill &&
                 bill.items.map((item) => {
-                  console.log(
-                    item.total,
-                    item.total / item.quantity,
-                    item.discount
-                  );
+                  // console.log(item);
                   return {
                     name: item.product.name,
                     mrp: item.product.mrp,
@@ -120,13 +116,16 @@ const SingleBill = () => {
                     price: item.total / item.quantity,
                     total: item.total,
                     discount: item.discount,
+                    measuring: item.product.measuring,
+                    hi: item.product.hi,
                   };
                 })
               }
               foundCustomer={
                 bill && {
                   phone: bill.customer.phone,
-                  outstanding: bill.total - calculateBillAmount(),
+                  outstanding:
+                    bill.total + bill.discount - calculateBillAmount(),
                   name: bill.customer.name,
                 }
               }
@@ -175,8 +174,12 @@ const SingleBill = () => {
                 <p>{calculateBillAmount()}</p>
               </span>
               <span className=" flex items-center justify-around">
+                <p>Discount: -</p>
+                <p>{bill.discount}</p>
+              </span>
+              <span className=" flex items-center justify-around">
                 <p>Prev:</p>
-                <p>{bill.total - calculateBillAmount()}</p>
+                <p>{bill.total + bill.discount - calculateBillAmount()}</p>
               </span>
               <span className="flex items-center justify-around">
                 <p>Payment:</p>

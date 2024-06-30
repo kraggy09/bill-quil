@@ -71,8 +71,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       box * product.boxQuantity * price +
       packet * product.packetQuantity * price -
       discount;
-    total = Number(total);
-    dispatch({ type: "CHANGE_TOTAL", value: total.toFixed() });
+    dispatch({ type: "CHANGE_TOTAL", value: total.toFixed(2) });
   };
 
   useEffect(() => {
@@ -113,7 +112,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           box: Number(state.box),
           discount: Number(state.discount),
           type: state.type,
-          total: Number(state.total),
+          total: state.total,
         };
         const newPurchased = purchased.map((pr) => {
           if (pr.id === product.id) {

@@ -13,24 +13,19 @@ import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { calculateDate, calculateTime } from "../libs/constant";
 import BillStrap from "../components/BillStrap";
-
 const DailyReportPage = () => {
   const daily = useSelector((store) => store.report.report);
   const user = useSelector((store) => store.user);
   const [type, setType] = useState("bills");
   const [dataObj, setDataObj] = useState(null);
 
-  // console.log(dataObj);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [dailyReport, setDailyReport] = useState(null);
   const [show, setShow] = useState(false);
-  // console.log("StartDate", startDate);
-  // console.log(endDate);
 
   const apiUrl1 = "/dailyReportOfDays";
-  // console.log(apiUrl + apiUrl1);
 
   const getBills = async () => {
     try {
@@ -57,7 +52,6 @@ const DailyReportPage = () => {
   const handleSubmit = () => {
     getBills();
   };
-  // console.log(dailyReport);
   useEffect(() => {
     if (daily) {
       setDailyReport(daily);
@@ -137,14 +131,21 @@ const DailyReportPage = () => {
         </article>
       )}
       {user.isAdmin && (
-        <div
-          className="flex text-2xl min-w-full items-center justify-center"
-          onClick={() => setShow((prev) => !prev)}
-        >
+        <div className="flex text-2xl min-w-full items-center justify-center">
           {!show ? (
-            <FaEye className="hover:text-green-500 hover:cursor-pointer" />
+            <FaEye
+              onClick={() => {
+                setShow(true);
+              }}
+              className="hover:text-green-500 hover:cursor-pointer"
+            />
           ) : (
-            <FaEyeSlash className="hover:text-red-500 hover:cursor-pointer" />
+            <FaEyeSlash
+              onClick={() => {
+                setShow(false);
+              }}
+              className="hover:text-red-500 hover:cursor-pointer"
+            />
           )}
         </div>
       )}

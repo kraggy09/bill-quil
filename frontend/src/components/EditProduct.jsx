@@ -38,17 +38,38 @@ const EditProduct = () => {
         return { ...state, [action.fieldName]: action.fieldValue };
       case "reset":
         return initialState;
+      case "barcode":
+        return { ...state, [action.fieldName]: action.fieldValue };
       default:
         return state;
     }
   };
-  console.log(product);
   console.log(id);
   const navigate = useNavigate();
   const dispatchR = useDispatch();
 
   const [formData, dispatch] = useReducer(formReducer, initialState);
+  console.log(formData);
+
   //   const [submitted, setSubmitted] = useState(false);
+
+  const handleBarcode = (barcode, op) => {
+    // Filter out the barcode to remove from the array
+    let newBarcode;
+    if (op === "delete") {
+      newBarcode = formData.barcode.filter((b) => b !== barcode);
+    } else {
+      newBarcode = formData.barcode;
+      newBarcode.push(barcode);
+    }
+    // Dispatch the updated barcode array
+    dispatch({
+      type: "updateField",
+      fieldName: "barcode",
+      fieldValue: newBarcode,
+    });
+  };
+
   const handleInputChange = (e) => {
     let { name, value } = e.target;
 
@@ -78,13 +99,18 @@ const EditProduct = () => {
       retailPrice: parseInt(formData.rp),
       wholesalePrice: parseFloat(formData.wp),
       superWholesalePrice: parseFloat(formData.swp),
-      barcode: parseInt(formData.barcode),
+      barcode: formData.barcode,
       stock: parseFloat(formData.stock),
       packet: parseInt(formData.packet),
       box: parseInt(formData.box),
       minQuantity: parseInt(formData.minQuantity),
       _id: product._id,
     };
+    if (formData2.barcode.length < 1) {
+      toast.error("Ek barcode to daliye sir");
+      setLoading(false);
+      return;
+    }
 
     // Send a POST request to your server with the form data
     axios
@@ -110,6 +136,8 @@ const EditProduct = () => {
         console.log("Error creating product:", error);
       });
   };
+
+  const [query, setQuery] = useState("");
   const css = {
     input:
       "mx-auto outline-none focus:border-green-800 transtion-all duration-300 ease-linear   border-b-2 px-2 text-xl font-bold max-w-[300px]",
@@ -252,33 +280,53 @@ const EditProduct = () => {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <div className={`${css.holder} my-3`}>
+            <div className={`${css.holder} my-3 relative`}>
               <label className={css.label} htmlFor="">
                 Barcode
               </label>
 
               <input
                 className={css.input}
-                required
+                // required
                 type="number"
                 id="barcode"
                 name="barcode"
-                value={formData.barcode[0]}
-                onChange={handleInputChange}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Enter the Barcode"
               />
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleBarcode(parseInt(query), "add");
+                }}
+                className="absolute right-0 bottom-2 rounded-xl font-bold bg-green-200 text-green-800 px-2 py-1 "
+              >
+                {" "}
+                + Barcode
+              </button>
             </div>
             <div>
-              {product.barcode.map((bar) => {
-                return (
-                  <span
-                    className="bg-green-300 rounded-xl px-3 py-2 mx-2 font-bold"
-                    key={bar}
-                  >
-                    {bar}
-                  </span>
-                );
-              })}
+              {formData.barcode &&
+                formData.barcode.map((bar) => {
+                  return (
+                    <span
+                      className="bg-green-200 text-green-700 rounded-xl px-3 py-2 mx-2 font-bold"
+                      key={bar}
+                    >
+                      {bar}{" "}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleBarcode(bar, "delete");
+                        }}
+                        className="bg-red-200 ml-3 text-red-600 px-2 py-1 rounded-xl"
+                      >
+                        X
+                      </button>
+                    </span>
+                  );
+                })}
             </div>
           </div>
 

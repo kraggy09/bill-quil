@@ -35,7 +35,7 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
       const queryValue = Number(query);
       if (isNaN(queryValue)) {
         // Query is not a valid number, so search by name
-        return product.name.toLowerCase().includes(query);
+        return product.name.toLowerCase().includes(query.toLowerCase());
       } else {
         // Query is a valid number, so search by barcode
         return product.barcode.includes(queryValue);

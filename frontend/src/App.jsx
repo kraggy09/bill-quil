@@ -26,35 +26,11 @@ import Login from "./components/Login";
 import UpdateStockRequest from "./components/UpdateStockRequest";
 import ReturnProduct from "./components/ReturnProduct";
 import { fetchLastBillId } from "./store/billIdSlice";
+import { Toaster } from "react-hot-toast";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
-  // console.log(user);
 
-  // const checkAuthentication = async () => {
-  //   try {
-  //     const res = await axios.get(apiUrl + "/checkAuth"); // Replace with your actual endpoint
-  //     console.log(res);
-  //     if (res) {
-  //       dispatch(
-  //         setUser({
-  //           username: res.data.user.username,
-  //           isAdmin: res.data.user.isAdmin,
-  //           id: res.data.user._id,
-  //         })
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Authentication check failed:", error);
-  //     // Handle authentication failure
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   console.log("I was called");
-  //   checkAuthentication();
-  // }, []);
-  // console.log(user);
   useEffect(() => {
     if (user.username) {
       dispatch(fetchCustomers());
@@ -63,8 +39,6 @@ const App = () => {
       dispatch(fetchLastBillId());
     }
   }, [user]);
-
-  // Example of checking authentication on the frontend
 
   return (
     <div className="min-h-[100vh] relative flex w-full">
@@ -137,6 +111,7 @@ const App = () => {
           />
         </Routes>
       </Router>
+      <Toaster position="top-center" reverseOrder={false} />
     </div>
   );
 };

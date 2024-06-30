@@ -18,6 +18,26 @@ const productSchema = mongoose.Schema({
     enum: ["kg", "piece"],
     required: true,
   },
+  category: {
+    type: String,
+    enum: [
+      "cigeratte",
+      "footwear",
+      "soap",
+      "cold_drink",
+      "shampoo",
+      "oil",
+      "chatkeens",
+      "chuda",
+      "underwear",
+      "innerwear",
+      "dry_fruits",
+      "supari",
+      "shampoo_packet",
+      "null",
+    ],
+    required: true,
+  },
   retailPrice: {
     type: Number,
     required: true,
@@ -51,6 +71,9 @@ const productSchema = mongoose.Schema({
   minQuantity: {
     type: Number,
     required: true,
+  },
+  hi: {
+    type: String,
   },
 });
 

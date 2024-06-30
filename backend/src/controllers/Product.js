@@ -2,6 +2,7 @@ import getDate from "../config/getDate.js";
 import DailyReport from "../models/DailyReport.js";
 import Product from "../models/Product.js";
 import Customer from "../models/Customer.js";
+import axios from "axios";
 
 import UpdateProducts from "../models/UpdateProducts.js";
 import Transaction from "../models/Transaction.js";
@@ -23,6 +24,25 @@ export const createNewProduct = async (req, res) => {
       box,
       minQuantity,
     } = req.body;
+    name = name.trim();
+    name = name.toLowerCase();
+
+    let newOne;
+    const get_base_url = (lang, word) =>
+      `https://www.google.com/inputtools/request?ime=transliteration_en_${lang}&num=5&cp=0&cs=0&ie=utf-8&oe=utf-8&app=jsapi&text=${word}`;
+
+    try {
+      const res = await axios.get(get_base_url("hi", name));
+
+      if (res.data[1][0][1]?.length > 0) {
+        // console.log([...res.data[1][0][1], name]);
+        newOne = [...res.data[1][0][1], name];
+      } else {
+        console.log(name);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
 
     const newBarcode = [barcode];
     name = name.toLowerCase();
@@ -59,6 +79,8 @@ export const createNewProduct = async (req, res) => {
       packet,
       box,
       minQuantity,
+      hi: newOne[0],
+      category: "null",
     });
 
     return res.status(201).json({
@@ -67,7 +89,7 @@ export const createNewProduct = async (req, res) => {
       data: newProduct,
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     return res.status(500).json({
       success: false,
       msg: error.message,
@@ -104,7 +126,7 @@ export const getProduct = async (req, res) => {
       msg: "No data found for this product",
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     return res.status(500).json({
       success: false,
       msg: error.message,
@@ -121,7 +143,7 @@ export const getAllproduct = async (req, res) => {
       products,
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     return res.status(500).json({
       success: false,
       msg: error.message,
@@ -158,7 +180,7 @@ export const deleteProduct = async (req, res) => {
       msg: "No product found ",
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     res.status(500).json({
       success: false,
       msg: error.message,
@@ -169,8 +191,9 @@ export const deleteProduct = async (req, res) => {
 export const updateProductDetails = async (req, res) => {
   try {
     const product = req.body;
+    console.log(product);
     const newProduct = {
-      name: product.name,
+      name: product.name.trim(),
       mrp: product.mrp,
       costPrice: product.costPrice,
       measuring: product.measuring,
@@ -181,16 +204,23 @@ export const updateProductDetails = async (req, res) => {
       packet: product.packet,
       box: product.box,
       minQuantity: product.minQuantity,
+      barcode: product.barcode,
     };
 
-    const barcode = product.barcode;
-    console.log("barcode", barcode);
-    console.log(newProduct);
-    console.log(product._id);
+    console.log(newProduct.barcode);
+    // console.log("barcode", barcode);
+    // console.log(newProduct);
+    // console.log(product._id);
 
-    const existingProduct = await Product.findOne({ barcode: barcode });
+    const existingProduct = await Product.findOne({
+      barcode: { $in: newProduct.barcode },
+    });
 
-    if (existingProduct && existingProduct.name != newProduct.name) {
+    if (
+      existingProduct &&
+      existingProduct.name != newProduct.name &&
+      existingProduct._id != product._id
+    ) {
       return res.status(404).json({
         success: false,
         msg: "Barcode in use for other product",
@@ -201,11 +231,10 @@ export const updateProductDetails = async (req, res) => {
       product._id,
       {
         $set: newProduct,
-        $addToSet: { barcode: existingProduct ? [] : barcode },
       },
       { new: true }
     );
-    console.log("updatedProduct", updatedProduct);
+    // console.log("updatedProduct", updatedProduct);
 
     if (!updatedProduct) {
       // Handle the case where the product was not found
@@ -222,6 +251,7 @@ export const updateProductDetails = async (req, res) => {
       data: updatedProduct,
     });
   } catch (error) {
+    // console.log(error.message);
     // Handle any potential errors
     res.status(500).json({
       success: false,
@@ -289,77 +319,117 @@ export const returnProduct = async (req, res) => {
   const currentDate = getDate();
   const { purchased, foundCustomer, returnType, total } = abc;
 
-  try {
-    const items = await Promise.all(
-      purchased.map(async (product) => {
-        const quantity =
-          product.piece +
-          product.packet * product.packetQuantity +
-          product.box * product.boxQuantity;
-        const id = new mongoose.Types.ObjectId(product.id);
-        const updatedProduct = await Product.findByIdAndUpdate(
-          id,
-          {
-            $inc: { stock: quantity },
-          },
-          { new: true }
-        );
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-        return {
-          product: updatedProduct._id,
-          quantity: quantity,
-          previousQuantity: updatedProduct.stock - quantity,
-        };
-      })
+  try {
+    let transaction, dailyReport;
+    dailyReport = await DailyReport.findOneAndUpdate(
+      { date: currentDate },
+      {},
+      { new: true, upsert: true }
     );
 
-    let transaction, dailyReport;
+    if (purchased.length === 0) {
+      throw new Error("No products to return");
+    }
+    console.log("Daily Report", dailyReport);
+    console.log("Purchased", purchased);
 
-    if (returnType === "adjustment") {
-      const newOutstanding = foundCustomer.outstanding - total;
-
-      transaction = await Transaction.create({
-        name: foundCustomer.name,
-        previousOutstanding: foundCustomer.outstanding,
-        amount: total,
-        newOutstanding,
-        taken: false,
-        purpose: "Return Product",
-        paymentMode: "productReturn",
-      });
-
-      const customer = await Customer.findByIdAndUpdate(foundCustomer._id, {
-        $inc: { outstanding: -total },
-        $push: { transactions: transaction._id },
-      });
-    } else {
-      transaction = await Transaction.create({
-        name: "Product Return",
-        amount: total,
-        taken: true,
-        purpose: "return",
-        paymentMode: "cash",
+    // Update the stock for each purchased product
+    const items = [];
+    for (const product of purchased) {
+      const quantity =
+        product.piece +
+        product.packet * product.packetQuantity +
+        product.box * product.boxQuantity;
+      const id = new mongoose.Types.ObjectId(product.id);
+      const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        { $inc: { stock: quantity } },
+        { new: true, session }
+      );
+      items.push({
+        product: updatedProduct._id,
+        quantity: quantity,
+        previousQuantity: updatedProduct.stock - quantity,
       });
     }
 
+    // Create the transaction based on the return type
+    if (returnType === "adjustment") {
+      if (!foundCustomer.outstanding) {
+        throw new Error("Outstanding not found");
+      }
+      const newOutstanding = foundCustomer?.outstanding - total;
+      transaction = await Transaction.create(
+        [
+          {
+            name: foundCustomer.name,
+            previousOutstanding: foundCustomer.outstanding,
+            amount: total,
+            newOutstanding,
+            taken: false,
+            purpose: "Return Product",
+            paymentMode: "productReturn",
+          },
+        ],
+        { new: true, session }
+      );
+      // Update customer's outstanding and push the transaction ID to transactions array
+      const customer = await Customer.findByIdAndUpdate(
+        foundCustomer._id,
+        {
+          $inc: { outstanding: -total },
+          $push: { transactions: transaction[0]._id },
+        },
+        { session }
+      );
+    } else {
+      // If returnType is not "adjustment", create a standard product return transaction
+      transaction = await Transaction.create(
+        [
+          {
+            name: "Product Return",
+            amount: total,
+            taken: true,
+            purpose: "return",
+            paymentMode: "cash",
+          },
+        ],
+        { new: true, session }
+      );
+    }
+
+    // Prepare data for daily report update
     const productsForDailyReport = items.map((inv) => ({
       product: inv.product,
       quantity: inv.quantity,
       previousQuantity: inv.previousQuantity,
     }));
 
-    dailyReport = await DailyReport.findOneAndUpdate(
-      { date: currentDate },
-      {
-        $push: {
-          updatedToday: { $each: productsForDailyReport },
-          transactions: transaction._id,
-        },
-      },
-      { upsert: true, new: true }
-    );
+    // Update the daily report document
+    if (transaction) {
+      // Push the updated products and transaction ID to the daily report
+      console.log(dailyReport);
+      dailyReport.updatedToday.push(...productsForDailyReport);
+      dailyReport.transactions.push(transaction[0]._id);
+      // Save the modified daily report
+      dailyReport = await dailyReport.save({ session });
+    } else {
+      // If transaction creation fails, abort the session
+      await session.abortTransaction();
+      return res.status(404).json({
+        msg: "There was an error creating the transaction",
+        success: false,
+      });
+    }
 
-    console.log("Everything done successfully");
+    // Commit the transaction if everything is successful
+    await session.commitTransaction();
+    session.endSession();
+
+    // Return success response
     return res.status(200).json({
       success: true,
       transaction,
@@ -367,6 +437,9 @@ export const returnProduct = async (req, res) => {
       msg: "Updated successfully",
     });
   } catch (error) {
+    // If an error occurs, abort the transaction and return error response
+    await session.abortTransaction();
+    session.endSession();
     console.error("Error:", error.message);
     return res.status(500).json({
       success: false,
@@ -379,9 +452,6 @@ export const returnProduct = async (req, res) => {
 //   const abc = req.body;
 //   const currentDate = getDate();
 //   const { purchased, foundCustomer, returnType, total } = abc;
-
-//   const session = await mongoose.startSession();
-//   session.startTransaction();
 
 //   try {
 //     const items = await Promise.all(
@@ -396,7 +466,7 @@ export const returnProduct = async (req, res) => {
 //           {
 //             $inc: { stock: quantity },
 //           },
-//           { new: true, session }
+//           { new: true }
 //         );
 
 //         return {
@@ -412,38 +482,28 @@ export const returnProduct = async (req, res) => {
 //     if (returnType === "adjustment") {
 //       const newOutstanding = foundCustomer.outstanding - total;
 
-//       transaction = await Transaction.create(
-//         {
-//           name: foundCustomer.name,
-//           previousOutstanding: foundCustomer.outstanding,
-//           amount: total,
-//           newOutstanding,
-//           taken: false,
-//           purpose: "Return Product",
-//           paymentMode: "productReturn",
-//         },
-//         { session }
-//       );
+//       transaction = await Transaction.create({
+//         name: foundCustomer.name,
+//         previousOutstanding: foundCustomer.outstanding,
+//         amount: total,
+//         newOutstanding,
+//         taken: false,
+//         purpose: "Return Product",
+//         paymentMode: "productReturn",
+//       });
 
-//       const customer = await Customer.findByIdAndUpdate(
-//         foundCustomer._id,
-//         {
-//           $inc: { outstanding: -total },
-//           $push: { transactions: transaction._id },
-//         },
-//         { session }
-//       );
+//       const customer = await Customer.findByIdAndUpdate(foundCustomer._id, {
+//         $inc: { outstanding: -total },
+//         $push: { transactions: transaction._id },
+//       });
 //     } else {
-//       transaction = await Transaction.create(
-//         {
-//           name: "Product Return",
-//           amount: total,
-//           taken: true,
-//           purpose: "return",
-//           paymentMode: "cash",
-//         },
-//         { session }
-//       );
+//       transaction = await Transaction.create({
+//         name: "Product Return",
+//         amount: total,
+//         taken: true,
+//         purpose: "return",
+//         paymentMode: "cash",
+//       });
 //     }
 
 //     const productsForDailyReport = items.map((inv) => ({
@@ -460,13 +520,8 @@ export const returnProduct = async (req, res) => {
 //           transactions: transaction._id,
 //         },
 //       },
-//       { upsert: true, new: true, session }
+//       { upsert: true, new: true }
 //     );
-
-//     await session.commitTransaction();
-//     session.endSession();
-
-//     console.log("Everything done successfully");
 //     return res.status(200).json({
 //       success: true,
 //       transaction,
@@ -474,9 +529,6 @@ export const returnProduct = async (req, res) => {
 //       msg: "Updated successfully",
 //     });
 //   } catch (error) {
-//     await session.abortTransaction();
-//     session.endSession();
-
 //     console.error("Error:", error.message);
 //     return res.status(500).json({
 //       success: false,

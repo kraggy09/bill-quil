@@ -4,7 +4,6 @@ const url = process.env.MONGO_URI;
 // console.log(url);
 
 connection(url);
-// const transactionId = await TransactionId.create({ id: 1 });
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

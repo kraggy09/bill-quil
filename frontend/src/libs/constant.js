@@ -26,5 +26,59 @@ export const calculateTime = (date) => {
     (seconds > 9 ? seconds : "0" + seconds);
   return str;
 };
+// Sample category array with price information
+const categories = [
+  {
+    name: "footwear",
+    prices: {
+      wholeSale: 2,
+      superWholeSale: 36,
+    },
+  },
+];
+
+export const getPriceTag = (product) => {
+  const productCategory = product.category;
+
+  const categoryInfo = categories.find((cat) => cat.name === productCategory);
+
+  if (categoryInfo) {
+    const { wholeSale, superWholeSale } = categoryInfo.prices;
+    if (product.piece >= superWholeSale) {
+      return "superwholesale";
+    } else if (product.piece < superWholeSale && product.piece >= wholeSale) {
+      return "wholesale";
+    }
+    return { wholeSale, superWholeSale };
+  } else {
+    console.error(`Category "${productCategory}" not found.`);
+    return null; // or handle it in a way appropriate for your application
+  }
+};
+
+export const calculateMeasuring = (total) => {
+  if (total < 1) {
+    return total * 1000 + "g";
+  } else {
+    return total + "kg";
+  }
+};
+
+export const fetchPin = async (pin, setShow, user, setPinShow) => {
+  try {
+    console.log(pin);
+    console.log(user);
+    let newPin = pin[0] + pin[1] + pin[2] + pin[3];
+    if (user.pin === newPin) {
+      setShow(true);
+      setPinShow(false);
+    } else {
+      setShow(false);
+      alert("Wrong Pin");
+    }
+  } catch (error) {
+    console.error("Error fetching PIN:", error);
+  }
+};
 
 export default getDate;

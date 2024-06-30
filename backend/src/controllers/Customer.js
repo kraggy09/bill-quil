@@ -5,7 +5,15 @@ export const createNewCustomer = async (req, res) => {
     const customerData = req.body;
     let { name, outstanding, phone } = customerData;
     name = name.toLowerCase();
-    const customer = await Customer.findOne({ name });
+    let customer = await Customer.findOne({ name });
+    if (customer) {
+      return res.status(404).json({
+        success: false,
+        msg: "Customer already exists",
+        customer,
+      });
+    }
+    customer = await Customer.findOne({ phone });
     if (customer) {
       return res.status(404).json({
         success: false,

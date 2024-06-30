@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import ReactToPrint from "react-to-print";
 import PrintBill from "./PrintBill";
+import ThermalPrint from "./ThermalPrint";
 import { useNavigate } from "react-router-dom";
+import ThermalPrintHindi from "./ThermalPrintHindi";
 
 export const PrintButton = ({
   foundCustomer,
@@ -12,9 +14,10 @@ export const PrintButton = ({
   payment,
   discount,
 }) => {
-  const componentRef = useRef();
+  const billComponentRef = useRef();
+  const thermalComponentRef = useRef();
+  const thermalHindiCompRef = useRef();
   const navigate = useNavigate();
-  // console.log("test", id);
 
   return (
     <div>
@@ -26,6 +29,7 @@ export const PrintButton = ({
       >
         No Print
       </button>
+
       <ReactToPrint
         trigger={() => (
           <button
@@ -34,10 +38,10 @@ export const PrintButton = ({
               navigate("/");
             }}
           >
-            Print
+            Print Bill
           </button>
         )}
-        content={() => componentRef.current}
+        content={() => billComponentRef.current}
         onAfterPrint={() => {
           // Handle actions after printing (e.g., close the print)
           setIsOpen(false);
@@ -49,7 +53,63 @@ export const PrintButton = ({
         total={total}
         discount={discount}
         payment={payment}
-        ref={componentRef}
+        ref={billComponentRef}
+        foundCustomer={foundCustomer}
+        purchased={purchased}
+      />
+
+      <ReactToPrint
+        trigger={() => (
+          <button
+            className="text-2xl bg-blue-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Print Thermal
+          </button>
+        )}
+        content={() => thermalComponentRef.current}
+        onAfterPrint={() => {
+          // Handle actions after printing (e.g., close the print)
+          setIsOpen(false);
+          navigate("/");
+        }}
+      />
+
+      <ReactToPrint
+        trigger={() => (
+          <button
+            className="text-2xl bg-yellow-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Print Thermal Hindi
+          </button>
+        )}
+        content={() => thermalHindiCompRef.current}
+        onAfterPrint={() => {
+          // Handle actions after printing (e.g., close the print)
+          setIsOpen(false);
+          navigate("/");
+        }}
+      />
+      <ThermalPrint
+        billId={billId}
+        total={total}
+        discount={discount}
+        payment={payment}
+        ref={thermalComponentRef}
+        foundCustomer={foundCustomer}
+        purchased={purchased}
+      />
+      <ThermalPrintHindi
+        billId={billId}
+        total={total}
+        discount={discount}
+        payment={payment}
+        ref={thermalHindiCompRef}
         foundCustomer={foundCustomer}
         purchased={purchased}
       />

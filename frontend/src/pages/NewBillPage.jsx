@@ -11,14 +11,14 @@ import BillType from "../components/BillType";
 import Modal from "../components/Modal";
 import BillingHeader from "../components/BillingHeader";
 import BillTable from "../components/BillTable";
+import Loading from "../components/Loading";
+import BillModal from "../components/BillModal";
+
 import { fetchProducts } from "../store/productSlice";
 import { fetchCustomers } from "../store/customerSlice";
-import { apiUrl } from "../constant";
-
-import BillModal from "../components/BillModal";
 import { fetchDailyReport } from "../store/reportSlice";
-import Loading from "../components/Loading";
 import { fetchLastBillId } from "../store/billIdSlice";
+import { apiUrl } from "../constant";
 
 // Constants
 const API_URL = "/createBill";
@@ -28,19 +28,19 @@ const NewBillPage = () => {
   const user = useSelector((store) => store.user);
   const [billType, setBillType] = useState("");
   const [print, setPrint] = useState(false);
+  const [reload, setReload] = useState(false);
   const [paymentMode, setPaymentMode] = useState("cash");
   const [disabled, setDisabled] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
+  // console.log(purchased);
   const [discount, setDiscount] = useState(0);
   const [payment, setPayment] = useState("");
   const [total, setTotal] = useState(0);
   const [disabledRefresh, setDisabledRefresh] = useState(true);
   const [loading, setLoading] = useState(false);
   const { id } = useSelector((store) => store.billId);
-  console.log(id);
-
   const handleRefresh = async () => {
     setLoading(true);
 
@@ -49,9 +49,11 @@ const NewBillPage = () => {
       await dispatch(fetchCustomers());
       await dispatch(fetchLastBillId());
       await dispatch(fetchDailyReport());
+      setReload(true);
       setLoading(false);
     } catch (error) {
       console.error(error);
+      toast.error("Error!! Please re-login");
       setLoading(false);
     }
   };
@@ -79,7 +81,7 @@ const NewBillPage = () => {
         customerId: foundCustomer?._id,
         createdBy: user.id,
       });
-      setLoading(false);
+
       setPrint(true);
       console.log(response.data);
       dispatch(fetchProducts());
@@ -89,7 +91,6 @@ const NewBillPage = () => {
 
       toast.success("Bill created successfully"); // Display success message
     } catch (error) {
-      setLoading(false);
       console.log("error", error);
 
       dispatch(fetchProducts());
@@ -97,6 +98,8 @@ const NewBillPage = () => {
       dispatch(fetchDailyReport());
       setDisabled(false);
       toast.error(error?.response?.data?.msg); // Display error message
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,26 +113,29 @@ const NewBillPage = () => {
       />
 
       <BillingHeader
+        reload={reload}
         billType={billType}
         purchased={purchased}
         setPurchased={setPurchased}
+        foundCustomer={foundCustomer}
         setFoundCustomer={setFoundCustomer}
       />
-      <div
-        onMouseEnter={() => setDisabledRefresh(false)}
-        onMouseLeave={() => setDisabledRefresh(true)}
-        onClick={() => {
-          handleRefresh();
-        }}
-        className="min-w-full  flex items-center justify-end"
-      >
-        <button
-          disabled={disabledRefresh}
-          className="flex items-center justify-center text-2xl bg-green-500 text-white rounded-xl font-bold px-3 py-1"
+      <div className="min-w-full  flex items-center justify-end">
+        <div
+          onMouseEnter={() => setDisabledRefresh(false)}
+          onMouseLeave={() => setDisabledRefresh(true)}
+          onClick={() => {
+            handleRefresh();
+          }}
         >
-          <IoRefresh className={loading && "animate-spin"} />
-          Refresh
-        </button>
+          <button
+            disabled={disabledRefresh}
+            className="flex items-center justify-center text-2xl bg-green-500 text-white rounded-xl font-bold px-3 py-1"
+          >
+            <IoRefresh className={loading && "animate-spin"} />
+            Refresh
+          </button>
+        </div>
       </div>
       <BillTable
         foundCustomer={foundCustomer}

@@ -9,7 +9,6 @@ import billRouter from "./routes/Bill.js";
 import customerRouter from "./routes/Customer.js";
 import transactionRouter from "./routes/Transaction.js";
 import dailyReportRouter from "./routes/DailyReport.js";
-import { verifyToken } from "./controllers/User.js";
 dotenv.config({
   path: "./src/config/config.env",
 });
@@ -21,15 +20,13 @@ app.use(express.json());
 app.use(
   cors({
     credentials: true,
-    origin: "https://dreamy-cuchufli-66a35d.netlify.app/",
-    // origin: "http://localhost:5173",
+    //  origin: "https://dreamy-cuchufli-66a35d.netlify.app/"
+    origin: "http://localhost:5173",
   })
 );
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", userRouter);
-// app.use(verifyToken);
-
 app.use("/api/v1", productRouter);
 app.use("/api/v1", billRouter);
 app.use("/api/v1", customerRouter);

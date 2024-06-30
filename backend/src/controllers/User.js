@@ -1,8 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import moment from "moment-timezone";
-const SECRET_KEY = "MySecretKeyForTheSoftware";
+import { generateToken } from "../utils/generateToken.js";
+import { verifyToken } from "../utils/verifyToken.js";
 export const register = async (req, res) => {
   try {
     const { name, username, password, isAdmin } = req.body;
@@ -18,9 +17,7 @@ export const register = async (req, res) => {
         });
       }
     }
-
     const existingUser = await User.findOne({ username });
-    // console.log(existingUser);
 
     if (existingUser) {
       return res.status(400).json({
@@ -28,9 +25,7 @@ export const register = async (req, res) => {
         msg: "User already exists. Proceed with the login.",
       });
     }
-    // console.log("Password before hashing:", password);
     const hashedPassword = bcrypt.hashSync(password, 10);
-    // console.log("after hashing", hashedPassword);
     const newUser = await User.create({
       name,
       username,
@@ -38,13 +33,26 @@ export const register = async (req, res) => {
       password: hashedPassword, // Use the hashed password here
     });
 
+    if (newUser) {
+      generateToken(newUser._id, res);
+    } else {
+      return res.status(404).json({
+        msg: "Error creating user",
+        success: false,
+      });
+    }
+
+    const userWithoutPassword = newUser.toObject();
+    // console.log(userWithoutPassword);
+    delete userWithoutPassword.password;
+
     return res.status(201).json({
       success: true,
       msg: "User created successfully",
-      newUser,
+      newUser: userWithoutPassword,
     });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
     return res.status(500).json({
       success: false,
       msg: "Internal Error from the server",
@@ -55,20 +63,21 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const { username, password } = req.body;
 
-  // Use await when querying the user by email
+  //Finding user with username
   const user = await User.findOne({ username });
 
+  //If not found just throw error
   if (!user) {
-    console.log("User not found. Kindly check your email ID.");
+    // console.log("User not found. Kindly check your username.");
     return res.status(404).json({
       success: false,
-      msg: "User not found. Kindly check your email ID.",
+      msg: "User not found. Kindly check your username.",
     });
   }
 
   try {
+    //Checking and throwing error for the password if not correct
     const checkPassword = await bcrypt.compare(password, user.password);
-
     if (!checkPassword) {
       return res.status(401).json({
         success: false,
@@ -76,23 +85,15 @@ export const login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user._id }, SECRET_KEY, {
-      expiresIn: "1hr",
-    });
-    res.cookie(String(user._id), token, {
-      path: "/",
-      expires: moment
-        .tz(Date.now() + 1 * 60 * 60 * 1000, "Asia/Kolkata")
-        .toDate(),
+    let token = await generateToken(user._id, res);
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
 
-      httpOnly: true,
-      sameSite: "lax",
-    });
-    console.log("Token" + token, "    ", "Cookie");
+    //Finally sending in response to the user
     return res.status(200).json({
       success: true,
       msg: "User Login successful",
-      user,
+      user: userWithoutPassword,
       token,
     });
   } catch (error) {
@@ -104,59 +105,45 @@ export const login = async (req, res) => {
   }
 };
 
-export const checkAuthentication = async (req, res) => {
+export const checkAuth = async (req, res) => {
+  const { token } = req.body;
+
+  const verificationResult = await verifyToken(token);
+
+  if (verificationResult.status !== 200) {
+    return res.status(verificationResult.status).json(verificationResult.json);
+  }
+
+  const userId = verificationResult.userId;
+
   try {
-    const userId = req.userId;
-    // console.log(userId, "I am inevitable");
-    const user = await User.findOne({ _id: userId });
+    let user = await User.findOne({ _id: userId }).select("-password");
 
     if (!user) {
       return res.status(404).json({
-        msg: "User not found",
         success: false,
+        msg: "User not found",
       });
     }
-
-    const newUser = {
-      username: user.username,
-      isAdmin: user.isAdmin,
-    };
 
     return res.status(200).json({
       success: true,
-      user: { ...newUser },
+      msg: "User logged in successfully",
+      user,
     });
   } catch (error) {
     console.error("Error checking authentication:", error);
-    return res.status(500).json({
-      msg: "Internal server error",
-      success: false,
-    });
-  }
-};
 
-export const verifyToken = async (req, res, next) => {
-  const headers = req.headers;
-  const cookies = headers.cookie;
-  const token = cookies && cookies.split("=")[1];
-  // console.log(token);
-  // const token = cookies.split("=")[1];
-  if (!token) {
-    return res.status(404).json({
-      msg: "Token not found",
-      success: false,
-    });
-  }
-  jwt.verify(String(token), SECRET_KEY, (err, user) => {
-    if (err) {
+    if (error.name === "CastError" && error.kind === "ObjectId") {
       return res.status(400).json({
-        msg: "Invalid Token",
         success: false,
+        msg: "Invalid user ID format",
       });
     }
-    // console.log(user);
-    req.userId = user.id;
 
-    next();
-  });
+    return res.status(500).json({
+      msg: "Server error! Please try again",
+      success: false,
+    });
+  }
 };

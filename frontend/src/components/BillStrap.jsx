@@ -5,6 +5,7 @@ import { calculateDate, calculateTime } from "../libs/constant";
 import { useNavigate } from "react-router-dom";
 
 const BillStrap = ({ bill }) => {
+  console.log(bill);
   const date = new Date(bill.createdAt);
   const navigate = useNavigate();
   const [billAmount, setBillAmount] = useState(0);
@@ -25,11 +26,11 @@ const BillStrap = ({ bill }) => {
       <td className="px-16 py-3 ">{calculateDate(date)}</td>
       <td className="px-16 py-3 ">{calculateTime(date)}</td>
       <td className="px-16 py-3 ">{bill?.id?.id ? bill.id.id : "Old Bill"}</td>
-      <td className="px-16 py-3 "> {billAmount.toFixed(3)}</td>
+      <td className="px-16 py-3 "> {billAmount.toFixed(3) - bill.discount}</td>
       <td className="px-16 py-3 ">
         {(bill.total - billAmount) % 1 != 0
-          ? (bill.total - billAmount).toFixed(1)
-          : bill.total - billAmount}
+          ? (bill.total - billAmount + bill.discount).toFixed(1)
+          : bill.total - billAmount + bill.discount}
       </td>
       <td className="px-16 py-3 ">{bill.payment}</td>
       <td className="px-16 py-3 ">{bill.total - bill.payment}</td>

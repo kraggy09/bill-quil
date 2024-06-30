@@ -14,16 +14,13 @@ export const createBill = async (req, res) => {
   let {
     customerId,
     billId,
-    total,
     payment = 0,
     paymentMode,
     discount = 0,
     createdBy,
   } = req.body;
-  console.log(billId);
   let newBillId = billId;
   newBillId = billId + 1;
-  console.log(newBillId);
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -43,13 +40,14 @@ export const createBill = async (req, res) => {
     if (!customer) {
       return res.status(404).json({ error: "Customer not found" });
     }
-
+    let billTotal = 0;
     const items = await Promise.all(
       products.map(async (product) => {
         const quantity =
           product.piece +
           product.packet * product.packetQuantity +
           product.box * product.boxQuantity;
+        billTotal += product.total;
         const id = new mongoose.Types.ObjectId(product.id);
         const updatedProduct = await Product.findByIdAndUpdate(
           id,
@@ -68,20 +66,28 @@ export const createBill = async (req, res) => {
         };
       })
     );
-    const idS = await BillId.create({
-      id: newBillId,
-    });
-
+    billTotal = Math.ceil(billTotal);
+    billTotal += customer.outstanding;
+    billTotal -= discount;
+    const idS = await BillId.create(
+      [
+        {
+          id: newBillId,
+        },
+      ],
+      { session }
+    );
+    // console.log(idS[0]);
     const newBill = await Bill.create(
       [
         {
           customer: customerId,
           items: items,
-          total,
+          total: billTotal,
           payment,
           discount,
           createdBy,
-          id: idS._id,
+          id: idS[0]._id,
         },
       ],
       { session }
@@ -96,8 +102,8 @@ export const createBill = async (req, res) => {
             name: customer.name,
             purpose: "Payment",
             amount: payment,
-            previousOutstanding: customer.outstanding,
-            newOutstanding: total - payment,
+            previousOutstanding: billTotal,
+            newOutstanding: billTotal - payment,
             taken: false,
             paymentMode,
           },
@@ -110,9 +116,9 @@ export const createBill = async (req, res) => {
     const updatedCustomer = await Customer.findByIdAndUpdate(
       customerId,
       {
-        outstanding: total - payment,
+        outstanding: billTotal - payment,
         $push: {
-          transactions: transaction ? transaction._id : null,
+          transactions: transaction ? transaction[0]._id : null,
           bills: newBill[0]._id,
         },
       },
@@ -183,9 +189,9 @@ export const getAllBillsOfToday = async (req, res) => {
 
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
-    console.log(start);
+    // console.log(start);
     const end = new Date(endDate);
-    console.log(end);
+    // console.log(end);
     end.setHours(23, 59, 59, 59);
     const bills = await Bill.find({
       createdAt: {
@@ -200,7 +206,7 @@ export const getAllBillsOfToday = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res.status(500).json({
       msg: "Server error",
     });
@@ -237,7 +243,7 @@ export async function getBillsByProductNameAndDate(req, res) {
 
   const barcode = product.barcode.map((code) => parseInt(code));
 
-  console.log(barcode);
+  // console.log(barcode);
 
   try {
     const startMoment = moment(startDate).startOf("day").tz(IST);

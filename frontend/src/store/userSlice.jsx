@@ -3,6 +3,7 @@ const initialState = {
   username: null,
   isAdmin: false,
   id: "",
+  pin: "",
 };
 
 const userSlice = createSlice({
@@ -12,6 +13,7 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.username = action.payload.username;
       state.isAdmin = action.payload.isAdmin;
+      state.pin = action.payload.pin;
       state.id = action.payload.id;
     },
   },

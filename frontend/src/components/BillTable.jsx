@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import BillProducts from "./BillProducts";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const BillTable = ({
   foundCustomer,
@@ -15,7 +15,8 @@ const BillTable = ({
   paymentMode,
   setPaymentMode,
 }) => {
-  console.log(purchased);
+  // console.log(purchased);
+  const [change, setChange] = useState(false);
   useEffect(() => {
     let total = purchased.reduce((accumulator, product) => {
       const productTotal = parseFloat(product.total);
@@ -31,6 +32,7 @@ const BillTable = ({
     total -= Number(discount);
 
     setTotal(Math.ceil(total.toFixed(2)));
+    setChange(true);
   }, [purchased, foundCustomer, discount]);
 
   return (
@@ -52,12 +54,13 @@ const BillTable = ({
         </thead>
         <tbody className="mt-20">
           {[...purchased].reverse().map((product) => {
-            console.log(product);
+            // console.log(product);
             return (
               <BillProducts
                 product={product}
                 key={product.id} // Use the id property as the key
                 purchased={purchased}
+                change={change}
                 setPurchased={setPurchased}
               />
             );

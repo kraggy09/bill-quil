@@ -73,6 +73,7 @@ export const createNewPayment = async (req, res) => {
     }
 
     const length = customer1.transactions.length - 1;
+
     // console.log(length, "Length");
     // console.log(customer1.transactions[length]);
     if (customer1.transactions[length]) {
@@ -82,11 +83,13 @@ export const createNewPayment = async (req, res) => {
 
       // Check if the amount is the same and the transaction occurred within the last 2 minutes
       if (
+        length != 0 &&
+        lastTransaction != null &&
         lastTransaction.amount === amount &&
-        moment().diff(moment(lastTransaction.createdAt), "minutes") <= 2
+        moment().diff(moment(lastTransaction.createdAt), "minutes") <= 29
       ) {
         return res.status(409).json({
-          msg: "Duplicate transaction found within 2 minutes",
+          msg: "Duplicate transaction found within 30 minutes",
           success: false,
         });
       }
@@ -145,8 +148,8 @@ export const createNewPayment = async (req, res) => {
 
     return res.status(201).json({ msg: "Payment not created", success: false });
   } catch (error) {
-    await session.abortTransaction();
     // console.log(error);
+    await session.abortTransaction();
     return res.status(500).json({
       msg: "Server down",
       success: false,
