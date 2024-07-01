@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import BillProducts from "./BillProducts";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const BillTable = ({
   foundCustomer,
@@ -17,6 +17,19 @@ const BillTable = ({
 }) => {
   // console.log(purchased);
   const [change, setChange] = useState(false);
+  let paymentRef = useRef();
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "F9") {
+        paymentRef.current.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
   useEffect(() => {
     let total = purchased.reduce((accumulator, product) => {
       const productTotal = parseFloat(product.total);
@@ -103,9 +116,15 @@ const BillTable = ({
         </div>
         <div className="min-w-[200px] ">
           <p className="text-end text-xl  font-bold">
-            <span className="px-16">Payment:</span>
+            <span className="px-16">
+              Payment
+              <sup className="text-sm ml-3  rounded-full bg-green-300 font-normal px-2 py-1">
+                F9
+              </sup>
+            </span>
             <input
               type="number"
+              ref={paymentRef}
               className="text-end pr-2 outline-none border-2 border-green-500 rounded-xl max-w-[70px]"
               value={payment}
               onChange={(e) => {

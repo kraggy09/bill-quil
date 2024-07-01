@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import ReactDOM from "react-dom";
 const Modal = ({ isOpen, setIsOpen, Component, componentProps }) => {
   const navigate = useNavigate();
-  return (
-    <div>
+  return ReactDOM.createPortal(
+    <>
       {isOpen && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 backdrop-blur-md">
           <div className="modal-container bg-white p-8 rounded-lg shadow-lg">
@@ -20,7 +21,8 @@ const Modal = ({ isOpen, setIsOpen, Component, componentProps }) => {
           </div>
         </div>
       )}
-    </div>
+    </>,
+    document.getElementById("portal")
   );
 };
 

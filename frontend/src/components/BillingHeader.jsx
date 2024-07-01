@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
 
@@ -149,6 +149,19 @@ const BillingHeader = ({
     setVisible(false);
     setFoundCustomer(customer);
   };
+  let customerNameRef = useRef();
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "F2") {
+        customerNameRef.current.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    // Cleanup function to remove the event listener when the component unmounts
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
   useEffect(() => {
     let name = foundCustomer?.name;
     let id = foundCustomer?._id;
@@ -232,10 +245,16 @@ const BillingHeader = ({
           </p>
         </div>
         <span className="relative text-xl">
-          <label htmlFor="customer_name">Customer Name</label>
+          <label htmlFor="customer_name">
+            Customer Name
+            <sup className="text-sm ml-2 rounded-full bg-green-300 px-2 py-1">
+              F2
+            </sup>
+          </label>
           <input
             className="border-b-2 border-green-600 mx-2 focus:bg-none px-4 text-xl font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none"
             type="text"
+            ref={customerNameRef}
             id="customer_name"
             value={name}
             onChange={(e) => {
