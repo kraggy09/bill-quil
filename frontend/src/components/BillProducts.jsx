@@ -133,15 +133,12 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
 
   return (
     <tr key={product.id} className="mb-3 border border-black">
-      <td
-        onClick={handleRemoveProduct}
-        className="text-center mx-auto  text-xl py-2"
-      >
+      <td onClick={handleRemoveProduct} className="text-center mx-auto   py-2">
         <span className=" text-red-600 hover:cursor-pointer font-bold bg-gray-400 px-2 py-1 rounded-full hover:text-red-800">
           X
         </span>
       </td>
-      <td className="text-center capitalize font-semibold text-xl py-2">
+      <td className="text-center capitalize font-semibold  py-2">
         <span className="flex items-center justify-center ">
           {product.name}{" "}
           {product.measuring === "kg" && (
@@ -160,15 +157,15 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           )}
         </span>
       </td>
-      <td className="text-center font-semibold text-xl py-2">{state.price}₹</td>
-      <td className="text-center font-semibold text-xl py-2">
-        <div className="max-w-fit mx-auto border-green-500 border rounded-xl">
+      <td className="text-center font-semibold  py-2">{state.price}₹</td>
+      <td className="text-center font-semibold  py-2">
+        <div className="max-w-fit mx-auto border-green-500 border rounded-lg ">
           <span
             onClick={() => {
               handleChange("type", "superWholesale");
               handleChange("price", Number(product.superWholesalePrice));
             }}
-            className={`px-3 rounded-xl ${
+            className={`px-3 rounded-lg  ${
               state.type === "superWholesale" ? "bg-green-500 text-white" : ""
             }`}
           >
@@ -179,7 +176,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
               handleChange("type", "wholesale");
               handleChange("price", Number(product.wholesalePrice));
             }}
-            className={`px-2 rounded-xl ${
+            className={`px-2 rounded-lg  ${
               state.type === "wholesale" ? "bg-green-500 text-white" : ""
             }`}
           >
@@ -190,7 +187,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
               handleChange("type", "retail");
               handleChange("price", Number(product.retailPrice));
             }}
-            className={`px-3 rounded-xl ${
+            className={`px-3 rounded-lg  ${
               state.type === "retail" ? "bg-green-500 text-white" : ""
             }`}
           >
@@ -198,7 +195,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           </span>
         </div>
       </td>
-      <td className="text-center font-semibold text-xl py-2">
+      <td className="text-center font-semibold  py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -207,7 +204,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           className="max-w-[50px]"
         />
       </td>
-      <td className="text-center font-semibold text-xl py-2">
+      <td className="text-center font-semibold  py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -216,7 +213,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           className="max-w-[50px]"
         />
       </td>
-      <td className="text-center font-semibold text-xl py-2">
+      <td className="text-center font-semibold  py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -225,7 +222,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           className="max-w-[50px]"
         />
       </td>
-      <td className="text-center font-semibold text-xl py-2">
+      <td className="text-center font-semibold  py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -235,7 +232,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         />
         ₹
       </td>
-      <td className="text-center font-semibold text-xl py-2">{state.total}₹</td>
+      <td className="text-center font-semibold  py-2">{state.total}₹</td>
     </tr>
   );
 };

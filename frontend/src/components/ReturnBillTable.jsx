@@ -29,16 +29,16 @@ const ReturnBillTable = ({
       <table className="min-w-[60vw]  mt-6">
         <thead className="border border-black rounded-xl">
           <tr>
-            <th className="text-2xl ">Action</th>
+            <th className=" ">Action</th>
 
-            <th className="text-2xl">Name</th>
-            <th className="text-2xl">Price</th>
-            <th className="text-2xl">Toggle</th>
-            <th className="text-2xl">Piece</th>
-            <th className="text-2xl">Packet</th>
-            <th className="text-2xl">Box</th>
-            <th className="text-2xl">Discount</th>
-            <th className="text-2xl">Total</th>
+            <th className="">Name</th>
+            <th className="">Price</th>
+            <th className="">Toggle</th>
+            <th className="">Piece</th>
+            <th className="">Packet</th>
+            <th className="">Box</th>
+            <th className="">Discount</th>
+            <th className="">Total</th>
           </tr>
         </thead>
         <tbody className="mt-20">
@@ -61,18 +61,18 @@ const ReturnBillTable = ({
         <div className="min-w-[200px] ">
           {returnType === "adjustment" && (
             <div className="min-w-[200px] ">
-              <p className="text-end text-xl  font-bold">
+              <p className="text-end   font-bold">
                 <span className="px-16">OutStanding:</span>
                 {foundCustomer?.outstanding}₹
               </p>
             </div>
           )}
-          <p className="text-end text-xl  font-bold">
+          <p className="text-end   font-bold">
             <span className="px-16">Total Bill:</span>
             {returnType === "adjustment" ? total - total * 2 : total}₹
           </p>
 
-          {/* <p className="text-end text-xl  font-bold">
+          {/* <p className="text-end   font-bold">
             <span className="px-16">Discount:</span>
             <input
               type="number"
@@ -87,14 +87,14 @@ const ReturnBillTable = ({
         </div>
         {returnType === "adjustment" && (
           <div className="min-w-[200px] ">
-            <p className="text-end text-xl  font-bold">
+            <p className="text-end   font-bold">
               <span className="px-16">Total:</span>
               {((foundCustomer && foundCustomer?.outstanding) || 0) - total}₹
             </p>
           </div>
         )}
         {/* <div className="min-w-[200px] ">
-          <p className="text-end text-xl  font-bold">
+          <p className="text-end   font-bold">
             <span className="px-16">Payment:</span>
             <input
               type="number"
@@ -108,7 +108,7 @@ const ReturnBillTable = ({
           </p>
         </div> */}
         {/* <div className="min-w-[200px] ">
-          <p className="text-end text-xl font-bold">
+          <p className="text-end  font-bold">
             <span className="px-16">Payment Mode:</span>
             <select
               name="paymentMode" // Set the name attribute to "paymentMode"

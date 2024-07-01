@@ -36,27 +36,27 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
   };
 
   return (
-    <div className="relative">
+    <div className="relative max-w-[100vw]">
       <table className="min-w-full ml-8">
         <thead>
           <tr>
-            <th className="text-start text-xl">Barcode</th>
-            <th className="text-start text-xl">Name</th>
-            <th className="text-start text-xl">MRP ₹</th>
-            {user.isAdmin && <th className="text-start text-xl">CP ₹</th>}
-            <th className="text-start text-xl">RP ₹</th>
-            <th className="text-start text-xl">WP ₹</th>
-            <th className="text-start text-xl">SWP ₹</th>
-            <th className="text-start text-xl">Stock</th>
-            <th className="text-start text-xl">Packet</th>
-            <th className="text-start text-xl">Box</th>
+            <th className="text-start ">Barcode</th>
+            <th className="text-start ">Name</th>
+            <th className="text-start ">MRP ₹</th>
+            {user.isAdmin && <th className="text-start ">CP ₹</th>}
+            <th className="text-start ">RP ₹</th>
+            <th className="text-start ">WP ₹</th>
+            <th className="text-start ">SWP ₹</th>
+            <th className="text-start ">Stock</th>
+            <th className="text-start ">Packet</th>
+            <th className="text-start ">Box</th>
           </tr>
         </thead>
         <tbody>
           {currentProducts.map((product) => {
             return (
               <tr key={product.id}>
-                <td className="text-start font-semibold text-xl py-2 ">
+                <td className="text-start font-semibold  py-2 ">
                   <div className="hover:cursor-pointer  max-w-[140px]">
                     <span
                       onClick={() => {
@@ -76,7 +76,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                     )}
                   </div>
                 </td>
-                <td className="text-start hover:cursor-pointer capitalize font-semibold text-xl py-2">
+                <td className="text-start hover:cursor-pointer capitalize font-semibold  py-2">
                   <div
                     onClick={() =>
                       user.isAdmin &&
@@ -87,32 +87,32 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                     {product.name}
                   </div>
                 </td>
-                <td className="text-start font-semibold text-xl py-2">
+                <td className="text-start font-semibold  py-2">
                   <div className="">{product.mrp}</div>
                 </td>
                 {user.isAdmin && (
-                  <td className="text-start font-semibold text-xl py-2">
+                  <td className="text-start font-semibold  py-2">
                     <div className="">{product.costPrice}</div>
                   </td>
                 )}
-                <td className="text-start font-semibold text-xl py-2">
+                <td className="text-start font-semibold  py-2">
                   <div className="">{product.retailPrice}</div>
                 </td>
-                <td className="text-start font-semibold text-xl py-2">
+                <td className="text-start font-semibold  py-2">
                   <div className="">
                     {product.wholesalePrice % 1 != 0
                       ? product.wholesalePrice.toPrecision(3)
                       : product.wholesalePrice}
                   </div>
                 </td>
-                <td className="text-start font-semibold text-xl py-2">
+                <td className="text-start font-semibold  py-2">
                   <div className="">
                     {product.superWholesalePrice % 1 != 0
                       ? product.superWholesalePrice.toPrecision(3)
                       : product.superWholesalePrice}
                   </div>
                 </td>
-                <td className="text-start hover:cursor-pointer font-semibold text-xl py-2">
+                <td className="text-start hover:cursor-pointer font-semibold  py-2">
                   <span
                     onClick={() => {
                       user.isAdmin &&
@@ -131,10 +131,10 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                       : product.stock}
                   </span>
                 </td>
-                <td className="text-start font-semibold text-xl py-2">
+                <td className="text-start font-semibold  py-2">
                   {product.packet}
                 </td>
-                <td className="text-start font-semibold text-xl py-2">
+                <td className="text-start font-semibold  py-2">
                   {product.box}
                 </td>
               </tr>
@@ -147,7 +147,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
       <div className="flex justify-center my-4">
         <button
           onClick={goToPreviousPage}
-          className={`text-xl mx-2 py-1 ${
+          className={` mx-2 py-1 ${
             currentPage === 1
               ? "text-gray-500"
               : "text-blue-500 hover:text-blue-500"
@@ -156,12 +156,12 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
           Previous
         </button>
 
-        <div className="text-2xl rounded-xl px-5 py-2 bg-green-500 mx-3  text-white">
+        <div className=" rounded-xl px-5 py-2 bg-green-500 mx-3  text-white">
           {currentPage}
         </div>
         <button
           onClick={goToNextPage}
-          className={`text-xl mx-2 py-1 ${
+          className={` mx-2 py-1 ${
             currentPage === Math.ceil(filteredProducts.length / itemsPerPage)
               ? "text-gray-500"
               : "text-blue-500 hover:text-blue-500"

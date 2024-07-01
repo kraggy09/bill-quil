@@ -51,7 +51,7 @@ const CustomerPage = () => {
       <div>
         {" "}
         <button
-          className="bg-green-500 p-5 text-xl font-bold text-white rounded-2xl mx-6 my-6"
+          className="bg-green-500 px-2 py-1  font-bold text-white rounded-lg mx-6 my-6"
           onClick={() => {
             setSortingType("name");
           }}
@@ -59,7 +59,7 @@ const CustomerPage = () => {
           Sort by Name
         </button>
         <button
-          className="bg-green-500 p-5 text-xl font-bold text-white rounded-2xl mx-6 my-6"
+          className="bg-green-500 px-2 py-1  font-bold text-white rounded-lg mx-6 my-6"
           onClick={() => {
             setSortingType("transaction");
           }}
@@ -67,7 +67,7 @@ const CustomerPage = () => {
           Sort by Number of Transaction
         </button>
         <button
-          className="bg-green-500 p-5 text-xl font-bold text-white rounded-2xl mx-6 my-6"
+          className="bg-green-500 px-2 py-1  font-bold text-white rounded-lg mx-6 my-6"
           onClick={() => {
             setSortingType("outstanding");
           }}
@@ -75,8 +75,8 @@ const CustomerPage = () => {
           Sort by Outstanding
         </button>
       </div>
-      <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
-        <thead className="text-2xl ">
+      <table className="table-auto border-spacing-16  border border-black ml-6 ">
+        <thead className=" ">
           <tr>
             <th className="border border-black mx-6 px-8">Name</th>
             <th className="border border-black mx-6 px-8">Bills</th>
@@ -92,17 +92,19 @@ const CustomerPage = () => {
                   onClick={() => {
                     navigate(`/customers/${customer._id}`, { state: customer });
                   }}
-                  className="text-center font-semibold text-xl capitalize px-16 py-3 "
+                  className="text-center font-semibold  capitalize px-16 py-3 "
                 >
-                  {customer.name}
+                  <span className="px-2 py-1 hover:bg-green-500 transition-all ease-in duration-200 rounded-lg hover:text-white  hover:cursor-pointer">
+                    {customer.name}
+                  </span>
                 </td>
-                <td className="text-center font-semibold text-xl px-16 py-3 ">
+                <td className="text-center font-semibold  px-16 py-3 ">
                   {customer.bills.length}
                 </td>
-                <td className="text-center font-semibold text-xl px-16 py-3 ">
+                <td className="text-center font-semibold  px-16 py-3 ">
                   {customer.transactions.length}
                 </td>
-                <td className="text-center font-semibold text-xl px-16 py-3 ">
+                <td className="text-center font-semibold  px-16 py-3 ">
                   {customer.outstanding}
                 </td>
               </tr>
@@ -111,8 +113,8 @@ const CustomerPage = () => {
         </tbody>
       </table>
       <Link to={"/newCustomer"}>
-        <button className="flex text-white text-2xl rounded-full absolute bottom-10 right-8 font-bold hover:bg-green-700 p-5 bg-green-500">
-          <AiOutlinePlus className="text-2xl text-white font-extrabold" />
+        <button className="flex text-white  rounded-full absolute bottom-10 right-8 font-bold hover:bg-green-700 px-2 py-1 bg-green-500">
+          <AiOutlinePlus className=" text-white font-extrabold" />
           New Customer
         </button>
       </Link>

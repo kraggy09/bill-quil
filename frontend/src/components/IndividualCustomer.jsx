@@ -44,14 +44,14 @@ const IndividualCustomer = () => {
         <div className="min-w-[85vw] ml-24">
           <div className="min-w-full my-6 flex items-center justify-center">
             {" "}
-            <div className="flex rounded-full max-w-[320px] border-2">
+            <div className="flex rounded-lg max-w-[320px] border-2">
               <div
                 onClick={() => {
                   setLoading(true);
                   setTab("bills");
                   setLoading(false);
                 }}
-                className={`min-w-[150px] hover:cursor-pointer rounded-full px-3  mx-auto flex items-center justify-center text-xl font-bold  py-2 ${
+                className={`min-w-[150px] hover:cursor-pointer rounded-lg px-3  mx-auto flex items-center justify-center  font-bold  py-2 ${
                   tab === "bills"
                     ? "bg-green-500 text-white"
                     : "bg-white text-black"
@@ -65,7 +65,7 @@ const IndividualCustomer = () => {
                   setTab("transaction");
                   setLoading(false);
                 }}
-                className={`min-w-[160px]  hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+                className={`min-w-[160px]  hover:cursor-pointer rounded-lg flex items-center justify-center px-3 mx-auto  font-bold py-2 ${
                   tab === "transaction"
                     ? "bg-green-500 text-white"
                     : "bg-white text-black"
@@ -76,16 +76,17 @@ const IndividualCustomer = () => {
             </div>
           </div>
 
-          <div className="ml-6 font-bold text-2xl my-3">
+          <div className="ml-6 font-bold  my-3">
             <p>Customer Id: {id}</p>
             <p className="capitalize"> Name: {customer && customer.name}</p>
             <p className="capitalize">
               {" "}
               Outstanding: {customer && customer.outstanding}
             </p>
+            <p>Mobile Number:{customer && customer.phone}</p>
           </div>
           {tab === "bills" ? (
-            <table className="table-auto border-spacing-x-60 text-2xl border border-black ml-6 ">
+            <table className="table-auto border-spacing-x-60  border border-black ml-6 ">
               <thead className="border border-black">
                 <tr className="border border-black">
                   <th className="border border-black mx-6">Date</th>
@@ -106,7 +107,7 @@ const IndividualCustomer = () => {
               </tbody>
             </table>
           ) : (
-            <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
+            <table className="table-auto border-spacing-16  border border-black ml-6 ">
               <thead className="border border-black">
                 <tr className="border border-black">
                   <th className="border border-black mx-6">Date</th>
@@ -122,7 +123,7 @@ const IndividualCustomer = () => {
                 {customer &&
                   [...customer.transactions].reverse().map((transaction) => {
                     return (
-                      <tr className="text-xl" key={transaction._id}>
+                      <tr className="" key={transaction._id}>
                         <td className="px-16 py-3 font-semibold">
                           {calculateDate(new Date(transaction.createdAt))}
                         </td>

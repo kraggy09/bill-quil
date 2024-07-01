@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import ReactToPrint from "react-to-print";
 import PrintBill from "./PrintBill";
 import ThermalPrint from "./ThermalPrint";
@@ -25,7 +25,7 @@ export const PrintButton = ({
         onClick={() => {
           navigate("/");
         }}
-        className="text-2xl bg-red-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
+        className=" bg-red-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
       >
         No Print
       </button>
@@ -33,7 +33,7 @@ export const PrintButton = ({
       <ReactToPrint
         trigger={() => (
           <button
-            className="text-2xl bg-green-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
+            className=" bg-green-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
             onClick={() => {
               navigate("/");
             }}
@@ -61,7 +61,7 @@ export const PrintButton = ({
       <ReactToPrint
         trigger={() => (
           <button
-            className="text-2xl bg-blue-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
+            className=" bg-blue-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
             onClick={() => {
               navigate("/");
             }}
@@ -80,7 +80,7 @@ export const PrintButton = ({
       <ReactToPrint
         trigger={() => (
           <button
-            className="text-2xl bg-yellow-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
+            className=" bg-yellow-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
             onClick={() => {
               navigate("/");
             }}

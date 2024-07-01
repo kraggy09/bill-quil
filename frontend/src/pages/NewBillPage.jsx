@@ -130,7 +130,7 @@ const NewBillPage = () => {
         >
           <button
             disabled={disabledRefresh}
-            className="flex items-center justify-center text-2xl bg-green-500 text-white rounded-xl font-bold px-3 py-1"
+            className="flex items-center justify-center  bg-green-500 text-white rounded-xl font-bold px-3 py-1"
           >
             <IoRefresh className={loading && "animate-spin"} />
             Refresh
@@ -152,7 +152,7 @@ const NewBillPage = () => {
       />
       <div className="max-w-[75vw] flex justify-end items-end">
         <button
-          className="bg-green-600 mr-10 p-2 text-xl text-white hover:bg-green-600 rounded-xl font-bold my-6"
+          className="bg-green-600 mr-10 p-2  text-white hover:bg-green-600 rounded-xl font-bold my-6"
           onClick={submitHandle}
           disabled={disabled}
           // onClick={() => setPrint(true)}

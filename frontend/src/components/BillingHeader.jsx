@@ -236,15 +236,15 @@ const BillingHeader = ({
     <header className="py-4 ">
       <div className="min-w-full mx-auto flex justify-around">
         <div className="flex flex-col mb-3">
-          <p className="text-xl font-bold">Bill No.:{bill.id + 1}</p>
-          <p className="text-xl font-bold">
+          <p className=" font-bold">Bill No.:{bill.id + 1}</p>
+          <p className=" font-bold">
             Bill Type:{" "}
             <i className="capitalize bg-green-500 px-2 py-1 text-white rounded-xl">
               {billType}
             </i>
           </p>
         </div>
-        <span className="relative text-xl">
+        <span className="relative ">
           <label htmlFor="customer_name">
             Customer Name
             <sup className="text-sm ml-2 rounded-full bg-green-300 px-2 py-1">
@@ -252,7 +252,7 @@ const BillingHeader = ({
             </sup>
           </label>
           <input
-            className="border-b-2 border-green-600 mx-2 focus:bg-none px-4 text-xl font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none"
+            className="border-b-2 border-green-600 mx-2 focus:bg-none px-4  font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none"
             type="text"
             ref={customerNameRef}
             id="customer_name"
@@ -262,12 +262,12 @@ const BillingHeader = ({
               setVisible(true);
             }}
           />
-          <div className="min-w-[300px] absolute right-0 bg-gray-400 z-20 rounded-xl ">
+          <div className="min-w-[300px] max-h-[150px] overflow-auto absolute right-0 bg-gray-200 z-20 rounded-xl ">
             {visible &&
               name !== "" &&
               findCustomer(name).map((d) => (
                 <div
-                  className="hover-bg-green-500 px-6 hover:cursor-pointer font-bold capitalize py-1 hover:text-white"
+                  className="hover-bg-green-500  px-6 hover:cursor-pointer font-bold capitalize py-1 hover:bg-green-400 hover:text-white"
                   onClick={() => handleCustomerSelection(d)}
                   key={d._id}
                 >
@@ -277,11 +277,11 @@ const BillingHeader = ({
           </div>
         </span>
       </div>
-      <div className="relative min-w-full flex items-center justify-center text-xl">
+      <div className="relative min-w-full flex items-center justify-center ">
         Product:
         <span className="relative">
           <input
-            className="border-b-2 border-green-600 mx-2 focus:bg-none px-4 text-xl font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none min-w-[450px]"
+            className="border-b-2 border-green-600 mx-2 focus:bg-none px-4  font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none min-w-[450px]"
             type="text"
             value={productName}
             onChange={(e) => {

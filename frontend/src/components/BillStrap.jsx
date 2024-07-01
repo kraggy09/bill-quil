@@ -22,18 +22,23 @@ const BillStrap = ({ bill }) => {
   // bill?.id && console.log("Id", bill);
 
   return (
-    <tr className="font-medium text-xl ">
-      <td className="px-16 py-3 ">{calculateDate(date)}</td>
-      <td className="px-16 py-3 ">{calculateTime(date)}</td>
-      <td className="px-16 py-3 ">{bill?.id?.id ? bill.id.id : "Old Bill"}</td>
-      <td className="px-16 py-3 "> {billAmount.toFixed(3) - bill.discount}</td>
-      <td className="px-16 py-3 ">
+    <tr className="font-medium  ">
+      <td className="lg:px-6 md:px-2 py-3 ">{calculateDate(date)}</td>
+      <td className="lg:px-6 md:px-2 py-3 ">{calculateTime(date)}</td>
+      <td className="lg:px-6 md:px-2 py-3 ">
+        {bill?.id?.id ? bill.id.id : "Old Bill"}
+      </td>
+      <td className="lg:px-6 md:px-2 py-3 ">
+        {" "}
+        {billAmount.toFixed(3) - bill.discount}
+      </td>
+      <td className="lg:px-6 md:px-2 py-3 ">
         {(bill.total - billAmount) % 1 != 0
           ? (bill.total - billAmount + bill.discount).toFixed(1)
           : bill.total - billAmount + bill.discount}
       </td>
-      <td className="px-16 py-3 ">{bill.payment}</td>
-      <td className="px-16 py-3 ">{bill.total - bill.payment}</td>
+      <td className="lg:px-6 md:px-2 py-3 ">{bill.payment}</td>
+      <td className="lg:px-6 md:px-2 py-3 ">{bill.total - bill.payment}</td>
       <td
         onClick={() => {
           navigate(`/bills/${bill._id}`, { state: bill });

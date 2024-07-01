@@ -175,20 +175,16 @@ const BillPage = () => {
   };
 
   return (
-    <div>
+    <div className="min-w-full">
       <header className="ml-9">
-        <p className="text-2xl text-center my-3 font-bold">
-          Search the bills here
-        </p>
-        <div className="min-w-[90vw] flex items-center justify-center">
+        <p className=" text-center my-3 font-bold">Search the bills here</p>
+        <div className="min-w-full flex items-center justify-center">
           <div className="py-2 relative">
             <div className="flex min-w-full px-6 my-2 items-center justify-start ">
-              <span className="px-16 text-2xl font-bold">
-                Search for Product
-              </span>
+              <span className="px-16  font-bold">Search for Product</span>
               <input
                 type="text"
-                className="border-b-2 border-green-600 mx-2 focus:bg-none px-4 text-xl font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none"
+                className="border-b-2 border-green-600 mx-2 focus:bg-none px-4  font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none"
                 value={query}
                 onChange={(e) => {
                   setIsQueryProgrammaticChange(true);
@@ -217,7 +213,7 @@ const BillPage = () => {
           </div>
         </div>
         <div className="flex min-w-[90vw] my-3 justify-around">
-          <span className="flex items-center justify-center text-xl">
+          <span className="flex items-center justify-center ">
             <p className="mr-3">Start Date: </p>
             <input
               type="date"
@@ -226,7 +222,7 @@ const BillPage = () => {
               onChange={(e) => setStartDate(e.target.value)}
             />
           </span>
-          <span className="flex items-center justify-center text-xl">
+          <span className="flex items-center justify-center ">
             <p className="mr-3">End Date:</p>
             <input
               type="date"
@@ -239,7 +235,7 @@ const BillPage = () => {
             />
           </span>
           <button
-            className="bg-green-500 p-2 font-semibold text-xl rounded-xl text-white"
+            className="bg-green-500 p-2 font-semibold  rounded-xl text-white"
             onClick={() => handleSubmit()}
           >
             Get the bills
@@ -270,7 +266,7 @@ const BillPage = () => {
       )}
       {user.isAdmin && (
         <div
-          className="flex text-2xl mb-6 min-w-full items-center justify-center"
+          className="flex  mb-6 min-w-full items-center justify-center"
           onClick={() => setShow((prev) => !prev)}
         >
           {!show ? (
@@ -282,7 +278,7 @@ const BillPage = () => {
       )}
       <main className="min-w-[90vw] flex items-center justify-center">
         {!filter ? (
-          <table className="table-auto border-spacing-x-60 text-2xl border border-black ml-6 ">
+          <table className="table-auto border-spacing-x-60  border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
                 <th className="border border-black mx-6">Date</th>
@@ -303,7 +299,7 @@ const BillPage = () => {
             </tbody>
           </table>
         ) : (
-          <table className="table-auto border-spacing-x-60 text-2xl border border-black ml-6 ">
+          <table className="table-auto border-spacing-x-60  border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
                 <th className="border border-black mx-6">Date</th>

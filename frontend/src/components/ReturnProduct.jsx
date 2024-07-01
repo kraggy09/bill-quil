@@ -76,7 +76,7 @@ const ReturnProduct = () => {
             onClick={() => {
               setReturnType("adjustment");
             }}
-            className={`min-w-[150px] hover:cursor-pointer rounded-xl px-3 mx-auto flex items-center justify-center text-xl font-bold  py-2 ${
+            className={`min-w-[150px] hover:cursor-pointer rounded-xl px-3 mx-auto flex items-center justify-center  font-bold  py-2 ${
               returnType === "adjustment"
                 ? "bg-red-200 text-red-800"
                 : "bg-white text-red-800"
@@ -89,7 +89,7 @@ const ReturnProduct = () => {
             onClick={() => {
               setReturnType("refund");
             }}
-            className={`min-w-[160px] hover:cursor-pointer rounded-xl flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+            className={`min-w-[160px] hover:cursor-pointer rounded-xl flex items-center justify-center px-3 mx-auto  font-bold py-2 ${
               returnType === "refund"
                 ? "bg-green-200  text-green-800"
                 : "bg-white text-green-800"

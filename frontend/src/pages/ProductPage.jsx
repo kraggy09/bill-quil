@@ -19,13 +19,13 @@ const ProductPage = () => {
     return total;
   };
   return (
-    <div className="ml-24 min-w-[80vw]">
+    <div className="pl-20 min-w-[90vw] max-w-full">
       {user.isAdmin && (
-        <div className="px-20 pt-3 min-w-full font-bold text-2xl ">
+        <div className="pl-20 pt-3 min-w-full font-bold text-2xl ">
           Your Current Stock Value: ₹{calculateStock().toFixed(3)}
         </div>
       )}
-      <div className="relative min-h-[95vh]  min-w-[85vw]">
+      <div className="relative min-h-[90vh]  min-w-[85vw]">
         <ProductHeader
           setFilteredProducts={setFilteredProducts}
           filteredProducts={filteredProducts}
@@ -35,7 +35,7 @@ const ProductPage = () => {
           setFilteredProducts={setFilteredProducts}
         />
         <button
-          className="rounded-full absolute bottom-28 right-8 font-bold hover:bg-green-200 p-5 bg-green-100 text-green-800 border border-green-100 text-3xl"
+          className="rounded-xl  absolute bottom-10 right-8 font-bold hover:bg-green-200 px-5 py-3 bg-green-100 text-green-800 border border-green-100 text-3xl"
           onClick={() => navigate("/newProduct")}
         >
           +

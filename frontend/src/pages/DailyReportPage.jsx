@@ -100,26 +100,26 @@ const DailyReportPage = () => {
   return (
     <div className="">
       <div>
-        <h1 className="text-3xl font-bold text-center my-3">
+        <h1 className=" font-bold text-center my-3">
           Get the complete details here
         </h1>
       </div>
       {user.isAdmin && show && (
-        <article className="flex min-w-full items-center justify-center my-6">
-          <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 bg-green-300  rounded-3xl text-3xl font-bold text-green-900 flex items-center justify-center shadow-lg px-6 mx-6 ">
+        <article className="flex min-w-full max-w-[100vw] items-center justify-center my-6">
+          <div className="min-w-[150px] min-h-[70px] border-2 border-green-500 bg-green-300  rounded-3xl  font-bold text-green-900 flex items-center justify-center shadow-lg px-6 mx-6 ">
             <FaIndianRupeeSign className="mx-1 font-extrabold" />
             {dataObj &&
               (dataObj.totalBillAmount - dataObj.totalInvestment).toFixed(1)}
           </div>
-          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-green-500 bg-green-200 rounded-3xl text-3xl font-bold text-green-800 flex items-center justify-center px-6 ">
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-green-500 bg-green-200 rounded-3xl  font-bold text-green-800 flex items-center justify-center px-6 ">
             <AiOutlineArrowDown className="mx-1 font-extrabold" />₹
             {dataObj && dataObj.totalPayment.toFixed(1)}
           </div>
-          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-red-500 rounded-3xl text-3xl font-bold text-red-800 flex items-center justify-center px-6 bg-red-200">
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-red-500 rounded-3xl  font-bold text-red-800 flex items-center justify-center px-6 bg-red-200">
             <AiOutlineArrowUp className="mx-1 font-extrabold" />₹
             {dataObj && dataObj.totalBillAmount.toFixed(1)}
           </div>
-          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-yellow-300 rounded-3xl text-3xl font-bold text-yellow-700 flex items-center justify-center px-6 bg-yellow-200">
+          <div className="min-w-[150px] min-h-[70px] border-2  mx-6 border-yellow-300 rounded-3xl  font-bold text-yellow-700 flex items-center justify-center px-6 bg-yellow-200">
             <FaPercentage className="mx-1 font-extrabold" />
             {dataObj &&
               (
@@ -131,7 +131,7 @@ const DailyReportPage = () => {
         </article>
       )}
       {user.isAdmin && (
-        <div className="flex text-2xl min-w-full items-center justify-center">
+        <div className="flex  min-w-full items-center justify-center">
           {!show ? (
             <FaEye
               onClick={() => {
@@ -150,7 +150,7 @@ const DailyReportPage = () => {
         </div>
       )}
       <div className="flex min-w-[50vw] my-3 justify-around">
-        <span className="flex items-center justify-center text-xl">
+        <span className="flex items-center justify-center ">
           <p className="mr-3">Start Date: </p>
           <input
             type="date"
@@ -159,7 +159,7 @@ const DailyReportPage = () => {
             onChange={(e) => setStartDate(e.target.value)}
           />
         </span>
-        <span className="flex items-center justify-center text-xl">
+        <span className="flex items-center justify-center ">
           <p className="mr-3">End Date:</p>
           <input
             type="date"
@@ -172,7 +172,7 @@ const DailyReportPage = () => {
           />
         </span>
         <button
-          className="bg-green-500 p-3 text-2xl font-semibold  rounded-xl text-white"
+          className="bg-green-500 p-3  font-semibold  rounded-xl text-white"
           onClick={() => handleSubmit()}
         >
           Get the bills
@@ -184,7 +184,7 @@ const DailyReportPage = () => {
             onClick={() => {
               setType("bills");
             }}
-            className={`min-w-[150px] hover:cursor-pointer rounded-full px-3 mx-auto flex items-center justify-center text-xl font-bold  py-2 ${
+            className={`min-w-[150px] hover:cursor-pointer rounded-full px-3 mx-auto flex items-center justify-center  font-bold  py-2 ${
               type === "bills"
                 ? "bg-green-500 text-white"
                 : "bg-white text-black"
@@ -197,7 +197,7 @@ const DailyReportPage = () => {
             onClick={() => {
               setType("transaction");
             }}
-            className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+            className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto  font-bold py-2 ${
               type === "transaction"
                 ? "bg-green-500 text-white"
                 : "bg-white text-black"
@@ -209,7 +209,7 @@ const DailyReportPage = () => {
             onClick={() => {
               setType("payment");
             }}
-            className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+            className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto  font-bold py-2 ${
               type === "payment"
                 ? "bg-green-500 text-white"
                 : "bg-white text-black"
@@ -222,7 +222,7 @@ const DailyReportPage = () => {
               onClick={() => {
                 setType("updatedProduct");
               }}
-              className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto text-xl font-bold py-2 ${
+              className={`min-w-[160px] hover:cursor-pointer rounded-full flex items-center justify-center px-3 mx-auto  font-bold py-2 ${
                 type === "updatedProduct"
                   ? "bg-green-500 text-white"
                   : "bg-white text-black"
@@ -233,9 +233,9 @@ const DailyReportPage = () => {
           )}
         </div>
       </div>
-      <div className="min-w-[90vw] mb-16 ml-24 flex items-center justify-center">
+      <div className=" mb-16 ml-24 flex items-center justify-center">
         {type === "bills" ? (
-          <table className="table-auto border-spacing-x-60 text-2xl border border-black ml-6 ">
+          <table className="table-auto border-spacing-x-60  border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
                 <th className="border border-black mx-6">Date</th>
@@ -256,7 +256,7 @@ const DailyReportPage = () => {
             </tbody>
           </table>
         ) : type === "transaction" ? (
-          <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
+          <table className="table-auto border-spacing-16  border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
                 <th className="border border-black mx-6">Date</th>
@@ -273,7 +273,7 @@ const DailyReportPage = () => {
                 [...dailyReport.transactions].reverse().map((transaction) => {
                   return (
                     !transaction.taken && (
-                      <tr className="text-xl" key={transaction._id}>
+                      <tr className="" key={transaction._id}>
                         <td className="px-16 py-3 font-semibold">
                           {calculateDate(new Date(transaction.createdAt))}
                         </td>
@@ -296,7 +296,7 @@ const DailyReportPage = () => {
             </tbody>
           </table>
         ) : type === "updatedProduct" ? (
-          <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
+          <table className="table-auto border-spacing-16  border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
                 <th className="border border-black mx-6">Date</th>
@@ -312,7 +312,7 @@ const DailyReportPage = () => {
                 dailyReport.updatedToday &&
                 [...dailyReport.updatedToday].reverse().map((updated) => {
                   return (
-                    <tr className="text-xl" key={updated._id}>
+                    <tr className="" key={updated._id}>
                       {updated.createdAt && (
                         <td className="px-16 py-3 font-semibold">
                           {calculateDate(new Date(updated.createdAt))}
@@ -347,7 +347,7 @@ const DailyReportPage = () => {
             </tbody>
           </table>
         ) : (
-          <table className="table-auto border-spacing-16 text-2xl border border-black ml-6 ">
+          <table className="table-auto border-spacing-16  border border-black ml-6 ">
             <thead className="border border-black">
               <tr className="border border-black">
                 <th className="border border-black mx-6">Date</th>
@@ -361,7 +361,7 @@ const DailyReportPage = () => {
                 [...dailyReport.transactions].reverse().map((transaction) => {
                   return (
                     transaction.taken && (
-                      <tr className="text-xl" key={transaction._id}>
+                      <tr className="" key={transaction._id}>
                         <td className="px-16 py-3 font-semibold">
                           {calculateDate(new Date(transaction.createdAt))}
                         </td>

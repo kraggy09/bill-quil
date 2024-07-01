@@ -58,7 +58,7 @@ const SingleBill = () => {
       {loading && <Loading />}
       {bill && (
         <div className="relative">
-          <header className="ml-6 text-xl font-semibold italic capitalize">
+          <header className="ml-6  font-semibold italic capitalize">
             <p>
               Bill Id:
               <span className="border-b-2 border-green-500 px-3">
@@ -145,7 +145,7 @@ const SingleBill = () => {
                 <th className="px-16">Total</th>
               </tr>
             </thead>
-            <tbody className="text-xl font-semibold ">
+            <tbody className=" font-semibold ">
               {bill.items.map((item) => {
                 return (
                   <tr key={item._id}>
@@ -168,7 +168,7 @@ const SingleBill = () => {
             </tbody>
           </table>
           <div className="min-w-full flex mt-3 pr-20 items-end justify-end">
-            <div className="flex flex-col text-xl font-semibold">
+            <div className="flex flex-col  font-semibold">
               <span className="border-t-2 pt-2 flex items-center justify-around border-black border-dashed ">
                 <p>Total: </p>
                 <p>{calculateBillAmount()}</p>

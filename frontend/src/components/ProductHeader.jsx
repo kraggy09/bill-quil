@@ -70,29 +70,29 @@ const ProductHeader = ({ filteredProducts, setFilteredProducts }) => {
   return (
     <div>
       <div className="flex min-w-full px-6 my-2 items-center justify-start ">
-        <span className="px-16 text-2xl font-bold">Search for Product</span>
+        <span className="px-16  font-semibold">Search for Product</span>
         <input
           type="text"
-          className="border-b-2 border-green-600 mx-2 focus:bg-none px-4 text-xl font-bold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none"
+          className="border-b-2 border-green-600 mx-2 focus:bg-none px-4  font-semibold capitalize py-1 focus:border-b-2 focus:border-green-600 outline-none"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
           }}
         />
         <button
-          className="bg-green-500 mx-10 text-white p-2 rounded-xl font-bold"
+          className="bg-green-500 mx-10 text-white p-2 rounded-xl font-semibold"
           onClick={handleSortStock}
         >
           Sort Stock
         </button>
         <button
-          className="bg-green-500 mx-6 text-white p-2 rounded-xl font-bold"
+          className="bg-green-500 mx-6 text-white p-2 rounded-xl font-semibold"
           onClick={handleSortByName}
         >
           Sort Name
         </button>
         <button
-          className="bg-green-200 border border-green-500 text-green-800 mx-6  p-2 rounded-xl font-bold"
+          className="bg-green-200 border border-green-500 text-green-800 mx-6  p-2 rounded-xl font-semibold"
           onClick={() => navigate("/updateStock")}
         >
           Update Stock

@@ -33,7 +33,7 @@ const BillType = ({ billType, setBillType, setIsOpen }) => {
 
   return (
     <>
-      <h1 className="text-center text-4xl font-bold p-5 rounded-xl bg-green-500 text-white">
+      <h1 className="text-center text-xl font-bold py-2 px-3 rounded-xl bg-green-500 text-white">
         Select Bill Type
       </h1>
       <div className="min-w-[30vw] flex items-center justify-center min-h-[40vh] ">
@@ -43,7 +43,7 @@ const BillType = ({ billType, setBillType, setIsOpen }) => {
             setBillType("superWholesale");
             setIsOpen(false);
           }}
-          className="text-3xl font-bold mx-16 p-8 border rounded-xl hover:cursor-pointer hover:border-green-500 transition-all duration-300 ease-linear hover:bg-green-500 hover:text-white
+          className=" font-bold mx-16 px-5 py-6 border rounded-xl hover:cursor-pointer hover:border-green-500 transition-all duration-300 ease-linear hover:bg-green-500 hover:text-white
       "
         >
           Super WholeSale
@@ -54,7 +54,7 @@ const BillType = ({ billType, setBillType, setIsOpen }) => {
             setBillType("wholesale");
             setIsOpen(false);
           }}
-          className="text-3xl font-bold mx-16 p-8 border rounded-xl hover:cursor-pointer hover:border-green-500 transition-all duration-300 ease-linear hover:bg-green-500 hover:text-white
+          className=" font-bold mx-16 px-3 py-6 border rounded-xl hover:cursor-pointer hover:border-green-500 transition-all duration-300 ease-linear hover:bg-green-500 hover:text-white
       "
         >
           WholeSale
@@ -65,7 +65,7 @@ const BillType = ({ billType, setBillType, setIsOpen }) => {
             setBillType("retail");
             setIsOpen(false);
           }}
-          className="text-3xl font-bold mx-16 p-8 border rounded-xl hover:cursor-pointer hover:border-green-500 transition-all duration-300 ease-linear hover:bg-green-500 hover:text-white
+          className=" font-bold mx-16 px-3 py-6 border rounded-xl hover:cursor-pointer hover:border-green-500 transition-all duration-300 ease-linear hover:bg-green-500 hover:text-white
       "
         >
           Retail

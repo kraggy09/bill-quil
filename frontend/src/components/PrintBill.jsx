@@ -30,7 +30,7 @@ const PrintBill = React.forwardRef(
         <div className="min-h-[92vh] ml-6 min-w-[480px] mt-3 max-w-[510px]  border-2 rounded-lg border-black">
           <div className="min-w-[98%] flex justify-start rounded-xl   mx-1 mr- my-2 border-2 border-black">
             <div className="max-w-[55%] border-r-2 border-black pl-3">
-              <p className="italic capitalize font-bold text-lg max-w-[90%]">
+              <p className="italic capitalize font-bold  max-w-[90%]">
                 Sultan Communication & General Stores
               </p>
 
@@ -90,7 +90,7 @@ const PrintBill = React.forwardRef(
                       <td>
                         <p className="text-center capitalize">{product.name}</p>
                       </td>
-              
+
                       <td>
                         <p className="text-center">
                           {" "}
