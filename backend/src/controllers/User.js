@@ -118,7 +118,7 @@ export const checkAuth = async (req, res) => {
 
   try {
     let user = await User.findOne({ _id: userId }).select("-password");
-
+    console.log(user);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -131,6 +131,51 @@ export const checkAuth = async (req, res) => {
       msg: "User logged in successfully",
       user,
     });
+  } catch (error) {
+    console.error("Error checking authentication:", error);
+
+    if (error.name === "CastError" && error.kind === "ObjectId") {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid user ID format",
+      });
+    }
+
+    return res.status(500).json({
+      msg: "Server error! Please try again",
+      success: false,
+    });
+  }
+};
+
+export const checkAdmin = async (req, res, next) => {
+  const { token } = req.body;
+
+  const verificationResult = await verifyToken(token);
+
+  if (verificationResult.status !== 200) {
+    return res.status(verificationResult.status).json(verificationResult.json);
+  }
+
+  const userId = verificationResult.userId;
+
+  try {
+    let user = await User.findOne({ _id: userId }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        msg: "User not found",
+      });
+    }
+
+    if (!user.isAdmin) {
+      return res.status(402).json({
+        success: false,
+        msg: "You don't have access to this data",
+      });
+    }
+    next();
   } catch (error) {
     console.error("Error checking authentication:", error);
 

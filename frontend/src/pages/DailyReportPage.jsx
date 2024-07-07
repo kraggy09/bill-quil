@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 // import toast from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import axios from "axios";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaLock } from "react-icons/fa";
 
 axios.defaults.withCredentials = true;
 import { apiUrl } from "../constant";
@@ -18,12 +18,12 @@ const DailyReportPage = () => {
   const user = useSelector((store) => store.user);
   const [type, setType] = useState("bills");
   const [dataObj, setDataObj] = useState(null);
-
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [dailyReport, setDailyReport] = useState(null);
   const [show, setShow] = useState(false);
+  let [pin, setPin] = useState("");
 
   const apiUrl1 = "/dailyReportOfDays";
 
@@ -133,12 +133,33 @@ const DailyReportPage = () => {
       {user.isAdmin && (
         <div className="flex  min-w-full items-center justify-center">
           {!show ? (
-            <FaEye
-              onClick={() => {
-                setShow(true);
-              }}
-              className="hover:text-green-500 hover:cursor-pointer"
-            />
+            <div className="flex flex-col items-center justify-center gap-y-2">
+              <h1>Please enter the pin</h1>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (pin === user.pin) {
+                    setShow(true);
+                    setPin("");
+                  }
+                }}
+                className="flex items-center justify-center"
+              >
+                <FaLock />
+                <input
+                  type="password"
+                  value={pin}
+                  onChange={(e) => {
+                    let a = e.target.value;
+                    setPin(a);
+                  }}
+                  className="border-x-0 outline-none border-t-0 border-b-2 ml-6"
+                />
+                <button className="ml-6 bg-green-200 px-2 py-1 rounded-lg font-bold">
+                  Check
+                </button>
+              </form>
+            </div>
           ) : (
             <FaEyeSlash
               onClick={() => {

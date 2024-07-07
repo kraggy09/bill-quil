@@ -81,7 +81,7 @@ const InventoryRequest = () => {
   }, []);
 
   return (
-    <div className="  max-h-[40vh] overflow-auto scrollbar-hide min-h-[40%]">
+    <div className="  max-h-[30vh] max-w-[80vw] overflow-auto scrollbar-hide min-h-[40%]">
       <Toaster position="top-center" reverseOrder={false} />
 
       <p className=" font-bold  pl-16 py-2">Inventory Update Request</p>
@@ -98,8 +98,8 @@ const InventoryRequest = () => {
                   <th className="">Time</th>
                   <th className="">Request</th>
                   <th className="">Name</th>
-                  <th className="px-3">Request Stock</th>
-                  <th className="px-3">Current Stock</th>
+                  <th className="px-1">Request Stock</th>
+                  <th className="px-1">Current Stock</th>
                   <th className="">Quantity</th>
                   {user.isAdmin && (
                     <>
@@ -114,32 +114,36 @@ const InventoryRequest = () => {
                   inventoryRequests.map((inv) => {
                     return (
                       <tr className="border border-black" key={inv._id}>
-                        <td className="font-semibold capitalize text-center px-3">
+                        <td className="font-semibold capitalize text-center px-1">
                           {calculateDate(new Date(inv.date))}
                         </td>
-                        <td className="font-semibold capitalize text-center px-3">
+                        <td className="font-semibold capitalize text-center px-1">
                           {calculateTime(new Date(inv.date))}
                         </td>
-                        <td className="font-semibold capitalize text-center px-3">
+                        <td className="font-semibold capitalize text-center px-1">
                           {inv.createdBy}
                         </td>
-                        <td className="font-semibold capitalize text-center px-3">
+                        <td className="font-semibold capitalize text-center px-1">
                           {inv.product.name}
                         </td>
-                        <td className="font-semibold capitalize text-center px-3">
-                          {inv.oldStock}
+                        <td className="font-semibold capitalize text-center px-1">
+                          {inv.oldStock % 1 != 0
+                            ? inv.oldStock.toFixed(3)
+                            : inv.oldStock}
                         </td>
-                        <td className="font-semibold capitalize text-center px-3">
-                          {inv.product.stock}
+                        <td className="font-semibold capitalize text-center px-1">
+                          {inv.product.stock % 1 != 0
+                            ? inv.product.stock.toFixed(3)
+                            : inv.product.stock}
                         </td>
-                        <td className="font-semibold capitalize text-center px-3">
+                        <td className="font-semibold capitalize text-center px-1">
                           {inv.quantity}
                         </td>
                         {user.isAdmin && (
                           <>
                             <td
                               onClick={() => handleInventoryAcceptance(inv)}
-                              className="font-semibold capitalize text-center px-3"
+                              className="font-semibold capitalize text-center px-1"
                             >
                               <p className="flex items-center font-bold justify-center bg-green-200 mx-4  rounded-lg my-1 px-2 py-1 text-green-800 hover:cursor-pointer">
                                 <IoMdCheckmark />
@@ -147,7 +151,7 @@ const InventoryRequest = () => {
                             </td>
                             <td
                               onClick={() => handleRejection(inv._id)}
-                              className="font-semibold capitalize text-center px-3"
+                              className="font-semibold capitalize text-center px-1"
                             >
                               <p className="flex items-center font-bold justify-center bg-red-200 mx-4  rounded-lg px-2 py-1 text-red-800 hover:cursor-pointer">
                                 <IoCloseSharp />

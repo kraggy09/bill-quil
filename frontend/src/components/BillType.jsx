@@ -4,17 +4,17 @@ import { useEffect } from "react";
 const BillType = ({ billType, setBillType, setIsOpen }) => {
   useEffect(() => {
     const handleKeyPress = (event) => {
-      if (event.key === "s") {
+      if (event.key === "s" || event.key === "S") {
         const linkButton = document.getElementById("super-wholesale");
         if (linkButton) {
           linkButton.click();
         }
-      } else if (event.key == "w") {
+      } else if (event.key == "w" || event.key === "W") {
         const linkButton = document.getElementById("wholesale");
         if (linkButton) {
           linkButton.click();
         }
-      } else if (event.key == "r") {
+      } else if (event.key == "r" || event.key === "R") {
         const linkButton = document.getElementById("retail");
         if (linkButton) {
           linkButton.click();

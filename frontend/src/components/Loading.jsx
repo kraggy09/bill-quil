@@ -19,7 +19,7 @@ const Loading = () => {
           />
         </svg>
       </div>
-      <span className="mx-6 text-white font-bold text-4xl animate-pulse">
+      <span className="mx-6 text-white font-bold text-2xl animate-pulse">
         Loading...
       </span>
     </div>

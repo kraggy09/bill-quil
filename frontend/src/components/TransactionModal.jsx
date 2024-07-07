@@ -1,4 +1,5 @@
 import { PrintTransaction } from "./PrintTransaction";
+import PropTypes from "prop-types";
 
 const TransactionModal = ({
   name,
@@ -27,4 +28,12 @@ const TransactionModal = ({
   );
 };
 
+TransactionModal.propTypes = {
+  name: PropTypes.string.isRequired,
+  amount: PropTypes.number.isRequired,
+  outstanding: PropTypes.number.isRequired,
+  paymentMode: PropTypes.string.isRequired,
+  setIsOpen: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+};
 export default TransactionModal;
