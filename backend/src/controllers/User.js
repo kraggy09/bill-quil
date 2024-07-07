@@ -97,7 +97,7 @@ export const login = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error(error.message);
+    // console.error(error.message);
     return res.status(500).json({
       success: false,
       msg: "Internal Error from the server",
@@ -118,7 +118,7 @@ export const checkAuth = async (req, res) => {
 
   try {
     let user = await User.findOne({ _id: userId }).select("-password");
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -132,7 +132,7 @@ export const checkAuth = async (req, res) => {
       user,
     });
   } catch (error) {
-    console.error("Error checking authentication:", error);
+    // console.error("Error checking authentication:", error);
 
     if (error.name === "CastError" && error.kind === "ObjectId") {
       return res.status(400).json({

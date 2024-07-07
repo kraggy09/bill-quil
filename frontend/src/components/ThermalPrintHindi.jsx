@@ -7,7 +7,10 @@ import {
 } from "../libs/constant";
 
 const ThermalPrintHindi = React.forwardRef(
-  ({ foundCustomer, purchased, payment, total, discount, billId }, ref) => {
+  (
+    { foundCustomer, purchased, payment, total, discount, billId, createdAt },
+    ref
+  ) => {
     const calculateSave = (product) => {
       let saved = 0;
       for (let i = 0; i < product.length; i++) {
@@ -33,11 +36,21 @@ const ThermalPrintHindi = React.forwardRef(
           <div className="text-xs justify-between font-semibold  flex ">
             <span id="left" className="mr-10">
               <p>चालान नं.: {billId}</p>
-              <p>तारीख:{calculateDate(new Date())}</p>
+              <p>
+                तारीख:
+                {createdAt
+                  ? calculateDate(new Date(createdAt))
+                  : calculateDate(new Date())}
+              </p>
             </span>
             <span id="right">
               <p>पेमेंट: {payment}</p>
-              <p>समय : {calculateTime(new Date())}</p>
+              <p>
+                समय :{" "}
+                {createdAt
+                  ? calculateTime(new Date(createdAt))
+                  : calculateTime(new Date())}
+              </p>
             </span>
           </div>
         </header>
@@ -69,8 +82,9 @@ const ThermalPrintHindi = React.forwardRef(
               <tr>
                 <th className="border border-black">नाम </th>
                 <th className="border border-black">पीस</th>
-                <th className="border border-black">दाम</th>
                 <th className="border border-black">भाव</th>
+
+                <th className="border border-black">दाम</th>
                 <th className="border border-black">टोटल</th>
               </tr>
               {purchased &&
@@ -100,13 +114,14 @@ const ThermalPrintHindi = React.forwardRef(
                         </p>
                       </td>
                       <td>
-                        <p className="text-center"> {product.mrp}</p>
-                      </td>
-                      <td>
                         <p className="text-center">
                           {price % 1 != 0 ? price.toFixed(2) : price}
                         </p>
                       </td>
+                      <td>
+                        <p className="text-center"> {product.mrp}</p>
+                      </td>
+
                       <td>
                         <p className="text-center">
                           {(price * total - product.discount) % 1 != 0

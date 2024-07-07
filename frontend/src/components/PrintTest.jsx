@@ -13,6 +13,7 @@ export const PrintButton = ({
   total,
   payment,
   discount,
+  createdAt,
 }) => {
   const billComponentRef = useRef();
   const thermalComponentRef = useRef();
@@ -49,6 +50,7 @@ export const PrintButton = ({
         }}
       />
       <PrintBill
+        createdAt={createdAt}
         billId={billId}
         total={total}
         discount={discount}
@@ -96,6 +98,7 @@ export const PrintButton = ({
         }}
       />
       <ThermalPrint
+        createdAt={createdAt}
         billId={billId}
         total={total}
         discount={discount}
@@ -105,6 +108,7 @@ export const PrintButton = ({
         purchased={purchased}
       />
       <ThermalPrintHindi
+        createdAt={createdAt}
         billId={billId}
         total={total}
         discount={discount}

@@ -7,7 +7,10 @@ import {
 } from "../libs/constant";
 
 const PrintBill = React.forwardRef(
-  ({ foundCustomer, purchased, payment, total, discount, billId }, ref) => {
+  (
+    { foundCustomer, purchased, payment, total, discount, billId, createdAt },
+    ref
+  ) => {
     // console.log(billId);
     // console.log(foundCustomer, purchased);
     const calculateSave = (product) => {
@@ -43,9 +46,14 @@ const PrintBill = React.forwardRef(
             </div>
             <div className="pl-2">
               <p className="font-semibold text-md italic">
-                Time:{calculateDate(new Date())}
+                Time:
+                {createdAt
+                  ? calculateDate(new Date(createdAt))
+                  : calculateDate(new Date())}
                 {"     "}
-                {calculateTime(new Date())}
+                {createdAt
+                  ? calculateTime(new Date(createdAt))
+                  : calculateTime(new Date())}
               </p>
               <span className="flex font-semibold">
                 Customer:
@@ -67,8 +75,9 @@ const PrintBill = React.forwardRef(
                 <th className="border border-black">Sr No.</th>
                 <th className="border border-black">Name</th>
                 <th className="border border-black">Quantity</th>
-                <th className="border border-black">MRP</th>
                 <th className="border border-black">Price</th>
+
+                <th className="border border-black">MRP</th>
                 <th className="border border-black">Total</th>
               </tr>
             </thead>
@@ -101,13 +110,14 @@ const PrintBill = React.forwardRef(
                             : total}
                         </p>
                       </td>
-                      <td>
-                        <p className="text-center"> {product.mrp}</p>
-                      </td>
+
                       <td>
                         <p className="text-center">
                           {price % 1 != 0 ? price.toFixed(2) : price}
                         </p>
+                      </td>
+                      <td>
+                        <p className="text-center"> {product.mrp}</p>
                       </td>
                       <td>
                         <p className="text-center">

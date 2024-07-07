@@ -100,6 +100,7 @@ const SingleBill = () => {
               </span>
             </p>
             <BillModal
+              createdAt={bill && bill.createdAt}
               isOpen={isOpen}
               purchased={
                 bill &&

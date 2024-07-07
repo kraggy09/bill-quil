@@ -7,7 +7,10 @@ import {
 } from "../libs/constant";
 
 const ThermalPrint = React.forwardRef(
-  ({ foundCustomer, purchased, payment, total, discount, billId }, ref) => {
+  (
+    { foundCustomer, purchased, payment, total, discount, billId, createdAt },
+    ref
+  ) => {
     const calculateSave = (product) => {
       let saved = 0;
       for (let i = 0; i < product.length; i++) {
@@ -35,11 +38,21 @@ const ThermalPrint = React.forwardRef(
           <div className="text-xs justify-between font-semibold  flex ">
             <span id="left" className="mr-10">
               <p>Invoice No.: {billId}</p>
-              <p>Date:{calculateDate(new Date())}</p>
+              <p>
+                Date:
+                {createdAt
+                  ? calculateDate(new Date(createdAt))
+                  : calculateDate(new Date())}
+              </p>
             </span>
             <span id="right">
               <p>Payment: {payment}</p>
-              <p>Time : {calculateTime(new Date())}</p>
+              <p>
+                Time :{" "}
+                {createdAt
+                  ? calculateTime(new Date(createdAt))
+                  : calculateTime(new Date())}
+              </p>
             </span>
           </div>
         </header>
@@ -71,9 +84,9 @@ const ThermalPrint = React.forwardRef(
               <tr>
                 <th className="border border-black">Name</th>
                 <th className="border border-black">Quantity</th>
+                <th className="border border-black">Price</th>
 
                 <th className="border border-black">MRP</th>
-                <th className="border border-black">Price</th>
                 <th className="border border-black">Total</th>
               </tr>
               {purchased &&
@@ -90,7 +103,7 @@ const ThermalPrint = React.forwardRef(
                       <td>
                         <p className="text-center capitalize">{product.name}</p>
                       </td>
-                     
+
                       <td>
                         <p className="text-center">
                           {" "}
@@ -101,13 +114,14 @@ const ThermalPrint = React.forwardRef(
                             : total}
                         </p>
                       </td>
-                      <td>
-                        <p className="text-center"> {product.mrp}</p>
-                      </td>
+
                       <td>
                         <p className="text-center">
                           {price % 1 != 0 ? price.toFixed(2) : price}
                         </p>
+                      </td>
+                      <td>
+                        <p className="text-center"> {product.mrp}</p>
                       </td>
                       <td>
                         <p className="text-center">

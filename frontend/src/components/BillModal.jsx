@@ -9,6 +9,7 @@ const BillModal = ({
   total,
   payment,
   discount,
+  createdAt,
 }) => {
   // console.log("modal", id);
   return (
@@ -17,6 +18,7 @@ const BillModal = ({
         <div className="fixed inset-0  z-50 bg-black bg-opacity-50 backdrop-blur-md">
           <div className="bg-white">
             <PrintButton
+              createdAt={createdAt}
               billId={billId}
               foundCustomer={foundCustomer}
               purchased={purchased}
