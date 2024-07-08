@@ -115,7 +115,7 @@ const IndividualCustomer = () => {
               </p>
               <p>Mobile Number:{customer && customer.phone}</p>
             </div>
-            {!locked && user.usAdmin ? (
+            {!locked ? (
               <div className="flex items-center min-w-[65vw] justify-between">
                 {data && (
                   <div className="shadow-2xl gap-y-2  rounded-lg px-4 bg-white  flex items-center justify-center max-w-[100%] md:min-w-[30%] h-36">
@@ -291,6 +291,7 @@ const IndividualCustomer = () => {
                     <form
                       className="flex items-center justify-center"
                       onSubmit={(e) => {
+                        console.log("I am working");
                         e.preventDefault();
                         if (pin === user.pin) {
                           setLocked(false);
