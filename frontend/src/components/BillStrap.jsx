@@ -5,7 +5,7 @@ import { calculateDate, calculateTime } from "../libs/constant";
 import { useNavigate } from "react-router-dom";
 
 const BillStrap = ({ bill }) => {
-  console.log(bill);
+  // console.log(bill);
   const date = new Date(bill.createdAt);
   const navigate = useNavigate();
   const [billAmount, setBillAmount] = useState(0);
