@@ -45,82 +45,91 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   const [change, setChange] = useState(false);
   const [open, setOpen] = useState(false);
   const [quantity, setQuantity] = useState(0);
-  // Function to handle changes and dispatch actions
-  const handleChange = (type, value) => {
-    setChange(true);
+  const [click, setClick] = useState(false);
 
+  // Function to handle changes and dispatch actions
+  const handleChange = (type, value, auto = true) => {
+    setChange(true);
     dispatch({ type: `CHANGE_${type.toUpperCase()}`, value });
 
-    // Call getPriceTag to get updated type and price
-    const { type: updatedType, price: updatedPrice } = getPriceTag({
-      piece: state.piece,
-      packet: state.packet,
-      box: state.box,
-      ...product, // Pass other necessary product details
-    });
+    if (auto) {
+      // Call getPriceTag to get updated type and price
+      const { type: updatedType, price: updatedPrice } = getPriceTag({
+        piece: state.piece,
+        packet: state.packet,
+        box: state.box,
+        ...product, // Pass other necessary product details
+      });
 
-    // Dispatch actions to update type and price
-    dispatch({ type: "CHANGE_TYPE", value: updatedType });
-    dispatch({ type: "CHANGE_PRICE", value: Number(updatedPrice) });
-
+      // Dispatch actions to update type and price
+      dispatch({ type: "CHANGE_TYPE", value: updatedType });
+      dispatch({ type: "CHANGE_PRICE", value: Number(updatedPrice) });
+    }
     // Optionally, you can calculate total here if needed
     calculateTotal(
       state.piece,
       state.box,
       state.packet,
       state.price,
-      state.discount
+      state.discount,
+      auto
     );
   };
 
-  const calculateTotal = (piece, box, packet, price, discount) => {
+  const calculateTotal = (piece, box, packet, price, discount, auto = true) => {
     let total =
       piece * price +
       box * product.boxQuantity * price +
       packet * product.packetQuantity * price -
       discount;
     dispatch({ type: "CHANGE_TOTAL", value: total.toFixed(2) });
-    let totalPieces = piece;
-    box * product.boxQuantity + packet * product.packetQuantity;
+
+    if (!auto) {
+      return;
+    }
+
+    let totalPieces =
+      piece + box * product.boxQuantity + packet * product.packetQuantity;
     const updated = getPriceTag(product, totalPieces);
     dispatch({ type: "CHANGE_TYPE", value: updated.type });
-    dispatch({ type: `CHANGE_PRICE`, value: updated.price });
+    dispatch({ type: "CHANGE_PRICE", value: updated.price });
   };
 
   useEffect(() => {
-    // console.log(1);
-
     calculateTotal(
       state.piece,
       state.box,
       state.packet,
       state.price,
-      state.discount
+      state.discount,
+      false
     );
-  }, [state.piece, state.box, state.packet, state.discount, state.price]);
+  }, [click]);
 
   useEffect(() => {
-    // console.log(2);
+    calculateTotal(
+      state.piece,
+      state.box,
+      state.packet,
+      state.price,
+      state.discount,
+      true
+    );
+  }, [state.piece, state.box, state.packet, state.discount]);
+
+  useEffect(() => {
     const updatedProduct = purchased.find((p) => p.id === product.id);
-
     if (updatedProduct && state.piece !== updatedProduct.piece) {
-      // handleChange("piece", updatedProduct.piece);
       setChange(false);
-
       const { type, price } = getPriceTag(updatedProduct);
-      console.log(type, "Uppercase type");
-
-      handleChange("type", type);
-      handleChange("price", Number(price));
+      handleChange("type", type, false);
+      handleChange("price", Number(price), false);
       dispatch({ type: "CHANGE_PIECE", value: updatedProduct.piece });
     }
   }, [product]);
 
   useEffect(() => {
-    // console.log(3);
     if (product !== undefined && change) {
-      // Create a new product object with the updated fields
-      // console.log("Mujhe bulaye the");
       const foundProduct = purchased.find((pr) => pr.id === product.id);
       if (foundProduct) {
         const updatedProduct = {
@@ -146,11 +155,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
   }, [state]);
 
   const handleRemoveProduct = () => {
-    // Create a new purchased array that excludes the product at the specified index
     const newPurchased = purchased.filter((pr) => pr.id !== product.id);
     setPurchased(newPurchased);
   };
-
   return (
     <tr key={product.id} className="mb-3 border border-black">
       <td onClick={handleRemoveProduct} className="text-center mx-auto   py-2">
@@ -182,8 +189,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         <div className="max-w-fit mx-auto border-green-500 border rounded-lg ">
           <span
             onClick={() => {
-              handleChange("type", "superWholesale");
-              handleChange("price", Number(product.superWholesalePrice));
+              handleChange("type", "superWholesale", false);
+              handleChange("price", Number(product.superWholesalePrice), false);
+              setClick((prev) => !prev);
             }}
             className={`px-3 rounded-lg  ${
               state.type === "superWholesale" ? "bg-green-500 text-white" : ""
@@ -193,8 +201,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           </span>
           <span
             onClick={() => {
-              handleChange("type", "wholesale");
-              handleChange("price", Number(product.wholesalePrice));
+              handleChange("type", "wholesale", false);
+              handleChange("price", Number(product.wholesalePrice), false);
+              setClick((prev) => !prev);
             }}
             className={`px-2 rounded-lg  ${
               state.type === "wholesale" ? "bg-green-500 text-white" : ""
@@ -203,9 +212,10 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
             WP
           </span>
           <span
-            onClick={() => {
-              handleChange("type", "retail");
-              handleChange("price", Number(product.retailPrice));
+            onClick={async () => {
+              handleChange("type", "retail", false);
+              handleChange("price", Number(product.retailPrice), false);
+              setClick((prev) => !prev);
             }}
             className={`px-3 rounded-lg  ${
               state.type === "retail" ? "bg-green-500 text-white" : ""
