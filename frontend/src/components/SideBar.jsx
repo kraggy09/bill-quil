@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { BiSolidReport } from "react-icons/bi";
+import { BiSolidCategoryAlt, BiSolidReport } from "react-icons/bi";
 import { GrTransaction } from "react-icons/gr";
 import { useEffect } from "react";
 import { BiSolidUser } from "react-icons/bi";
@@ -15,7 +15,9 @@ import {
   MdOutlineProductionQuantityLimits,
 } from "react-icons/md";
 import getDate from "../libs/constant";
+import { useSelector } from "react-redux";
 const SideBar = () => {
+  const user = useSelector((store) => store.user);
   const [time, setTime] = useState("");
   const [hidden, setHidden] = useState(true);
 
@@ -175,7 +177,22 @@ const SideBar = () => {
                 <p className="px-2">Returns</p>
               </span>
             </NavLink>
-
+            {user.isAdmin && (
+              <NavLink
+                to="/categories"
+                className={({ isActive }) =>
+                  isActive ? "bg-green-500 text-white" : ""
+                }
+              >
+                <span
+                  onClick={() => setHidden(true)}
+                  className="text-xl flex items-center py-1 hover:bg-gray-300 hover:text-black justify-start px-6"
+                >
+                  <BiSolidCategoryAlt className="hover:text-white" />
+                  <p className="px-2">Categories</p>
+                </span>
+              </NavLink>
+            )}
             <span className="flex items-center justify-start bg-green-500 text-white rounded-xl px-3 py-2 mx-6 font-bold ">
               <ImClock className="mr-2" />
               {time}
@@ -279,6 +296,19 @@ const SideBar = () => {
           >
             <PiKeyReturnFill />
           </NavLink>
+          {user.isAdmin && (
+            <NavLink
+              to="/categories"
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-green-500 text-white px-2 py-1 mx-auto rounded-lg"
+                  : "mx-auto rounded-lg px-2 py-1 hover:bg-green-600 hover:text-white"
+              }
+              onClick={() => setHidden(true)}
+            >
+              <BiSolidCategoryAlt />
+            </NavLink>
+          )}
         </div>
       )}
     </div>

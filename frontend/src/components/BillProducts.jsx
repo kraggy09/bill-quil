@@ -3,6 +3,7 @@ import { FaCalculator } from "react-icons/fa";
 import Calculator from "./Calculator";
 
 import PropTypes from "prop-types";
+import usePriceTag from "../hooks/usePriceTag";
 
 // Reducer function to manage state changes
 const reducer = (state, action) => {
@@ -37,6 +38,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     type: product.type,
     total: product.total,
   };
+  const { getPriceTag } = usePriceTag();
 
   // Use the reducer to manage state
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -48,21 +50,27 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     setChange(true);
 
     dispatch({ type: `CHANGE_${type.toUpperCase()}`, value });
-    if (
-      type === "piece" ||
-      type === "packet" ||
-      type === "box" ||
-      type === "price" ||
-      type === "discount"
-    ) {
-      calculateTotal(
-        state.piece,
-        state.box,
-        state.packet,
-        state.price,
-        state.discount
-      );
-    }
+
+    // Call getPriceTag to get updated type and price
+    const { type: updatedType, price: updatedPrice } = getPriceTag({
+      piece: state.piece,
+      packet: state.packet,
+      box: state.box,
+      ...product, // Pass other necessary product details
+    });
+
+    // Dispatch actions to update type and price
+    dispatch({ type: "CHANGE_TYPE", value: updatedType });
+    dispatch({ type: "CHANGE_PRICE", value: Number(updatedPrice) });
+
+    // Optionally, you can calculate total here if needed
+    calculateTotal(
+      state.piece,
+      state.box,
+      state.packet,
+      state.price,
+      state.discount
+    );
   };
 
   const calculateTotal = (piece, box, packet, price, discount) => {
@@ -72,10 +80,16 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       packet * product.packetQuantity * price -
       discount;
     dispatch({ type: "CHANGE_TOTAL", value: total.toFixed(2) });
+    let totalPieces = piece;
+    box * product.boxQuantity + packet * product.packetQuantity;
+    const updated = getPriceTag(product, totalPieces);
+    dispatch({ type: "CHANGE_TYPE", value: updated.type });
+    dispatch({ type: `CHANGE_PRICE`, value: updated.price });
   };
 
   useEffect(() => {
     // console.log(1);
+
     calculateTotal(
       state.piece,
       state.box,
@@ -93,6 +107,11 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       // handleChange("piece", updatedProduct.piece);
       setChange(false);
 
+      const { type, price } = getPriceTag(updatedProduct);
+      console.log(type, "Uppercase type");
+
+      handleChange("type", type);
+      handleChange("price", Number(price));
       dispatch({ type: "CHANGE_PIECE", value: updatedProduct.piece });
     }
   }, [product]);
@@ -114,6 +133,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           type: state.type,
           total: state.total,
         };
+
         const newPurchased = purchased.map((pr) => {
           if (pr.id === product.id) {
             return updatedProduct;
@@ -200,7 +220,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           onWheel={(e) => e.target.blur()}
           type="number"
           value={state.piece}
-          onChange={(e) => handleChange("piece", Number(e.target.value))}
+          onChange={(e) => {
+            handleChange("piece", Number(e.target.value));
+          }}
           className="max-w-[50px]"
         />
       </td>

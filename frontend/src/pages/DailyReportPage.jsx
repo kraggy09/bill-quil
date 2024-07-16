@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 // import toast from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import axios from "axios";
-import { FaEye, FaEyeSlash, FaLock } from "react-icons/fa";
+import { FaEyeSlash, FaLock } from "react-icons/fa";
 
 axios.defaults.withCredentials = true;
 import { apiUrl } from "../constant";
@@ -91,8 +91,15 @@ const DailyReportPage = () => {
 
       // Apply optional chaining and nullish coalescing for totalPayment as well
       totalPayment = totalPayment ?? 0;
+      let totalOutGoing = dailyReport.transactions.reduce((ac, item) => {
+        return ac + (item.taken ? item.amount : 0);
+      }, 0);
 
-      const newDataObj = { ...temp, totalPayment };
+      // Apply optional chaining and nullish coalescing for totalPayment as well
+      totalOutGoing = totalOutGoing ?? 0;
+
+      const newDataObj = { ...temp, totalPayment, totalOutGoing };
+      console.log(newDataObj, "Data");
       setDataObj(newDataObj);
     }
   }, [dailyReport]);
@@ -292,6 +299,7 @@ const DailyReportPage = () => {
             <tbody>
               {dailyReport &&
                 [...dailyReport.transactions].reverse().map((transaction) => {
+                  console.log(transaction.taken);
                   return (
                     !transaction.taken && (
                       <tr className="" key={transaction._id}>
@@ -368,39 +376,46 @@ const DailyReportPage = () => {
             </tbody>
           </table>
         ) : (
-          <table className="table-auto border-spacing-16  border border-black ml-6 ">
-            <thead className="border border-black">
-              <tr className="border border-black">
-                <th className="border border-black mx-6">Date</th>
-                <th className="border border-black mx-6">Time</th>
-                <th className="border border-black">Party Name</th>
-                <th className="border border-black px-0">Payment ₹</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dailyReport &&
-                [...dailyReport.transactions].reverse().map((transaction) => {
-                  return (
-                    transaction.taken && (
-                      <tr className="" key={transaction._id}>
-                        <td className="px-16 py-3 font-semibold">
-                          {calculateDate(new Date(transaction.createdAt))}
-                        </td>
-                        <td className="px-16 py-3 font-semibold">
-                          {calculateTime(new Date(transaction.createdAt))}
-                        </td>
-                        <td className="px-16 py-3 capitalize font-semibold">
-                          {transaction.name}
-                        </td>
-                        <td className="px-16 py-3 font-semibold">
-                          {transaction.amount}
-                        </td>
-                      </tr>
-                    )
-                  );
-                })}
-            </tbody>
-          </table>
+          <div className="flex flex-col  items-end justify-center">
+            <table className="table-auto border-spacing-16  border border-black ml-6 ">
+              <thead className="border border-black">
+                <tr className="border border-black">
+                  <th className="border border-black mx-6">Date</th>
+                  <th className="border border-black mx-6">Time</th>
+                  <th className="border border-black">Party Name</th>
+                  <th className="border border-black px-0">Payment ₹</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dailyReport &&
+                  [...dailyReport.transactions].reverse().map((transaction) => {
+                    return (
+                      transaction.taken && (
+                        <tr className="" key={transaction._id}>
+                          <td className="px-16 py-3 font-semibold">
+                            {calculateDate(new Date(transaction.createdAt))}
+                          </td>
+                          <td className="px-16 py-3 font-semibold">
+                            {calculateTime(new Date(transaction.createdAt))}
+                          </td>
+                          <td className="px-16 py-3 capitalize font-semibold">
+                            {transaction.name}
+                          </td>
+                          <td className="px-16 py-3 font-semibold">
+                            {transaction.amount}
+                          </td>
+                        </tr>
+                      )
+                    );
+                  })}
+              </tbody>
+            </table>
+            {user.isAdmin && (
+              <p className="text-lg font-semibold">
+                Total Payment: {dataObj && dataObj.totalOutGoing}
+              </p>
+            )}
+          </div>
         )}
       </div>
       {loading && <Loading />}

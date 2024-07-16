@@ -37,7 +37,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
 
   return (
     <div className="relative max-w-[100vw]">
-      <table className="min-w-full ml-8">
+      <table className="min-w-[95%] ml-8">
         <thead>
           <tr>
             <th className="text-start ">Barcode</th>
@@ -57,22 +57,22 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
             return (
               <tr key={product.id}>
                 <td className="text-start font-semibold  py-2 ">
-                  <div className="hover:cursor-pointer  max-w-[140px]">
+                  <div className="hover:cursor-pointer h-fit">
                     <span
                       onClick={() => {
                         navigate(`/products/barcode/${product.barcode[0]}`, {
                           state: product.barcode,
                         });
                       }}
-                      className="bg-green-300  mx-1 my-2 px-2 rounded-xl py-1 "
+                      className="bg-green-300  mx-1 my-2 px-2 rounded-md py-1 "
                     >
                       {" "}
                       {product.barcode[0]}
                     </span>
                     {product.barcode.length - 1 > 0 && (
-                      <span className="ml-3 rounded-full bg-yellow-400 px-3 py-2 ">
+                      <sup className="px-2 py-1 text-sm rounded-lg bg-yellow-400  ">
                         +{product.barcode.length - 1}
-                      </span>
+                      </sup>
                     )}
                   </div>
                 </td>

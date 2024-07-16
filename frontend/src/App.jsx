@@ -1,7 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 
 import { useEffect } from "react";
+
 import { fetchCustomers } from "./store/customerSlice";
+import { fetchCategories } from "./store/categorySlice";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import DashBoardPage from "./pages/DashBoardPage";
 
@@ -27,6 +29,7 @@ import UpdateStockRequest from "./components/UpdateStockRequest";
 import ReturnProduct from "./components/ReturnProduct";
 import { fetchLastBillId } from "./store/billIdSlice";
 import { Toaster } from "react-hot-toast";
+import CategoriesPage from "./pages/CategoriesPage";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
@@ -37,6 +40,7 @@ const App = () => {
       dispatch(fetchProducts());
       dispatch(fetchDailyReport());
       dispatch(fetchLastBillId());
+      dispatch(fetchCategories());
     }
   }, [user]);
 
@@ -108,6 +112,10 @@ const App = () => {
           <Route
             path="/return-product"
             element={<Protected Component={ReturnProduct} />}
+          />
+          <Route
+            path="/categories"
+            element={<Protected Component={CategoriesPage} />}
           />
         </Routes>
       </Router>

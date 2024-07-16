@@ -4,6 +4,7 @@ import productSlice from "./productSlice";
 import reportSlice from "./reportSlice";
 import userSlice from "./userSlice";
 import billIdSlice from "./billIdSlice";
+import categorySlice from "./categorySlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     report: reportSlice,
     user: userSlice,
     billId: billIdSlice,
+    categories: categorySlice,
   },
 });
 

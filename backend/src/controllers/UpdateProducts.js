@@ -137,6 +137,13 @@ export const acceptInventoryRequest = async (req, res) => {
       { new: true, session }
     );
 
+    if (!updatedProduct) {
+      return res.status(404).json({
+        msg: "Product not found",
+        success: false,
+      });
+    }
+
     const product = {
       product: updatedProduct._id,
       quantity: inv.quantity,
