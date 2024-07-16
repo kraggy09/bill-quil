@@ -24,7 +24,7 @@ export const PrintButton = ({
     <div>
       <button
         onClick={() => {
-          navigate("/");
+          navigate("/newbill");
         }}
         className=" bg-red-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
       >
@@ -36,7 +36,7 @@ export const PrintButton = ({
           <button
             className=" bg-green-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
             onClick={() => {
-              navigate("/");
+              navigate("/newbill");
             }}
           >
             Print Bill
@@ -46,7 +46,7 @@ export const PrintButton = ({
         onAfterPrint={() => {
           // Handle actions after printing (e.g., close the print)
           setIsOpen(false);
-          navigate("/");
+          navigate("/newbill");
         }}
       />
       <PrintBill
