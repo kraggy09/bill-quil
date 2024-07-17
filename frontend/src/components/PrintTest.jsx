@@ -24,7 +24,10 @@ export const PrintButton = ({
     <div>
       <button
         onClick={() => {
-          navigate("/newbill");
+          navigate("/");
+          setTimeout(() => {
+            navigate("/newBill");
+          }, 500);
         }}
         className=" bg-red-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
       >
@@ -36,7 +39,10 @@ export const PrintButton = ({
           <button
             className=" bg-green-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
             onClick={() => {
-              navigate("/newbill");
+              navigate("/");
+              setTimeout(() => {
+                navigate("/newBill");
+              }, 500);
             }}
           >
             Print Bill
@@ -46,7 +52,10 @@ export const PrintButton = ({
         onAfterPrint={() => {
           // Handle actions after printing (e.g., close the print)
           setIsOpen(false);
-          navigate("/newbill");
+          navigate("/");
+          setTimeout(() => {
+            navigate("/newBill");
+          }, 500);
         }}
       />
       <PrintBill
@@ -66,6 +75,9 @@ export const PrintButton = ({
             className=" bg-blue-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
             onClick={() => {
               navigate("/");
+              setTimeout(() => {
+                navigate("/newBill");
+              }, 500);
             }}
           >
             Print Thermal
@@ -76,6 +88,9 @@ export const PrintButton = ({
           // Handle actions after printing (e.g., close the print)
           setIsOpen(false);
           navigate("/");
+          setTimeout(() => {
+            navigate("/newBill");
+          }, 500);
         }}
       />
 
@@ -85,6 +100,9 @@ export const PrintButton = ({
             className=" bg-yellow-600 mx-6 my-2 p-2 text-white font-bold rounded-xl px-3"
             onClick={() => {
               navigate("/");
+              setTimeout(() => {
+                navigate("/newBill");
+              }, 500);
             }}
           >
             Print Thermal Hindi
@@ -95,6 +113,9 @@ export const PrintButton = ({
           // Handle actions after printing (e.g., close the print)
           setIsOpen(false);
           navigate("/");
+          setTimeout(() => {
+            navigate("/newBill");
+          }, 500);
         }}
       />
       <ThermalPrint

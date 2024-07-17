@@ -55,21 +55,21 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     if (auto) {
       // Call getPriceTag to get updated type and price
       const { type: updatedType, price: updatedPrice } = getPriceTag({
-        piece: state.piece,
-        packet: state.packet,
-        box: state.box,
+        piece: type === "piece" ? value : state.piece,
+        packet: type === "packet" ? value : state.packet,
+        box: type === "box" ? value : state.box,
         ...product, // Pass other necessary product details
       });
 
       // Dispatch actions to update type and price
-      dispatch({ type: "CHANGE_TYPE", value: updatedType });
       dispatch({ type: "CHANGE_PRICE", value: Number(updatedPrice) });
+      dispatch({ type: "CHANGE_TYPE", value: updatedType });
     }
     // Optionally, you can calculate total here if needed
     calculateTotal(
-      state.piece,
-      state.box,
-      state.packet,
+      type === "piece" ? value : state.piece,
+      type === "box" ? value : state.box,
+      type === "packet" ? value : state.packet,
       state.price,
       state.discount,
       auto
@@ -82,9 +82,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       box * product.boxQuantity * price +
       packet * product.packetQuantity * price -
       discount;
-    dispatch({ type: "CHANGE_TOTAL", value: total.toFixed(2) });
 
     if (!auto) {
+      dispatch({ type: "CHANGE_TOTAL", value: total.toFixed(2) });
       return;
     }
 
@@ -93,6 +93,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     const updated = getPriceTag(product, totalPieces);
     dispatch({ type: "CHANGE_TYPE", value: updated.type });
     dispatch({ type: "CHANGE_PRICE", value: updated.price });
+
+    let newTotal = state.price * totalPieces;
+    dispatch({ type: "CHANGE_TOTAL", value: newTotal.toFixed(2) });
   };
 
   useEffect(() => {
@@ -158,16 +161,17 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     const newPurchased = purchased.filter((pr) => pr.id !== product.id);
     setPurchased(newPurchased);
   };
+
   return (
     <tr key={product.id} className="mb-3 border border-black">
-      <td onClick={handleRemoveProduct} className="text-center mx-auto   py-2">
-        <span className=" text-red-600 hover:cursor-pointer font-bold bg-gray-400 px-2 py-1 rounded-full hover:text-red-800">
+      <td onClick={handleRemoveProduct} className="text-center mx-auto py-2">
+        <span className="text-red-600 hover:cursor-pointer font-bold bg-gray-400 px-2 py-1 rounded-full hover:text-red-800">
           X
         </span>
       </td>
-      <td className="text-center capitalize font-semibold  py-2">
-        <span className="flex items-center justify-center ">
-          {product.name}{" "}
+      <td className="text-center capitalize font-semibold py-2">
+        <span className="flex items-center justify-center">
+          {product.name}
           {product.measuring === "kg" && (
             <FaCalculator
               onClick={() => setOpen(true)}
@@ -184,16 +188,16 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           )}
         </span>
       </td>
-      <td className="text-center font-semibold  py-2">{state.price}₹</td>
-      <td className="text-center font-semibold  py-2">
-        <div className="max-w-fit mx-auto border-green-500 border rounded-lg ">
+      <td className="text-center font-semibold py-2">{state.price}₹</td>
+      <td className="text-center font-semibold py-2">
+        <div className="max-w-fit mx-auto border-green-500 border rounded-lg">
           <span
             onClick={() => {
               handleChange("type", "superWholesale", false);
               handleChange("price", Number(product.superWholesalePrice), false);
               setClick((prev) => !prev);
             }}
-            className={`px-3 rounded-lg  ${
+            className={`px-3 rounded-lg ${
               state.type === "superWholesale" ? "bg-green-500 text-white" : ""
             }`}
           >
@@ -205,7 +209,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
               handleChange("price", Number(product.wholesalePrice), false);
               setClick((prev) => !prev);
             }}
-            className={`px-2 rounded-lg  ${
+            className={`px-2 rounded-lg ${
               state.type === "wholesale" ? "bg-green-500 text-white" : ""
             }`}
           >
@@ -217,7 +221,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
               handleChange("price", Number(product.retailPrice), false);
               setClick((prev) => !prev);
             }}
-            className={`px-3 rounded-lg  ${
+            className={`px-3 rounded-lg ${
               state.type === "retail" ? "bg-green-500 text-white" : ""
             }`}
           >
@@ -225,7 +229,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           </span>
         </div>
       </td>
-      <td className="text-center font-semibold  py-2">
+      <td className="text-center font-semibold py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -236,7 +240,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           className="max-w-[50px]"
         />
       </td>
-      <td className="text-center font-semibold  py-2">
+      <td className="text-center font-semibold py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -245,7 +249,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           className="max-w-[50px]"
         />
       </td>
-      <td className="text-center font-semibold  py-2">
+      <td className="text-center font-semibold py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -254,7 +258,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           className="max-w-[50px]"
         />
       </td>
-      <td className="text-center font-semibold  py-2">
+      <td className="text-center font-semibold py-2">
         <input
           onWheel={(e) => e.target.blur()}
           type="number"
@@ -264,7 +268,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
         />
         ₹
       </td>
-      <td className="text-center font-semibold  py-2">{state.total}₹</td>
+      <td className="text-center font-semibold py-2">{state.total}₹</td>
     </tr>
   );
 };
