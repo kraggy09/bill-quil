@@ -19,6 +19,14 @@ const transactionSchema = mongoose.Schema({
   newOutstanding: {
     type: Number,
   },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Customer",
+  },
+  approved: {
+    type: Boolean,
+    required: true,
+  },
   name: {
     type: String,
     required: true,

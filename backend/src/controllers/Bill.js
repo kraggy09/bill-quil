@@ -106,6 +106,8 @@ export const createBill = async (req, res) => {
             newOutstanding: billTotal - payment,
             taken: false,
             paymentMode,
+            approved: true,
+            customer: customer._id,
           },
         ],
         { session }

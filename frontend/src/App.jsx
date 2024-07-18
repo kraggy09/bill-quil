@@ -30,6 +30,7 @@ import ReturnProduct from "./components/ReturnProduct";
 import { fetchLastBillId } from "./store/billIdSlice";
 import { Toaster } from "react-hot-toast";
 import CategoriesPage from "./pages/CategoriesPage";
+import NewTransaction from "./components/NewTransaction";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
@@ -116,6 +117,10 @@ const App = () => {
           <Route
             path="/categories"
             element={<Protected Component={CategoriesPage} />}
+          />
+          <Route
+            path="/newTransaction"
+            element={<Protected Component={NewTransaction} />}
           />
         </Routes>
       </Router>

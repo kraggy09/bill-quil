@@ -3,8 +3,7 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 
 import { useDispatch, useSelector } from "react-redux";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
+import { Toaster, toast } from "react-hot-toast";
 import { fetchDailyReport } from "../store/reportSlice";
 import { apiUrl } from "../constant";
 import Loading from "./Loading";
@@ -121,6 +120,7 @@ const NewTransaction = () => {
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          handleSubmit();
         }}
         className="shadow-xl shadow-gray-400 min-w-[80vw] rounded-2xl max-w-[80vw]"
       >
@@ -288,11 +288,11 @@ const NewTransaction = () => {
             </span>
           )}
 
-          <button className={css.button} onClick={handleSubmit}>
+          <button type="submit" className={css.button}>
             Create {taken ? "Transaction" : "Payment"}
           </button>
         </div>
-        <ToastContainer autoClose={3000} />
+        <Toaster autoClose={3000} />
       </form>
     </div>
   );
