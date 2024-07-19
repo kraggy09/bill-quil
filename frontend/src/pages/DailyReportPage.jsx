@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-// import toast from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import axios from "axios";
 import { FaEyeSlash, FaLock } from "react-icons/fa";
 
@@ -38,6 +36,7 @@ const DailyReportPage = () => {
       });
       if (res) {
         const temp = res.data;
+        console.log("Data given below", temp);
         // console.log("Data", temp);
         setDailyReport(temp.newDaily);
         // toast.success(`Bills Found Successfully`);
@@ -65,8 +64,21 @@ const DailyReportPage = () => {
         (acc, currentBill) => {
           const temp = currentBill.items.reduce(
             (ac, item) => {
+              if (item?.product?.costPrice * item.quantity > item.total) {
+                console.log(
+                  `Name: ${item?.product?.name} Cost Price:${
+                    item.product?.costPrice * item.quantity
+                  } SP:${item.total}`
+                );
+                return {
+                  billAmount: ac.billAmount + (item.total ?? 0),
+
+                  investment: ac.investment + (item.total - 10),
+                };
+              }
               return {
                 billAmount: ac.billAmount + (item.total ?? 0),
+
                 investment:
                   ac.investment +
                   (item.quantity ?? 0) * (item.product?.costPrice ?? 0),
@@ -89,7 +101,6 @@ const DailyReportPage = () => {
         return ac + (item.taken === false ? item.amount : 0);
       }, 0);
 
-      // Apply optional chaining and nullish coalescing for totalPayment as well
       totalPayment = totalPayment ?? 0;
       let totalOutGoing = dailyReport.transactions.reduce((ac, item) => {
         return ac + (item.taken ? item.amount : 0);

@@ -117,13 +117,7 @@ const NewTransaction = () => {
   return (
     <div className="w-full min-h-[100vh] flex items-center justify-center">
       {loading && <Loading />}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit();
-        }}
-        className="shadow-xl shadow-gray-400 min-w-[80vw] rounded-2xl max-w-[80vw]"
-      >
+      <article className="shadow-xl shadow-gray-400 min-w-[80vw] rounded-2xl max-w-[80vw]">
         <h1 className="text-center text-3xl my-6 font-bold">
           <p className="inline-block border-b-2 px-6 my-1 py-2 border-black">
             Create a New {taken ? "Transaction" : "Payment"}
@@ -288,12 +282,17 @@ const NewTransaction = () => {
             </span>
           )}
 
-          <button type="submit" className={css.button}>
+          <button
+            onClick={(e) => {
+              handleSubmit();
+            }}
+            className={css.button}
+          >
             Create {taken ? "Transaction" : "Payment"}
           </button>
         </div>
         <Toaster autoClose={3000} />
-      </form>
+      </article>
     </div>
   );
 };
