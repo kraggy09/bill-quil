@@ -355,10 +355,9 @@ export const returnProduct = async (req, res) => {
         previousQuantity: updatedProduct.stock - quantity,
       });
     }
-
     // Create the transaction based on the return type
     if (returnType === "adjustment") {
-      if (!foundCustomer.outstanding) {
+      if (foundCustomer.outstanding == null) {
         throw new Error("Outstanding not found");
       }
       const newOutstanding = foundCustomer?.outstanding - total;
@@ -372,6 +371,8 @@ export const returnProduct = async (req, res) => {
             taken: false,
             purpose: "Return Product",
             paymentMode: "productReturn",
+            approved: true,
+            customer: foundCustomer._id,
           },
         ],
         { new: true, session }
@@ -395,6 +396,7 @@ export const returnProduct = async (req, res) => {
             taken: true,
             purpose: "return",
             paymentMode: "cash",
+            approved: true,
           },
         ],
         { new: true, session }
@@ -440,6 +442,7 @@ export const returnProduct = async (req, res) => {
     // If an error occurs, abort the transaction and return error response
     await session.abortTransaction();
     session.endSession();
+    console.log(error);
     console.error("Error:", error.message);
     return res.status(500).json({
       success: false,
