@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import Barcode from "react-barcode";
 import { useSelector } from "react-redux";
 import ReactToPrint from "react-to-print";
@@ -84,10 +84,14 @@ const BarcodePage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    barcode.push({
+                    let newBarcode = [...barcode];
+
+                    newBarcode.push({
                       barcode: selectedBarcode,
                       quantity: parseInt(quantity, 10), // Convert quantity to a number
+                      name: selectedProduct.name, // Include the product name
                     });
+                    setBarcode(newBarcode);
                     setSelectedProduct(null);
                     setSelectedBarcode(null);
                     setQuery("");
@@ -145,22 +149,41 @@ const BarcodePage = () => {
         )}
       </div>
 
-      <div className="max-w-[85vw] mt-3 ml-3 flex flex-wrap" ref={componentRef}>
-        {barcode.map((bar, index) => {
-          return Array(bar.quantity)
-            .fill("")
-            .map((_, i) => {
-              return (
-                <Barcode
-                  key={`${bar.barcode}-${index}-${i}`}
-                  width={2}
-                  value={bar.barcode}
-                  height={30}
-                  fontSize={12}
-                />
-              );
-            });
-        })}
+      <div className="max-w-[794px] ml-3 flex flex-wrap" ref={componentRef}>
+        {barcode
+          .reduce(
+            (acc, bar, index) => {
+              const barcodes = Array(bar.quantity)
+                .fill("")
+                .map((_, i) => ({
+                  name: bar.name,
+                  barcode: bar.barcode,
+                  key: `${bar.barcode}-${index}-${i + acc.currentIndex}`,
+                  index: acc.currentIndex + i,
+                }));
+
+              acc.currentIndex += bar.quantity;
+              acc.barcodes.push(...barcodes);
+              return acc;
+            },
+            { barcodes: [], currentIndex: 0 }
+          )
+          .barcodes.map((bar) => (
+            <div
+              className={`w-1/5 my-2 flex flex-col items-center justify-center ${
+                bar.index % 65 <= 4 && "mt-9"
+              }`}
+              key={bar.key}
+            >
+              <span className="text-[10px] capitalize">{bar.name}</span>
+              <Barcode
+                width={1.4}
+                value={bar.barcode}
+                height={20}
+                fontSize={10}
+              />
+            </div>
+          ))}
       </div>
     </div>
   );
