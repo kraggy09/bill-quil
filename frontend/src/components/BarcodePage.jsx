@@ -85,11 +85,10 @@ const BarcodePage = () => {
                 <button
                   onClick={() => {
                     let newBarcode = [...barcode];
-
                     newBarcode.push({
                       barcode: selectedBarcode,
-                      quantity: parseInt(quantity, 10), // Convert quantity to a number
-                      name: selectedProduct.name, // Include the product name
+                      quantity: parseInt(quantity, 10),
+                      name: selectedProduct.name, // Convert quantity to a number
                     });
                     setBarcode(newBarcode);
                     setSelectedProduct(null);
@@ -149,37 +148,45 @@ const BarcodePage = () => {
         )}
       </div>
 
-      <div className="max-w-[794px] ml-3 flex flex-wrap" ref={componentRef}>
+      <div
+        className="min-w-[1122px] mt-[72px] ml-3 grid grid-cols-5"
+        ref={componentRef}
+      >
         {barcode
-          .reduce(
-            (acc, bar, index) => {
-              const barcodes = Array(bar.quantity)
-                .fill("")
-                .map((_, i) => ({
-                  name: bar.name,
-                  barcode: bar.barcode,
-                  key: `${bar.barcode}-${index}-${i + acc.currentIndex}`,
-                  index: acc.currentIndex + i,
-                }));
+          .reduce((acc, bar, barIndex) => {
+            let currentIndex = acc.length; // Start from where the last barcode ended
 
-              acc.currentIndex += bar.quantity;
-              acc.barcodes.push(...barcodes);
-              return acc;
-            },
-            { barcodes: [], currentIndex: 0 }
-          )
-          .barcodes.map((bar) => (
+            for (let i = 0; i < bar.quantity; i++) {
+              // Determine if the current index and the next 4 items should have extra margin
+              const shouldAddExtraMargin =
+                currentIndex >= 5 &&
+                (currentIndex % 65 === 0 ||
+                  (currentIndex % 65 >= 0 && currentIndex % 65 < 5));
+
+              acc.push({
+                key: `${bar.barcode}-${barIndex}-${i}`,
+                name: bar.name,
+                barcode: bar.barcode,
+                extraMargin: shouldAddExtraMargin,
+              });
+
+              currentIndex++;
+            }
+
+            return acc;
+          }, [])
+          .map((item) => (
             <div
-              className={`w-1/5 my-2 flex flex-col items-center justify-center ${
-                bar.index % 65 <= 4 && "mt-9"
+              key={item.key}
+              className={`min-w-[143px] mb-8 flex items-center justify-center flex-col min-h-[79px] ${
+                item.extraMargin ? "mt-[72px]" : ""
               }`}
-              key={bar.key}
             >
-              <span className="text-[10px] capitalize">{bar.name}</span>
+              <p className="text-center capitalize text-sm">{item.name}</p>
               <Barcode
-                width={1.4}
-                value={bar.barcode}
-                height={20}
+                width={2}
+                value={item.barcode}
+                height={30}
                 fontSize={10}
               />
             </div>

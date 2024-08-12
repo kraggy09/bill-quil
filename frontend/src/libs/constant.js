@@ -30,9 +30,12 @@ export const calculateTime = (date) => {
 
 export const calculateMeasuring = (total) => {
   if (total < 1) {
-    return total * 1000 + "g";
+    total = total * 1000;
+    total = total % 1 != 0 ? total.toPrecision(3) : total;
+    return total + " g";
   } else {
-    return total + "kg";
+    total = total % 1 != 0 ? total.toFixed(2) : total;
+    return total + " kg";
   }
 };
 

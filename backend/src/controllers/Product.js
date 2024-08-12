@@ -153,19 +153,13 @@ export const getAllproduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    const { name, mrp, barcode } = req.query;
-    if (name) {
-      const deletedProduct = await Product.findOneAndDelete({ name, mrp });
-      if (deletedProduct) {
-        return res.status(200).json({
-          success: true,
-          data: deletedProduct,
-          msg: "Product deleted successfully",
-        });
-      }
-    }
-    if (barcode) {
-      const deletedProduct = await Product.findOneAndDelete({ barcode });
+    const product = req.query;
+    console.log(product);
+
+    if (product.barcode) {
+      const deletedProduct = await Product.findOneAndDelete({
+        barcode: product.barcode,
+      });
       if (deletedProduct) {
         return res.status(200).json({
           success: true,
@@ -180,7 +174,6 @@ export const deleteProduct = async (req, res) => {
       msg: "No product found ",
     });
   } catch (error) {
-    // console.log(error.message);
     res.status(500).json({
       success: false,
       msg: error.message,

@@ -187,7 +187,6 @@ const EditProduct = () => {
             </label>
             <select
               value={formData.measuring}
-              disabled
               name="measuring"
               className="max-w-[300px] font-bold px-2 text-xl min-w-[300px] mx-auto"
               onChange={handleInputChange}
