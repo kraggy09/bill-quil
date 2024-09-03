@@ -4,7 +4,8 @@ import axios from "axios";
 import Loading from "./Loading";
 import { apiUrl } from "../constant";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-hot-toast";
+import { calculateMeasuring } from "../libs/constant";
 
 const UpdateStockRequest = () => {
   const { products } = useSelector((store) => store.product);
@@ -41,7 +42,17 @@ const UpdateStockRequest = () => {
   };
 
   class Product {
-    constructor(id, name, barcode, quantity, stock, piece, packet, box) {
+    constructor(
+      id,
+      name,
+      barcode,
+      quantity,
+      stock,
+      piece,
+      packet,
+      box,
+      measuring
+    ) {
       this.box = box;
       this.pieceQuantity = 0;
       this.packetQuantity = 0;
@@ -53,6 +64,7 @@ const UpdateStockRequest = () => {
       this.id = id;
       this.barcode = barcode;
       this.stock = stock;
+      this.measuring = measuring;
     }
   }
 
@@ -79,8 +91,18 @@ const UpdateStockRequest = () => {
         updatedOptions[0].stock,
         updatedOptions[0].piece,
         updatedOptions[0].packet,
-        updatedOptions[0].box
+        updatedOptions[0].box,
+        updatedOptions[0].measuring
       );
+      const productExists = updatedProducts.update.some(
+        (prev) => prev.barcode === newProduct.barcode
+      );
+
+      if (productExists) {
+        toast.error("Product already added");
+        setQuery("");
+        return;
+      }
       const newProductList = {
         createdBy: user.username,
         update: updatedProducts.update.map((prevProduct) => prevProduct),
@@ -144,8 +166,19 @@ const UpdateStockRequest = () => {
                           prod.stock,
                           prod.piece,
                           prod.packet,
-                          prod.box
+                          prod.box,
+                          prod.measuring
                         );
+                        const productExists = updatedProducts.update.some(
+                          (prev) => prev.barcode === newProduct.barcode
+                        );
+
+                        if (productExists) {
+                          toast.error("Product already added");
+                          setQuery("");
+                          return;
+                        }
+
                         const newProductList = {
                           createdBy: user.username,
                           update: updatedProducts.update.map(
@@ -205,9 +238,16 @@ const UpdateStockRequest = () => {
                       {prod.name}
                     </td>
                     <td className="text-center flex flex-col capitalize font-semibold text-xl py-2">
-                      <p> {prod.stock}</p>
+                      <p>
+                        {" "}
+                        {prod.measuring === "kg"
+                          ? calculateMeasuring(prod.stock)
+                          : prod.stock}
+                      </p>
                       <p className="text-[18px] rounded-xl bg-green-200  mt-2">
-                        {calculateStock(prod)}
+                        {prod.measuring === "kg"
+                          ? calculateMeasuring(prod.stock)
+                          : calculateStock(prod)}
                       </p>
                     </td>
                     <td className="text-center capitalize font-semibold text-xl py-2">
@@ -339,6 +379,7 @@ const UpdateStockRequest = () => {
           <button
             onClick={() => {
               handleSubmit();
+              z;
             }}
             className="bg-green-200 border-green-400 text-xl mr-16 mt-6 px-4 py-2 rounded-xl font-semibold "
           >
@@ -346,7 +387,7 @@ const UpdateStockRequest = () => {
           </button>
         </div>
       )}
-      <ToastContainer autoClose={1500} />
+      {/* <ToastContainer autoClose={1500} /> */}
     </div>
   );
 };

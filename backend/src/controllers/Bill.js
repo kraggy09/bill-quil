@@ -7,6 +7,7 @@ import Product from "../models/Product.js";
 import Transaction from "../models/Transaction.js";
 import BillId from "../models/BillId.js";
 import moment from "moment-timezone";
+import Logger from "../models/Logger.js";
 
 export const createBill = async (req, res) => {
   const currentDate = getDate();
@@ -49,6 +50,7 @@ export const createBill = async (req, res) => {
           product.box * product.boxQuantity;
         billTotal += product.total;
         const id = new mongoose.Types.ObjectId(product.id);
+        let availableProduct = await Product.findById(id);
         const updatedProduct = await Product.findByIdAndUpdate(
           id,
           {
@@ -56,6 +58,21 @@ export const createBill = async (req, res) => {
           },
           { new: true, session }
         );
+
+        if (!updatedProduct) {
+          return res.status(404).json({
+            success: false,
+            msg: "Unable to update stock  ",
+          });
+        }
+
+        let logger = await Logger.create({
+          name: "Billing",
+          previousQuantity: availableProduct.stock,
+          qunatity: quantity,
+          newQuantity: updatedProduct.stock,
+          product: availableProduct._id,
+        });
 
         return {
           product: updatedProduct._id,

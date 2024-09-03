@@ -7,6 +7,7 @@ import axios from "axios";
 import UpdateProducts from "../models/UpdateProducts.js";
 import Transaction from "../models/Transaction.js";
 import mongoose from "mongoose";
+import Logger from "../models/Logger.js";
 
 export const createNewProduct = async (req, res) => {
   try {
@@ -337,11 +338,26 @@ export const returnProduct = async (req, res) => {
         product.packet * product.packetQuantity +
         product.box * product.boxQuantity;
       const id = new mongoose.Types.ObjectId(product.id);
+      let availableProduct = await Product.findById(id);
       const updatedProduct = await Product.findByIdAndUpdate(
         id,
         { $inc: { stock: quantity } },
         { new: true, session }
       );
+      if (!updatedProduct) {
+        return res.status(404).json({
+          msg: "Error while returning the product",
+          success: false,
+        });
+      }
+
+      let logger = await Logger.create({
+        name: "Product Return",
+        previousQuantity: availableProduct.stock,
+        newQuantity: updatedProduct.stock,
+        qunatity: quantity,
+        product: availableProduct._id,
+      });
       items.push({
         product: updatedProduct._id,
         quantity: quantity,

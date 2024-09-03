@@ -164,6 +164,8 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
 
   return (
     <tr key={product.id} className="mb-3 border border-black">
+      <td className="text-center font-semibold py-2">{product?.stock}</td>
+
       <td onClick={handleRemoveProduct} className="text-center mx-auto py-2">
         <span className="text-red-600 hover:cursor-pointer font-bold bg-gray-400 px-2 py-1 rounded-full hover:text-red-800">
           X
@@ -287,6 +289,7 @@ BillProducts.propTypes = {
     total: PropTypes.number.isRequired,
     type: PropTypes.string.isRequired,
     wholesalePrice: PropTypes.number.isRequired,
+    stock: PropTypes.number.isRequired,
     retailPrice: PropTypes.number.isRequired,
     measuring: PropTypes.string.isRequired,
     superWholesalePrice: PropTypes.number.isRequired,

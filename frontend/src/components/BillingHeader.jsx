@@ -22,7 +22,8 @@ class Product {
     discount,
     total,
     category,
-    hi
+    hi,
+    stock
   ) {
     this.id = id;
     this.boxQuantity = boxQuantity;
@@ -43,6 +44,7 @@ class Product {
     this.total = total;
     this.category = category;
     this.hi = hi;
+    this.stock = stock;
   }
 }
 
@@ -221,8 +223,10 @@ const BillingHeader = ({
           ? product.superWholesalePrice
           : product.retailPrice) * 1,
         product.category,
-        product.hi
+        product.hi,
+        product.stock
       );
+
       setPurchased([...purchased, newProduct]);
     } else {
       const newPurchased = purchased.map((el) => {

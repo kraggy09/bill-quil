@@ -31,7 +31,7 @@ const ThermalPrint = React.forwardRef(
             Sultan Communication & General Stroes
           </h1>
           <p className="text-xs font-semibold">Behind Green Land Hotel</p>
-          <p className="text-xs font-semibold">Mob:9607744000/9145506000</p>
+          <p className="text-xs font-semibold">Mob:9370564909/9145506000</p>
           <div className="font-bold mt-3">
             ------------------------------------------------
           </div>

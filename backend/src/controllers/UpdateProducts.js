@@ -1,5 +1,6 @@
 import getDate from "../config/getDate.js";
 import DailyReport from "../models/DailyReport.js";
+import Logger from "../models/Logger.js";
 import Product from "../models/Product.js";
 import UpdateProducts from "../models/UpdateProducts.js";
 import mongoose from "mongoose";
@@ -129,6 +130,8 @@ export const acceptInventoryRequest = async (req, res) => {
     session.startTransaction();
     const currentDate = getDate();
 
+    let availableProduct = await Product.findById(inv.product._id);
+
     const updatedProduct = await Product.findByIdAndUpdate(
       inv.product._id,
       {
@@ -143,6 +146,14 @@ export const acceptInventoryRequest = async (req, res) => {
         success: false,
       });
     }
+
+    let logger = await Logger.create({
+      name: "Stock Update",
+      previousQuantity: availableProduct.stock,
+      newQuantity: updatedProduct.stock,
+      product: availableProduct._id,
+      qunatity: inv.quantity,
+    });
 
     const product = {
       product: updatedProduct._id,
@@ -194,16 +205,28 @@ export const acceptAllInventoryRequest = async (req, res) => {
     const requests = req.body; // Assuming req.body is an array of inventory requests
 
     for (const inv of requests) {
+      const availableProduct = await Product.findById(inv.product._id);
+      let newStock = availableProduct.stock + inv.quantity;
+      console.log(newStock, "This is manual");
+
       const updatedProduct = await Product.findByIdAndUpdate(
         inv.product._id,
         { $inc: { stock: inv.quantity } },
         { new: true, session }
       );
 
+      console.log(updatedProduct.stock, "This is automatic");
+
       if (!updatedProduct) {
         throw new Error("Product update failed");
       }
-
+      let logger = await Logger.create({
+        name: "Stock Update",
+        previousQuantity: availableProduct.stock,
+        newQuantity: updatedProduct.stock,
+        qunatity: inv.quantity,
+        product: availableProduct._id,
+      });
       const product = {
         product: updatedProduct._id,
         quantity: inv.quantity,
