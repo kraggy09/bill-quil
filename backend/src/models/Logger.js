@@ -13,7 +13,7 @@ let loggerSchema = new Schema(
       required: true,
     },
 
-    qunatity: {
+    quantity: {
       type: Number,
       required: true,
     },

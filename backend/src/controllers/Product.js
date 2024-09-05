@@ -8,6 +8,7 @@ import UpdateProducts from "../models/UpdateProducts.js";
 import Transaction from "../models/Transaction.js";
 import mongoose from "mongoose";
 import Logger from "../models/Logger.js";
+import BillId from "../models/BillId.js";
 
 export const createNewProduct = async (req, res) => {
   try {
@@ -311,24 +312,37 @@ export const updateStock = async (req, res) => {
 export const returnProduct = async (req, res) => {
   const abc = req.body;
   const currentDate = getDate();
-  const { purchased, foundCustomer, returnType, total } = abc;
+  let { purchased, foundCustomer, billId, returnType, total } = abc;
 
   const session = await mongoose.startSession();
   session.startTransaction();
+  let newBillId = billId + 1;
 
   try {
     let transaction, dailyReport;
+
+    const previousBillId = await BillId.findOne({ id: newBillId }).session(
+      session
+    );
+    if (previousBillId) {
+      await session.abortTransaction();
+      return res.status(409).json({
+        msg: "Duplicate bill detected, please check your history",
+        success: false,
+        previousBillId,
+      });
+    }
+
+    // Update the daily report for the current date
     dailyReport = await DailyReport.findOneAndUpdate(
       { date: currentDate },
       {},
-      { new: true, upsert: true }
+      { new: true, upsert: true, session }
     );
 
     if (purchased.length === 0) {
       throw new Error("No products to return");
     }
-    console.log("Daily Report", dailyReport);
-    console.log("Purchased", purchased);
 
     // Update the stock for each purchased product
     const items = [];
@@ -338,38 +352,50 @@ export const returnProduct = async (req, res) => {
         product.packet * product.packetQuantity +
         product.box * product.boxQuantity;
       const id = new mongoose.Types.ObjectId(product.id);
-      let availableProduct = await Product.findById(id);
+      let availableProduct = await Product.findById(id).session(session);
+      if (!availableProduct) {
+        throw new Error("Product not found");
+      }
+
       const updatedProduct = await Product.findByIdAndUpdate(
         id,
         { $inc: { stock: quantity } },
         { new: true, session }
       );
+
       if (!updatedProduct) {
-        return res.status(404).json({
-          msg: "Error while returning the product",
-          success: false,
-        });
+        throw new Error("Error while updating product stock");
       }
 
-      let logger = await Logger.create({
-        name: "Product Return",
-        previousQuantity: availableProduct.stock,
-        newQuantity: updatedProduct.stock,
-        qunatity: quantity,
-        product: availableProduct._id,
-      });
+      await Logger.create(
+        [
+          {
+            name: "Product Return",
+            previousQuantity: availableProduct.stock,
+            newQuantity: updatedProduct.stock,
+            quantity: quantity,
+            product: availableProduct._id,
+          },
+        ],
+        { session }
+      );
+
       items.push({
         product: updatedProduct._id,
         quantity: quantity,
         previousQuantity: updatedProduct.stock - quantity,
       });
     }
+
     // Create the transaction based on the return type
     if (returnType === "adjustment") {
-      if (foundCustomer.outstanding == null) {
+      foundCustomer = await Customer.findById(foundCustomer._id).session(
+        session
+      );
+      if (!foundCustomer) {
         throw new Error("Outstanding not found");
       }
-      const newOutstanding = foundCustomer?.outstanding - total;
+      const newOutstanding = foundCustomer.outstanding - total;
       transaction = await Transaction.create(
         [
           {
@@ -384,10 +410,14 @@ export const returnProduct = async (req, res) => {
             customer: foundCustomer._id,
           },
         ],
-        { new: true, session }
+        { session }
       );
-      // Update customer's outstanding and push the transaction ID to transactions array
-      const customer = await Customer.findByIdAndUpdate(
+
+      if (!transaction) {
+        throw new Error("Unable to create the transaction");
+      }
+
+      const updatedCustomer = await Customer.findByIdAndUpdate(
         foundCustomer._id,
         {
           $inc: { outstanding: -total },
@@ -395,6 +425,10 @@ export const returnProduct = async (req, res) => {
         },
         { session }
       );
+
+      if (!updatedCustomer) {
+        throw new Error("Unable to update the customer's outstanding balance");
+      }
     } else {
       // If returnType is not "adjustment", create a standard product return transaction
       transaction = await Transaction.create(
@@ -408,8 +442,12 @@ export const returnProduct = async (req, res) => {
             approved: true,
           },
         ],
-        { new: true, session }
+        { session }
       );
+
+      if (!transaction) {
+        throw new Error("Unable to create the transaction");
+      }
     }
 
     // Prepare data for daily report update
@@ -421,26 +459,26 @@ export const returnProduct = async (req, res) => {
 
     // Update the daily report document
     if (transaction) {
-      // Push the updated products and transaction ID to the daily report
-      console.log(dailyReport);
       dailyReport.updatedToday.push(...productsForDailyReport);
       dailyReport.transactions.push(transaction[0]._id);
-      // Save the modified daily report
-      dailyReport = await dailyReport.save({ session });
+      const savedDailyReport = await dailyReport.save({ session });
+
+      if (!savedDailyReport) {
+        throw new Error("Unable to save the daily report");
+      }
+
+      dailyReport = savedDailyReport;
     } else {
-      // If transaction creation fails, abort the session
-      await session.abortTransaction();
-      return res.status(404).json({
-        msg: "There was an error creating the transaction",
-        success: false,
-      });
+      throw new Error("Transaction was created but not saved");
+    }
+
+    const idS = await BillId.create([{ id: newBillId }], { session });
+    if (!idS[0]) {
+      throw new Error("Error creating the id");
     }
 
     // Commit the transaction if everything is successful
     await session.commitTransaction();
-    session.endSession();
-
-    // Return success response
     return res.status(200).json({
       success: true,
       transaction,
@@ -450,13 +488,14 @@ export const returnProduct = async (req, res) => {
   } catch (error) {
     // If an error occurs, abort the transaction and return error response
     await session.abortTransaction();
-    session.endSession();
-    console.log(error);
-    console.error("Error:", error.message);
+    console.error("Error during processing:", error.message);
     return res.status(500).json({
       success: false,
-      msg: "Error during processing",
+      msg: error.message,
     });
+  } finally {
+    // Ensure the session is ended
+    session.endSession();
   }
 };
 

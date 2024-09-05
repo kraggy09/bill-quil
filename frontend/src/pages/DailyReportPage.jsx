@@ -300,6 +300,9 @@ const DailyReportPage = () => {
               <tr className="border border-black">
                 <th className="border border-black mx-6">Date</th>
                 <th className="border border-black">Time</th>
+
+                <th className="border border-black">Purpose</th>
+                <th className="border border-black">Name</th>
                 <th className="border border-black px-0">
                   Previous Outstanding
                 </th>
@@ -314,19 +317,26 @@ const DailyReportPage = () => {
                   return (
                     !transaction.taken && (
                       <tr className="" key={transaction._id}>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
                           {calculateDate(new Date(transaction.createdAt))}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
                           {calculateTime(new Date(transaction.createdAt))}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
+                          {transaction?.purpose}
+                        </td>
+                        <td className="lg:px-6 capitalize md:px-2 py-3 font-semibold">
+                          {transaction?.name}
+                        </td>
+
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
                           {transaction.previousOutstanding || 0}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
                           {transaction.amount}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
                           {transaction.newOutstanding || 0}{" "}
                         </td>
                       </tr>
@@ -354,27 +364,27 @@ const DailyReportPage = () => {
                   return (
                     <tr className="" key={updated._id}>
                       {updated.createdAt && (
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
                           {calculateDate(new Date(updated.createdAt))}
                         </td>
                       )}
                       {updated.createdAt && (
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3 font-semibold">
                           {calculateTime(new Date(updated.createdAt))}
                         </td>
                       )}
                       <td className="px-16 py-3 capitalize font-semibold">
                         {updated.product && updated.product.name}
                       </td>
-                      <td className="px-16 py-3 font-semibold">
+                      <td className="lg:px-6 md:px-2 py-3 font-semibold">
                         {updated.previousQuantity % 1 != 0
                           ? updated.previousQuantity.toFixed(3)
                           : updated.previousQuantity}
                       </td>
-                      <td className="px-16 py-3 font-semibold">
+                      <td className="lg:px-6 md:px-2 py-3 font-semibold">
                         {updated.quantity}{" "}
                       </td>
-                      <td className="px-16 py-3 font-semibold">
+                      <td className="lg:px-6 md:px-2 py-3 font-semibold">
                         {(updated.quantity + updated.previousQuantity) % 1 == 0
                           ? updated.quantity + updated.previousQuantity
                           : (
@@ -403,16 +413,16 @@ const DailyReportPage = () => {
                     return (
                       transaction.taken && (
                         <tr className="" key={transaction._id}>
-                          <td className="px-16 py-3 font-semibold">
+                          <td className="lg:px-6 md:px-2 py-3 font-semibold">
                             {calculateDate(new Date(transaction.createdAt))}
                           </td>
-                          <td className="px-16 py-3 font-semibold">
+                          <td className="lg:px-6 md:px-2 py-3 font-semibold">
                             {calculateTime(new Date(transaction.createdAt))}
                           </td>
                           <td className="px-16 py-3 capitalize font-semibold">
                             {transaction.name}
                           </td>
-                          <td className="px-16 py-3 font-semibold">
+                          <td className="lg:px-6 md:px-2 py-3 font-semibold">
                             {transaction.amount}
                           </td>
                         </tr>

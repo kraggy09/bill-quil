@@ -164,7 +164,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
 
   return (
     <tr key={product.id} className="mb-3 border border-black">
-      <td className="text-center font-semibold py-2">{product?.stock}</td>
+      <td className="text-center font-semibold py-2">
+        {product?.stock % 1 != 0 ? product?.stock.toFixed(2) : product?.stock}
+      </td>
 
       <td onClick={handleRemoveProduct} className="text-center mx-auto py-2">
         <span className="text-red-600 hover:cursor-pointer font-bold bg-gray-400 px-2 py-1 rounded-full hover:text-red-800">
@@ -190,7 +192,9 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           )}
         </span>
       </td>
-      <td className="text-center font-semibold py-2">{state.price}₹</td>
+      <td className="text-center font-semibold py-2">
+        {state.price % 1 != 0 ? state.price.toFixed(2) : state.price}₹
+      </td>
       <td className="text-center font-semibold py-2">
         <div className="max-w-fit mx-auto border-green-500 border rounded-lg">
           <span

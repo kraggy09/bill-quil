@@ -43,7 +43,7 @@ const SingleBill = () => {
       const total = bill.items.reduce((ac, item) => {
         return ac + item.total;
       }, 0);
-      return total;
+      return Math.ceil(total);
     }
   };
   useEffect(() => {

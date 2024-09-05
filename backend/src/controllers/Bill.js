@@ -20,27 +20,32 @@ export const createBill = async (req, res) => {
     discount = 0,
     createdBy,
   } = req.body;
-  let newBillId = billId;
-  newBillId = billId + 1;
+  let newBillId = billId + 1; // Increment bill ID
 
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    // Check if the customer exists
-    const previousBillId = await BillId.findOne({ id: newBillId });
+    // Check if the bill ID already exists
+    const previousBillId = await BillId.findOne({ id: newBillId }).session(
+      session
+    );
     if (previousBillId) {
+      await session.abortTransaction();
       return res.status(409).json({
-        msg: "Duplicate bill detected pls check your history",
+        msg: "Duplicate bill detected, please check your history",
         success: false,
         previousBillId,
       });
     }
 
+    // Find the customer using the transaction session
     const customer = await Customer.findById(customerId).session(session);
     if (!customer) {
+      await session.abortTransaction();
       return res.status(404).json({ error: "Customer not found" });
     }
+
     let billTotal = 0;
     const items = await Promise.all(
       products.map(async (product) => {
@@ -49,30 +54,47 @@ export const createBill = async (req, res) => {
           product.packet * product.packetQuantity +
           product.box * product.boxQuantity;
         billTotal += product.total;
+        console.log(quantity);
+
         const id = new mongoose.Types.ObjectId(product.id);
-        let availableProduct = await Product.findById(id);
+
+        // Fetch the product within the transaction session
+        let availableProduct = await Product.findById(id).session(session);
+        if (!availableProduct) {
+          await session.abortTransaction();
+          return res
+            .status(404)
+            .json({ success: false, msg: "Product not found" });
+        }
+
+        // Update the product stock within the session
         const updatedProduct = await Product.findByIdAndUpdate(
           id,
-          {
-            $inc: { stock: -quantity },
-          },
+          { $inc: { stock: -quantity } },
           { new: true, session }
         );
 
         if (!updatedProduct) {
+          await session.abortTransaction();
           return res.status(404).json({
             success: false,
-            msg: "Unable to update stock  ",
+            msg: "Unable to update stock",
           });
         }
 
-        let logger = await Logger.create({
-          name: "Billing",
-          previousQuantity: availableProduct.stock,
-          qunatity: quantity,
-          newQuantity: updatedProduct.stock,
-          product: availableProduct._id,
-        });
+        // Log the stock change within the session
+        await Logger.create(
+          [
+            {
+              name: "Billing",
+              previousQuantity: availableProduct.stock,
+              quantity: quantity,
+              newQuantity: updatedProduct.stock,
+              product: availableProduct._id,
+            },
+          ],
+          { session }
+        );
 
         return {
           product: updatedProduct._id,
@@ -83,18 +105,20 @@ export const createBill = async (req, res) => {
         };
       })
     );
-    billTotal = Math.ceil(billTotal);
-    billTotal += customer.outstanding;
-    billTotal -= discount;
-    const idS = await BillId.create(
-      [
-        {
-          id: newBillId,
-        },
-      ],
-      { session }
-    );
-    // console.log(idS[0]);
+
+    billTotal = Math.ceil(billTotal + customer.outstanding - discount);
+
+    // Create the new bill ID entry within the transaction
+    const idS = await BillId.create([{ id: newBillId }], { session });
+
+    if (!idS[0]) {
+      await session.abortTransaction();
+      return res.status(404).json({
+        success: false,
+        msg: "Unable to create the new bill id",
+      });
+    }
+    // Create the new bill within the transaction
     const newBill = await Bill.create(
       [
         {
@@ -110,8 +134,15 @@ export const createBill = async (req, res) => {
       { session }
     );
 
+    if (!newBill[0]) {
+      await session.abortTransaction();
+      return res.status(404).json({
+        success: false,
+        msg: "Unable to create  the bill",
+      });
+    }
+
     let transaction = null;
-    let dailyReport = null;
     if (payment > 0) {
       transaction = await Transaction.create(
         [
@@ -129,9 +160,17 @@ export const createBill = async (req, res) => {
         ],
         { session }
       );
+
+      if (!transaction[0]) {
+        await session.abortTransaction();
+        return res.status(404).json({
+          msg: "Unable to create the transaction",
+          success: false,
+        });
+      }
     }
 
-    // Update the customer's bills array with the newly created bill
+    // Update the customer's bills array and outstanding balance within the session
     const updatedCustomer = await Customer.findByIdAndUpdate(
       customerId,
       {
@@ -144,18 +183,36 @@ export const createBill = async (req, res) => {
       { session }
     );
 
-    dailyReport = await DailyReport.findOneAndUpdate(
+    if (!updatedCustomer) {
+      await session.abortTransaction();
+      return res.status(401).json({
+        success: false,
+        msg: "Unable to update the customer outstanding",
+      });
+    }
+
+    // Update or create the daily report within the session
+    const dailyReport = await DailyReport.findOneAndUpdate(
       { date: currentDate },
       {
         $push: {
           transactions: transaction ? transaction[0]._id : null,
-          bills: newBill ? newBill[0]._id : null,
+          bills: newBill[0]._id,
         },
       },
       { upsert: true, new: true, session }
     );
 
+    if (!dailyReport) {
+      await session.abortTransaction();
+      return res.status(404).json({
+        success: false,
+        msg: "Unable to update the dailyreport",
+      });
+    }
+
     await session.commitTransaction();
+    session.endSession();
 
     return res.status(201).json({
       message: "Bill created successfully",

@@ -351,6 +351,8 @@ const IndividualCustomer = () => {
                 <tr className="border border-black">
                   <th className="border border-black mx-6">Date</th>
                   <th className="border border-black">Time</th>
+
+                  <th className="border border-black">Purpose</th>
                   <th className="border border-black px-0">
                     Previous Outstanding
                   </th>
@@ -363,19 +365,24 @@ const IndividualCustomer = () => {
                   [...customer.transactions].reverse().map((transaction) => {
                     return (
                       <tr className="" key={transaction._id}>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3  font-semibold">
                           {calculateDate(new Date(transaction.createdAt))}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3  font-semibold">
                           {calculateTime(new Date(transaction.createdAt))}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+
+                        <td className="lg:px-6 md:px-2 py-3  font-semibold">
+                          {transaction?.purpose}
+                        </td>
+
+                        <td className="lg:px-6 md:px-2 py-3  font-semibold">
                           {transaction.previousOutstanding || 0}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3  font-semibold">
                           {transaction.amount}
                         </td>
-                        <td className="px-16 py-3 font-semibold">
+                        <td className="lg:px-6 md:px-2 py-3  font-semibold">
                           {transaction.newOutstanding || 0}{" "}
                         </td>
                       </tr>

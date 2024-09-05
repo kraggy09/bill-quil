@@ -11,10 +11,10 @@ const BillStrap = ({ bill }) => {
   const [billAmount, setBillAmount] = useState(0);
   // console.log(bill);
   const calculateBillAmount = () => {
-    const total = bill.items.reduce((ac, item) => {
+    let total = bill.items.reduce((ac, item) => {
       return ac + item.total;
     }, 0);
-    setBillAmount(total);
+    setBillAmount(Math.ceil(total));
   };
   useEffect(() => {
     calculateBillAmount();

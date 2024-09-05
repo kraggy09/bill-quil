@@ -9,17 +9,39 @@ import { fetchProducts } from "../store/productSlice";
 import { fetchDailyReport } from "../store/reportSlice";
 import axios from "axios";
 import { apiUrl } from "../constant";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import TransactionModal from "./TransactionModal";
+import { fetchLastBillId } from "../store/billIdSlice";
+import { IoRefresh } from "react-icons/io5";
 
 const ReturnProduct = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [reload, setReload] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   const [total, setTotal] = useState(0);
   console.log("Hey, I am the total", total);
+  const { id } = useSelector((store) => store.billId);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+
+    try {
+      await dispatch(fetchProducts()); // Wait for the fetchProducts operation to complete
+      await dispatch(fetchCustomers());
+      await dispatch(fetchLastBillId());
+      await dispatch(fetchDailyReport());
+      setReload(true);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Error!! Please re-login");
+      setLoading(false);
+    }
+  };
   const [foundCustomer, setFoundCustomer] = useState();
+  const [disabledRefresh, setDisabledRefresh] = useState(false);
   const [purchased, setPurchased] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [returnType, setReturnType] = useState("adjustment");
@@ -31,12 +53,14 @@ const ReturnProduct = () => {
         foundCustomer,
         purchased,
         returnType,
+        billId: id,
         total,
       });
 
       dispatch(fetchCustomers());
       dispatch(fetchProducts());
       dispatch(fetchDailyReport());
+      dispatch(fetchLastBillId());
       setLoading(false);
 
       if (returnType === "adjustment") {
@@ -46,11 +70,14 @@ const ReturnProduct = () => {
       if (returnType === "refund") {
         setPurchased([]);
       }
-      console.log(res.data);
+      console.log(res.data, "DAt");
+
       // Additional logic based on the response if needed
     } catch (error) {
+      console.log(error, "Error");
+
       console.error("Error while making the request:", error.message);
-      toast.error(error.message);
+      toast.error(error.response.data.msg);
       setLoading(false);
       // Handle the error, show a user-friendly message, or take appropriate action
     }
@@ -100,11 +127,29 @@ const ReturnProduct = () => {
         </div>
       </div>
       <BillingHeader
+        reload={reload}
         billType="return"
         purchased={purchased}
         setFoundCustomer={setFoundCustomer}
         setPurchased={setPurchased}
       />
+      <div className="min-w-full  flex items-center justify-end">
+        <div
+          onMouseEnter={() => setDisabledRefresh(false)}
+          onMouseLeave={() => setDisabledRefresh(true)}
+          onClick={() => {
+            handleRefresh();
+          }}
+        >
+          <button
+            disabled={disabledRefresh}
+            className="flex items-center justify-center  bg-green-500 text-white rounded-xl font-bold px-3 py-1"
+          >
+            <IoRefresh className={loading && "animate-spin"} />
+            Refresh
+          </button>
+        </div>
+      </div>
       <ReturnBillTable
         discount={0}
         total={total}

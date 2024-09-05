@@ -130,30 +130,38 @@ export const acceptInventoryRequest = async (req, res) => {
     session.startTransaction();
     const currentDate = getDate();
 
-    let availableProduct = await Product.findById(inv.product._id);
+    // Fetch the available product within the transaction session
+    const availableProduct = await Product.findById(inv.product._id).session(
+      session
+    );
+    if (!availableProduct) {
+      throw new Error("Product not found");
+    }
 
+    // Update the product's stock within the session
     const updatedProduct = await Product.findByIdAndUpdate(
       inv.product._id,
-      {
-        $inc: { stock: inv.quantity },
-      },
+      { $inc: { stock: inv.quantity } },
       { new: true, session }
     );
 
     if (!updatedProduct) {
-      return res.status(404).json({
-        msg: "Product not found",
-        success: false,
-      });
+      throw new Error("Product update failed");
     }
 
-    let logger = await Logger.create({
-      name: "Stock Update",
-      previousQuantity: availableProduct.stock,
-      newQuantity: updatedProduct.stock,
-      product: availableProduct._id,
-      qunatity: inv.quantity,
-    });
+    // Create the log entry within the transaction session
+    await Logger.create(
+      [
+        {
+          name: "Stock Update",
+          previousQuantity: availableProduct.stock,
+          newQuantity: updatedProduct.stock,
+          product: availableProduct._id,
+          quantity: inv.quantity,
+        },
+      ],
+      { session }
+    );
 
     const product = {
       product: updatedProduct._id,
@@ -161,29 +169,34 @@ export const acceptInventoryRequest = async (req, res) => {
       previousQuantity: updatedProduct.stock - inv.quantity,
     };
 
+    // Update the daily report within the transaction session
     const dailyReport = await DailyReport.findOneAndUpdate(
       { date: currentDate },
-      {
-        $push: {
-          updatedToday: product,
-        },
-      },
+      { $push: { updatedToday: product } },
       { upsert: true, new: true, session }
     );
 
+    if (!dailyReport) {
+      throw new Error("Daily report update failed");
+    }
+
+    // Delete the inventory request within the transaction session
     const deleteRequest = await UpdateProducts.findOneAndDelete({
       _id: inv._id,
     }).session(session);
-
-    await session.commitTransaction();
-    if (dailyReport) {
-      console.log("Yo bro daily report to h");
-      return res.status(200).json({
-        success: true,
-        msg: "Stock updated successfully",
-      });
+    if (!deleteRequest) {
+      throw new Error("Failed to delete the inventory request");
     }
+
+    // Commit the transaction if all operations are successful
+    await session.commitTransaction();
+
+    return res.status(200).json({
+      success: true,
+      msg: "Stock updated successfully",
+    });
   } catch (error) {
+    // Abort the transaction if any error occurs
     await session.abortTransaction();
     console.error("Error accepting inventory request:", error);
     return res.status(500).json({
@@ -191,6 +204,7 @@ export const acceptInventoryRequest = async (req, res) => {
       success: false,
     });
   } finally {
+    // Ensure the session is properly ended
     session.endSession();
   }
 };
@@ -205,10 +219,18 @@ export const acceptAllInventoryRequest = async (req, res) => {
     const requests = req.body; // Assuming req.body is an array of inventory requests
 
     for (const inv of requests) {
-      const availableProduct = await Product.findById(inv.product._id);
-      let newStock = availableProduct.stock + inv.quantity;
+      // Fetch the product to be updated within the session
+      const availableProduct = await Product.findById(inv.product._id).session(
+        session
+      );
+      if (!availableProduct) {
+        throw new Error("Product not found");
+      }
+
+      const newStock = availableProduct.stock + inv.quantity;
       console.log(newStock, "This is manual");
 
+      // Update the product's stock within the session
       const updatedProduct = await Product.findByIdAndUpdate(
         inv.product._id,
         { $inc: { stock: inv.quantity } },
@@ -220,19 +242,28 @@ export const acceptAllInventoryRequest = async (req, res) => {
       if (!updatedProduct) {
         throw new Error("Product update failed");
       }
-      let logger = await Logger.create({
-        name: "Stock Update",
-        previousQuantity: availableProduct.stock,
-        newQuantity: updatedProduct.stock,
-        qunatity: inv.quantity,
-        product: availableProduct._id,
-      });
+
+      // Create a log for the stock update within the session
+      await Logger.create(
+        [
+          {
+            name: "Stock Update",
+            previousQuantity: availableProduct.stock,
+            newQuantity: updatedProduct.stock,
+            quantity: inv.quantity,
+            product: availableProduct._id,
+          },
+        ],
+        { session }
+      );
+
       const product = {
         product: updatedProduct._id,
         quantity: inv.quantity,
         previousQuantity: updatedProduct.stock - inv.quantity,
       };
 
+      // Update the daily report within the session
       const dailyReport = await DailyReport.findOneAndUpdate(
         { date: currentDate },
         { $push: { updatedToday: product } },
@@ -243,15 +274,23 @@ export const acceptAllInventoryRequest = async (req, res) => {
         throw new Error("Daily report update failed");
       }
 
-      await UpdateProducts.findOneAndDelete({ _id: inv._id }).session(session);
+      // Delete the inventory request within the session
+      const deletedRequest = await UpdateProducts.findOneAndDelete({
+        _id: inv._id,
+      }).session(session);
+      if (!deletedRequest) {
+        throw new Error("Failed to delete the inventory request");
+      }
     }
 
+    // Commit the transaction if all operations are successful
     await session.commitTransaction();
     return res.status(200).json({
       success: true,
       msg: "All stock updates successful",
     });
   } catch (error) {
+    // Abort the transaction if any error occurs
     await session.abortTransaction();
     console.error("Error accepting all inventory requests:", error);
     return res.status(500).json({
@@ -259,6 +298,7 @@ export const acceptAllInventoryRequest = async (req, res) => {
       success: false,
     });
   } finally {
+    // Ensure the session is properly ended
     session.endSession();
   }
 };
