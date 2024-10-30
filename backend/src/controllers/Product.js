@@ -256,56 +256,84 @@ export const updateProductDetails = async (req, res) => {
 };
 
 export const updateStock = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const currentDate = getDate();
-
     const { quantity, id } = req.body;
+
+    // Find the product with the current session to ensure it's part of the transaction
+    const availableProduct = await Product.findById(id).session(session);
+    if (!availableProduct) {
+      throw new Error("Unable to find the available product");
+    }
 
     // Use the $inc operator to increment the stock field by the given quantity
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
-      {
-        $inc: { stock: quantity },
-      },
-      { new: true }
+      { $inc: { stock: quantity } },
+      { new: true, session }
     );
+
+    // Check if the update was successful
+    if (!updatedProduct) {
+      throw new Error("Unable to update the product");
+    }
 
     const product = {
       product: updatedProduct._id,
       quantity: quantity,
-      previousQuantity: updatedProduct.stock - quantity,
+      previousQuantity: availableProduct.stock,
     };
 
+    // Update or create the daily report
     const dailyReport = await DailyReport.findOneAndUpdate(
       { date: currentDate },
-      {
-        $push: {
-          updatedToday: product,
-        },
-      },
-      { upsert: true, new: true }
+      { $push: { updatedToday: product } },
+      { upsert: true, new: true, session }
     );
 
-    if (!updatedProduct) {
-      // Handle the case where the product was not found
-      return res.status(404).json({
-        success: false,
-        msg: "Product not found",
-      });
+    if (!dailyReport) {
+      throw new Error("Unable to update the dailyreport");
+    }
+    // Log the update
+    let logger = await Logger.create(
+      [
+        {
+          name: "Stock Update",
+          previousQuantity: availableProduct.stock,
+          newQuantity: updatedProduct.stock,
+          quantity: quantity,
+          product: updatedProduct._id,
+        },
+      ],
+      { session }
+    );
+    if (!logger) {
+      throw new Error("Unable to create the logger");
     }
 
+    // Commit the transaction if all operations are successful
+    await session.commitTransaction();
+
     // Respond with the updated product data
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       msg: "Stock Updated Successfully",
       data: updatedProduct,
     });
   } catch (error) {
-    // Handle any potential errors
-    res.status(500).json({
+    // If an error occurs, abort the transaction and handle the error
+    await session.abortTransaction();
+    console.log("Error during stock update:", error.message);
+    returnres.status(500).json({
       success: false,
-      msg: "Server is down",
+      msg: error.message || "Server Down",
     });
+  } finally {
+    // Ensure the session is ended
+    session.endSession();
   }
 };
 
@@ -367,7 +395,7 @@ export const returnProduct = async (req, res) => {
         throw new Error("Error while updating product stock");
       }
 
-      await Logger.create(
+      let logger = await Logger.create(
         [
           {
             name: "Product Return",
@@ -379,6 +407,10 @@ export const returnProduct = async (req, res) => {
         ],
         { session }
       );
+
+      if (!logger) {
+        throw new Error("Unable to create logger");
+      }
 
       items.push({
         product: updatedProduct._id,

@@ -45,66 +45,63 @@ export const createBill = async (req, res) => {
       await session.abortTransaction();
       return res.status(404).json({ error: "Customer not found" });
     }
-
     let billTotal = 0;
-    const items = await Promise.all(
-      products.map(async (product) => {
-        const quantity =
-          product.piece +
-          product.packet * product.packetQuantity +
-          product.box * product.boxQuantity;
-        billTotal += product.total;
-        console.log(quantity);
-
-        const id = new mongoose.Types.ObjectId(product.id);
-
-        // Fetch the product within the transaction session
-        let availableProduct = await Product.findById(id).session(session);
-        if (!availableProduct) {
-          await session.abortTransaction();
-          return res
-            .status(404)
-            .json({ success: false, msg: "Product not found" });
-        }
-
-        // Update the product stock within the session
-        const updatedProduct = await Product.findByIdAndUpdate(
-          id,
-          { $inc: { stock: -quantity } },
-          { new: true, session }
-        );
-
-        if (!updatedProduct) {
-          await session.abortTransaction();
-          return res.status(404).json({
-            success: false,
-            msg: "Unable to update stock",
-          });
-        }
-
-        // Log the stock change within the session
-        await Logger.create(
-          [
-            {
-              name: "Billing",
-              previousQuantity: availableProduct.stock,
-              quantity: quantity,
-              newQuantity: updatedProduct.stock,
-              product: availableProduct._id,
-            },
-          ],
-          { session }
-        );
-
-        return {
-          product: updatedProduct._id,
-          quantity: quantity,
-          discount: product.discount || 0,
-          type: product.type,
-          total: product.total,
-        };
-      })
-    );
+    const items = [];
+    
+    for (const product of products) {
+      const quantity = 
+        product.piece + 
+        product.packet * product.packetQuantity + 
+        product.box * product.boxQuantity;
+      billTotal += product.total;
+      
+      const id = new mongoose.Types.ObjectId(product.id);
+    
+      // Fetch the product within the transaction session
+      let availableProduct = await Product.findById(id).session(session);
+      if (!availableProduct) {
+        await session.abortTransaction();
+        return res.status(404).json({ success: false, msg: "Product not found" });
+      }
+    
+      // Update the product stock within the session
+      const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        { $inc: { stock: -quantity } },
+        { new: true, session }
+      );
+    
+      if (!updatedProduct) {
+        await session.abortTransaction();
+        return res.status(404).json({
+          success: false,
+          msg: "Unable to update stock",
+        });
+      }
+    
+      // Log the stock change within the session
+      await Logger.create(
+        [
+          {
+            name: "Billing",
+            previousQuantity: availableProduct.stock,
+            quantity: quantity,
+            newQuantity: updatedProduct.stock,
+            product: availableProduct._id,
+          },
+        ],
+        { session }
+      );
+    
+      items.push({
+        product: updatedProduct._id,
+        quantity: quantity,
+        discount: product.discount || 0,
+        type: product.type,
+        total: product.total,
+      });
+    }
+    
 
     billTotal = Math.ceil(billTotal + customer.outstanding - discount);
 
