@@ -200,7 +200,6 @@ export const approveTransaction = async (req, res) => {
       customerId,
       {
         $inc: { outstanding: -transaction.amount },
-        $push: { transactions: transaction._id },
       },
       { new: true, session }
     );

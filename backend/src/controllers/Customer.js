@@ -1,4 +1,6 @@
+import Bill from "../models/Bill.js";
 import Customer from "../models/Customer.js";
+import Transaction from "../models/Transaction.js";
 
 export const createNewCustomer = async (req, res) => {
   try {
@@ -65,17 +67,22 @@ export const getAllCustomers = async (req, res) => {
 export const getSingleCustomer = async (req, res) => {
   const customerId = req.params.customerId; // Access the customer ID from the route parameter
   try {
-    const customer = await Customer.findById(customerId)
-      .populate({
-        path: "bills",
-        populate: { path: "id", model: "BillId" }, // Assuming 'billid' is the field to populate in the 'bills' model
-      })
-      .populate("transactions")
-      .exec();
+    const customer = await Customer.findById(customerId);
+    let bills = await Bill.find({ customer: customerId })
+      .sort({ createdAt: 1 })
+      .populate({ path: "id", model: "BillId" });
+
+    let transactions = await Transaction.find({
+      customer: customerId,
+      approved: true,
+    }).sort({
+      createdAt: 1,
+    });
+    let newCustomer = { ...customer._doc, bills, transactions };
     if (customer) {
       return res.status(200).json({
         msg: "Customer found successfully",
-        customer,
+        customer: newCustomer,
         success: true,
       });
     }

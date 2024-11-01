@@ -4,18 +4,6 @@ const customerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  bills: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Bill",
-    },
-  ],
-  transactions: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Transaction",
-    },
-  ],
   outstanding: {
     type: Number,
     required: true,

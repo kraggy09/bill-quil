@@ -76,4 +76,6 @@ const billSchema = mongoose.Schema({
 // Create an index on the "expires" field for TTL
 billSchema.index({ expires: 1 }, { expireAfterSeconds: 0 });
 
-export default mongoose.model("Bill", billSchema);
+const Bill = mongoose.model("Bill", billSchema);
+
+export default Bill;

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { IoRefresh } from "react-icons/io5";
 
-import { ToastContainer, toast } from "react-toastify";
+import { Toaster, toast } from "react-hot-toast";
+// import { , toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 axios.defaults.withCredentials = true;
@@ -34,7 +35,7 @@ const NewBillPage = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
-  // console.log(purchased);
+  console.log(purchased);
   const [discount, setDiscount] = useState(0);
   const [payment, setPayment] = useState("");
   const [total, setTotal] = useState(0);
@@ -71,6 +72,19 @@ const NewBillPage = () => {
     setLoading(true);
 
     try {
+      let err = false;
+      purchased.forEach((pr) => {
+        if (pr.total === 0) {
+          toast.error(`${pr.name} has  0 quantity`);
+          err = true;
+        }
+      });
+
+      if (err) {
+        setDisabled(false);
+        setLoading(false);
+        return;
+      }
       const response = await axios.post(apiUrl + API_URL, {
         purchased,
         discount,
@@ -170,7 +184,7 @@ const NewBillPage = () => {
           discount={discount}
         />
       </div>
-      <ToastContainer autoClose={3000} />
+      <Toaster position="top-center" />
       {loading && <Loading />}
     </div>
   );

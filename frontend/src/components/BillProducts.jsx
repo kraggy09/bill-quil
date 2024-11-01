@@ -169,7 +169,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
       </td>
 
       <td onClick={handleRemoveProduct} className="text-center mx-auto py-2">
-        <span className="text-red-600 hover:cursor-pointer font-bold bg-gray-400 px-2 py-1 rounded-full hover:text-red-800">
+        <span className="text-red-600 hover:cursor-pointer font-bold bg-slate-200 px-2 py-1 rounded-full hover:text-red-800">
           X
         </span>
       </td>
@@ -251,7 +251,13 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           onWheel={(e) => e.target.blur()}
           type="number"
           value={state.packet}
-          onChange={(e) => handleChange("packet", Number(e.target.value))}
+          onChange={(e) => {
+            if (state.packet == 0) {
+              handleChange("piece", 0);
+            }
+
+            handleChange("packet", Number(e.target.value));
+          }}
           className="max-w-[50px]"
         />
       </td>
@@ -260,7 +266,14 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
           onWheel={(e) => e.target.blur()}
           type="number"
           value={state.box}
-          onChange={(e) => handleChange("box", Number(e.target.value))}
+          onChange={(e) => {
+            if (state.box == 0) {
+              handleChange("packet", 0);
+              handleChange("piece", 0);
+            }
+
+            handleChange("box", Number(e.target.value));
+          }}
           className="max-w-[50px]"
         />
       </td>

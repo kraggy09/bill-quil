@@ -453,7 +453,6 @@ export const returnProduct = async (req, res) => {
         foundCustomer._id,
         {
           $inc: { outstanding: -total },
-          $push: { transactions: transaction[0]._id },
         },
         { session }
       );
