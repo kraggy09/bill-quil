@@ -24,6 +24,14 @@ const DashBoardPage = () => {
   const [mergedData, setMergeData] = useState(null);
   const [locked, setLocked] = useState(true);
   const [pin, setPin] = useState("");
+  const [pendingTrans, setPendingTrans] = useState("");
+
+  async function fetchTransactions() {
+    let res = await axios.get(apiUrl + "/getTransactionForApproval");
+    console.log(res.data);
+    setPendingTrans(res.data.transactions);
+    // toast.success(res.data.msg);
+  }
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.key === "b" || event.key === "B") {
@@ -42,6 +50,7 @@ const DashBoardPage = () => {
   }, []);
   useEffect(() => {
     fetchData();
+    fetchTransactions();
   }, [days]);
 
   async function fetchData() {
@@ -249,8 +258,8 @@ const DashBoardPage = () => {
         </article>
       )}
       {locked && (
-        <div className="min-h-[65vh]  flex items-center justify-center">
-          <div className="min-w-[50%] min-h-[70%] bg-white rounded-lg">
+        <div className="min-h-[65vh]   flex items-center justify-center">
+          <div className="min-w-[50%] relative min-h-[70%] bg-white rounded-lg">
             <h1 className="text-xl capitalize text-center py-2">
               Hello,{" "}
               <span className="bg-green-300 text-green-800 px-2 py-1 rounded-lg hover:cursor-pointer">
@@ -293,6 +302,22 @@ const DashBoardPage = () => {
                     </button>
                   </div>
                 </form>
+                <div className="min-w-full flex items-center font-semibold justify-center text-center absolute bottom-6">
+                  {pendingTrans.length > 0 ? (
+                    <p className="flex">
+                      Pending Transaction{" "}
+                      <span className="ml-2">{pendingTrans.length}</span>
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="bg-green-200 text-green-800 px-6 rounded-lg ">
+                      No transaction pending
+                    </p>
+                  )}
+                </div>
               </>
             )}
           </div>

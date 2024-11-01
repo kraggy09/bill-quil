@@ -20,7 +20,7 @@ const CategoriesPage = () => {
         visible={portalVisible}
         setVisible={setPortalVisible}
         initialName={selectedCategory ? selectedCategory.name : ""}
-        initialWholesale={selectedCategory ? selectedCategory.wholeSale : ""}
+        initialWholesale={selectedCategory ? selectedCategory.wholesale : ""}
         initialSuperWholesale={
           selectedCategory ? selectedCategory.superWholeSale : ""
         }
