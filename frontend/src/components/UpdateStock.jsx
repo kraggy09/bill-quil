@@ -1,6 +1,3 @@
-import axios from "axios";
-axios.defaults.withCredentials = true;
-
 import Loading from "./Loading";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -9,6 +6,7 @@ import { fetchProducts } from "../store/productSlice";
 import { ToastContainer, toast } from "react-toastify";
 import { apiUrl } from "../constant";
 import { fetchDailyReport } from "../store/reportSlice";
+import apiCaller from "../libs/apiCaller";
 
 const apiUrl1 = "/products/updateStock";
 
@@ -49,7 +47,7 @@ const UpdateStock = () => {
     setLoading(true);
     const id = product._id;
     e.preventDefault();
-    axios
+    apiCaller
       .post(apiUrl + apiUrl1, { quantity, id })
       .then((res) => {
         console.log(res);

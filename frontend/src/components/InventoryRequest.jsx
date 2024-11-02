@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { apiUrl } from "../constant";
 import { fetchDailyReport } from "../store/reportSlice";
 import { fetchProducts } from "../store/productSlice";
@@ -10,6 +9,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { calculateDate, calculateTime } from "../libs/constant";
 import { useDispatch, useSelector } from "react-redux";
 import { Toaster, toast } from "react-hot-toast";
+import apiCaller from "../libs/apiCaller";
 const InventoryRequest = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
@@ -17,7 +17,7 @@ const InventoryRequest = () => {
   const [inventoryRequests, setInventoryRequests] = useState(null);
   const handleRejection = async (id) => {
     try {
-      const response = await axios.delete(
+      const response = await apiCaller.delete(
         apiUrl + "/products/deleteInventoryRequest",
         {
           data: { id: id },
@@ -38,7 +38,7 @@ const InventoryRequest = () => {
     try {
       setInventoryRequests(null);
 
-      const res = await axios.post(
+      const res = await apiCaller.post(
         apiUrl + "/products/acceptInventoryRequest",
         { inv: data }
       );
@@ -57,9 +57,9 @@ const InventoryRequest = () => {
   const hadleAllInventoryAccept = async () => {
     setInventoryRequests(null);
     try {
-      const res = await axios.post(
+      const res = await apiCaller.post(
         apiUrl + "/products/updateAllInventroryRequests",
-        inventoryRequests
+        { inventoryRequests }
       );
       if (res) {
         toast.success("All Products Updated Successfully");
@@ -72,7 +72,7 @@ const InventoryRequest = () => {
     }
   };
   const onLoad = async () => {
-    const res = await axios.get(apiUrl + "/products/requests");
+    const res = await apiCaller.get(apiUrl + "/products/requests");
     console.log(res.data);
     setInventoryRequests(res.data.inventory);
   };

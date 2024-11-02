@@ -13,9 +13,9 @@ import {
 import { FaLock } from "react-icons/fa";
 
 import InventoryRequest from "../components/InventoryRequest";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { apiUrl } from "../constant";
+import apiCaller from "../libs/apiCaller";
 
 const DashBoardPage = () => {
   let user = useSelector((store) => store.user);
@@ -27,7 +27,7 @@ const DashBoardPage = () => {
   const [pendingTrans, setPendingTrans] = useState("");
 
   async function fetchTransactions() {
-    let res = await axios.get(apiUrl + "/getTransactionForApproval");
+    let res = await apiCaller.get(apiUrl + "/getTransactionForApproval");
     console.log(res.data);
     setPendingTrans(res.data.transactions);
     // toast.success(res.data.msg);
@@ -56,7 +56,7 @@ const DashBoardPage = () => {
   async function fetchData() {
     let token = localStorage.getItem("token");
 
-    let res = await axios.post(apiUrl + "/getAdminData", {
+    let res = await apiCaller.post(apiUrl + "/getAdminData", {
       token: token,
       days: days,
     });

@@ -1,10 +1,11 @@
 import ReactDOM from "react-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { apiUrl } from "../constant";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 import { fetchCategories } from "../store/categorySlice";
+import apiCaller from "../libs/apiCaller";
+import PropTypes from "prop-types";
 
 const CategoryPortal = ({
   visible,
@@ -29,7 +30,7 @@ const CategoryPortal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let res = await axios.post(apiUrl + "/newCategory", {
+    let res = await apiCaller.post(apiUrl + "/newCategory", {
       name,
       wholesale: Number(wholesale),
       superWholeSale: Number(superWholeSale),
@@ -113,6 +114,14 @@ const CategoryPortal = ({
     </div>,
     document.getElementById("portal")
   );
+};
+
+CategoryPortal.propTypes = {
+  visible: PropTypes.bool,
+  setVisible: PropTypes.func,
+  initialName: PropTypes.string,
+  initialWholesale: PropTypes.string,
+  initialSuperWholesale: PropTypes.string,
 };
 
 export default CategoryPortal;

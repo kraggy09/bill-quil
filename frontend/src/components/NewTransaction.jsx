@@ -1,7 +1,4 @@
 import { useReducer, useState } from "react";
-import axios from "axios";
-axios.defaults.withCredentials = true;
-
 import { useDispatch, useSelector } from "react-redux";
 import { Toaster, toast } from "react-hot-toast";
 import { fetchDailyReport } from "../store/reportSlice";
@@ -11,6 +8,7 @@ import Loading from "./Loading";
 import { fetchCustomers } from "../store/customerSlice";
 import { useNavigate } from "react-router-dom";
 import TransactionModal from "./TransactionModal";
+import apiCaller from "../libs/apiCaller";
 const initialState = {
   name: "",
   purpose: "",
@@ -75,7 +73,7 @@ const NewTransaction = () => {
   const handleSubmit = async () => {
     setLoading(true);
     if (!taken) {
-      await axios
+      await apiCaller
         .post(apiUrl + "/createPayment", {
           ...formData,
           id: foundCustomer._id,
@@ -92,7 +90,7 @@ const NewTransaction = () => {
           toast.error(err.response.data.msg);
         });
     } else {
-      await axios
+      await apiCaller
         .post(apiUrl + "/createTransation", {
           ...formData,
         })
@@ -283,7 +281,7 @@ const NewTransaction = () => {
           )}
 
           <button
-            onClick={(e) => {
+            onClick={() => {
               handleSubmit();
             }}
             className={css.button}

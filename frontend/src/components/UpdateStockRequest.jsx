@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import Loading from "./Loading";
 import { apiUrl } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { calculateMeasuring } from "../libs/constant";
+import apiCaller from "../libs/apiCaller";
 
 const UpdateStockRequest = () => {
   const { products } = useSelector((store) => store.product);
@@ -117,7 +117,7 @@ const UpdateStockRequest = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(
+      const res = await apiCaller.post(
         apiUrl + "/products/updateInventoryRequest",
         updatedProducts
       );
@@ -379,7 +379,6 @@ const UpdateStockRequest = () => {
           <button
             onClick={() => {
               handleSubmit();
-              z;
             }}
             className="bg-green-200 border-green-400 text-xl mr-16 mt-6 px-4 py-2 rounded-xl font-semibold "
           >

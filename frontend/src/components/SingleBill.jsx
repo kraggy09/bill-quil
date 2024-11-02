@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { apiUrl } from "../constant";
-import axios from "axios";
 import { FaPrint } from "react-icons/fa";
-
-axios.defaults.withCredentials = true;
-
 import { toast, ToastContainer } from "react-toastify";
 import Loading from "./Loading";
 import { calculateDate, calculateTime } from "../libs/constant";
 import BillModal from "./BillModal";
+import apiCaller from "../libs/apiCaller";
 
 const SingleBill = () => {
   const apiEndPoint = "/getBillDetails";
@@ -24,7 +21,7 @@ const SingleBill = () => {
     setLoading(true);
 
     try {
-      const res = await axios.get(apiUrl + apiEndPoint, { params: { id } });
+      const res = await apiCaller.get(apiUrl + apiEndPoint, { params: { id } });
       console.log(res.data.bills);
       setBill(res.data.bills);
       setLoading(false);

@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { FcCancel } from "react-icons/fc";
 
 import { CiWarning } from "react-icons/ci";
-
-import axios from "axios";
 import { apiUrl } from "../constant";
 import { useNavigate } from "react-router-dom";
 import { calculateDate, calculateTime } from "../libs/constant";
@@ -12,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
 import { fetchCustomers } from "../store/customerSlice";
 import { fetchDailyReport } from "../store/reportSlice";
+import apiCaller from "../libs/apiCaller";
 
 const TransactionPage = () => {
   const [transaction, setTransaction] = useState(null);
@@ -19,7 +18,7 @@ const TransactionPage = () => {
 
   async function approveTransaction(id) {
     try {
-      let res = await axios.post(apiUrl + "/approveTransaction", {
+      let res = await apiCaller.post(apiUrl + "/approveTransaction", {
         id,
       });
       toast.success(res.data.msg);
@@ -44,7 +43,7 @@ const TransactionPage = () => {
   }
   async function rejectTransaction(id) {
     try {
-      let res = await axios.post(apiUrl + "/rejectTransaction", {
+      let res = await apiCaller.post(apiUrl + "/rejectTransaction", {
         id,
       });
       toast.success(res.data.msg);
@@ -59,7 +58,7 @@ const TransactionPage = () => {
   const user = useSelector((store) => store.user);
 
   async function fetchTransactions() {
-    let res = await axios.get(apiUrl + "/getTransactionForApproval");
+    let res = await apiCaller.get(apiUrl + "/getTransactionForApproval");
     console.log(res.data);
     setTransaction(res.data.transactions);
     // toast.success(res.data.msg);

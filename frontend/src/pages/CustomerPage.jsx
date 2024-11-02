@@ -79,8 +79,7 @@ const CustomerPage = () => {
         <thead className=" ">
           <tr>
             <th className="border border-black mx-6 px-8">Name</th>
-            <th className="border border-black mx-6 px-8">Bills</th>
-            <th className="border border-black mx-6 px-8">Transactions</th>
+            <th className="border border-black mx-6 px-8">Mobile</th>
             <th className="border border-black mx-6 px-8">Outstanding</th>
           </tr>
         </thead>
@@ -99,10 +98,7 @@ const CustomerPage = () => {
                   </span>
                 </td>
                 <td className="text-center font-semibold  px-16 py-3 ">
-                  {customer.bills.length}
-                </td>
-                <td className="text-center font-semibold  px-16 py-3 ">
-                  {customer.transactions.length}
+                  {customer.phone}
                 </td>
                 <td className="text-center font-semibold  px-16 py-3 ">
                   {customer.outstanding}

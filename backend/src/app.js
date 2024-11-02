@@ -10,6 +10,7 @@ import customerRouter from "./routes/Customer.js";
 import transactionRouter from "./routes/Transaction.js";
 import dailyReportRouter from "./routes/DailyReport.js";
 import categoryRouter from "./routes/Category.js";
+import { extractToken } from "./utils/verifyToken.js";
 
 dotenv.config({
   path: "./src/config/config.env",
@@ -39,12 +40,12 @@ app.use(
 );
 
 app.use("/api/v1", userRouter);
-app.use("/api/v1", productRouter);
-app.use("/api/v1", billRouter);
-app.use("/api/v1", customerRouter);
-app.use("/api/v1", transactionRouter);
-app.use("/api/v1", dailyReportRouter);
-app.use("/api/v1", productUpdateRouter);
-app.use("/api/v1", categoryRouter);
+app.use("/api/v1", extractToken, productRouter);
+app.use("/api/v1", extractToken, billRouter);
+app.use("/api/v1", extractToken, customerRouter);
+app.use("/api/v1", extractToken, transactionRouter);
+app.use("/api/v1", extractToken, dailyReportRouter);
+app.use("/api/v1", extractToken, productUpdateRouter);
+app.use("/api/v1", extractToken, categoryRouter);
 
 export default app;

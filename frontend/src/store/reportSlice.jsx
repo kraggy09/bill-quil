@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { apiUrl } from "../constant";
-axios.defaults.withCredentials = true;
+import apiCaller from "../libs/apiCaller";
 
 const initialState = {
   report: null,
@@ -12,7 +11,7 @@ const initialState = {
 export const fetchDailyReport = createAsyncThunk(
   "report/fetchDailyReport",
   async () => {
-    const res = await axios.get(apiUrl + "/dailyReport");
+    const res = await apiCaller.get(apiUrl + "/dailyReport");
     console.log(res.data.dailyReport[0]);
 
     return res.data.dailyReport[0];

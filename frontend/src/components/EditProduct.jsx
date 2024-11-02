@@ -3,14 +3,13 @@ import { ToastContainer, toast } from "react-toastify";
 import { AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import { IoArrowBackOutline } from "react-icons/io5";
-import axios from "axios";
-axios.defaults.withCredentials = true;
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
 import { apiUrl } from "../constant";
 import Loading from "./Loading";
+import apiCaller from "../libs/apiCaller";
 
 const EditProduct = () => {
   const [loading, setLoading] = useState(false);
@@ -113,7 +112,7 @@ const EditProduct = () => {
     }
 
     // Send a POST request to your server with the form data
-    axios
+    apiCaller
       .post(apiUrl + "/products/updateProduct", {
         ...formData2,
         barcode: formData.barcode,

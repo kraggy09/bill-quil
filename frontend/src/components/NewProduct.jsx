@@ -4,14 +4,12 @@ import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 
 import { AiOutlinePlus } from "react-icons/ai";
 import { IoArrowBackOutline } from "react-icons/io5";
-import axios from "axios";
-axios.defaults.withCredentials = true;
-
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
 import { apiUrl } from "../constant";
 import Loading from "./Loading";
+import apiCaller from "../libs/apiCaller";
 
 const initialState = {
   name: "",
@@ -87,7 +85,7 @@ const NewProduct = () => {
     };
 
     // Send a POST request to your server with the form data
-    axios
+    apiCaller
       .post(apiUrl + apiUrl1, formData2)
       .then((response) => {
         // Handle a successful response from the server

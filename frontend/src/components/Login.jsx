@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../constant";
 import { setUser } from "../store/userSlice";
 import { useDispatch } from "react-redux";
 import Loading from "./Loading";
 import { Toaster, toast } from "react-hot-toast";
-axios.defaults.withCredentials = true;
+import apiCaller from "../libs/apiCaller";
 const Login = () => {
   const ref = useRef();
   const [username, setUserName] = useState("");
@@ -22,7 +21,7 @@ const Login = () => {
         toast.success("Please re-login");
         return;
       }
-      let res = await axios.post(apiUrl + "/verifyAuth", { token: token });
+      let res = await apiCaller.post(apiUrl + "/verifyAuth", { token: token });
 
       if (res.data.user) {
         dispatch(
@@ -59,7 +58,10 @@ const Login = () => {
       return;
     }
     try {
-      const res = await axios.post(apiUrl + "/login", { username, password });
+      const res = await apiCaller.post(apiUrl + "/login", {
+        username,
+        password,
+      });
       console.log(res.data);
       let token = res.data.token;
       dispatch(

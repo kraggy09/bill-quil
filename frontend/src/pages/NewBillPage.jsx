@@ -5,9 +5,6 @@ import { IoRefresh } from "react-icons/io5";
 import { Toaster, toast } from "react-hot-toast";
 // import { , toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
-axios.defaults.withCredentials = true;
-
 import BillType from "../components/BillType";
 import Modal from "../components/Modal";
 import BillingHeader from "../components/BillingHeader";
@@ -20,6 +17,7 @@ import { fetchCustomers } from "../store/customerSlice";
 import { fetchDailyReport } from "../store/reportSlice";
 import { fetchLastBillId } from "../store/billIdSlice";
 import { apiUrl } from "../constant";
+import apiCaller from "../libs/apiCaller";
 
 // Constants
 const API_URL = "/createBill";
@@ -85,7 +83,7 @@ const NewBillPage = () => {
         setLoading(false);
         return;
       }
-      const response = await axios.post(apiUrl + API_URL, {
+      const response = await apiCaller.post(apiUrl + API_URL, {
         purchased,
         discount,
         billId: id,

@@ -1,5 +1,3 @@
-import axios from "axios";
-axios.defaults.withCredentials = true;
 import { useEffect, useState } from "react";
 import { apiUrl } from "../constant";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,6 +10,7 @@ import { useSelector } from "react-redux";
 import BillStrap from "../components/BillStrap";
 import { calculateDate, calculateTime } from "../libs/constant";
 import { useNavigate } from "react-router-dom";
+import apiCaller from "../libs/apiCaller";
 const apiUrl1 = "/getAllBills";
 
 const BillPage = () => {
@@ -71,7 +70,7 @@ const BillPage = () => {
   const getBills = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(apiUrl + apiUrl1, {
+      const res = await apiCaller.get(apiUrl + apiUrl1, {
         params: {
           startDate,
           endDate,
@@ -94,7 +93,7 @@ const BillPage = () => {
   const getBillByProductName = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(apiUrl + "/getBillByProductName", {
+      const res = await apiCaller.get(apiUrl + "/getBillByProductName", {
         params: {
           product: selectedProduct,
           startDate: new Date(startDate),

@@ -1,8 +1,8 @@
 // customerSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+
 import { apiUrl } from "../constant";
-axios.defaults.withCredentials = true;
+import apiCaller from "../libs/apiCaller";
 
 const initialState = {
   customers: [],
@@ -14,7 +14,7 @@ console.log(initialState.customer);
 export const fetchCustomers = createAsyncThunk(
   "customers/fetchCustomers",
   async () => {
-    const response = await axios.get(apiUrl + "/getAllCustomers");
+    const response = await apiCaller.get(apiUrl + "/getAllCustomers");
 
     return response.data.customers;
   }

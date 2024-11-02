@@ -1,12 +1,12 @@
 import { useEffect, useReducer, useRef } from "react";
-import axios from "axios";
-axios.defaults.withCredentials = true;
-
 import { ToastContainer, toast } from "react-toastify";
 import { AiOutlineArrowLeft, AiOutlinePlus } from "react-icons/ai";
 import "react-toastify/dist/ReactToastify.css";
 import { apiUrl } from "../constant";
 import { useNavigate } from "react-router-dom";
+import apiCaller from "../libs/apiCaller";
+import { fetchCustomers } from "../store/customerSlice";
+import { useDispatch } from "react-redux";
 
 const initialState = {
   name: "",
@@ -34,6 +34,7 @@ const NewCustomer = () => {
   useEffect(() => {
     myInputRef.current.focus();
   }, []);
+  const disptachR = useDispatch();
 
   const handleInputChange = (e) => {
     let { name, value } = e.target;
@@ -66,12 +67,13 @@ const NewCustomer = () => {
       phone: Number.parseInt(formData.phone),
       outstanding: Number.parseInt(formData.outstanding),
     };
-    axios
+    apiCaller
       .post(apiUrl + apiUrl1, formData2)
       .then((res) => {
         console.log("Response", res);
         toast.success("customer created successfully");
         handleReset();
+        disptachR(fetchCustomers());
       })
       .catch((err) => {
         console.log(err.response);

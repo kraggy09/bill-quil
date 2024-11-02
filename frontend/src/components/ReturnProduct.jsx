@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import BillingHeader from "./BillingHeader";
 import Loading from "./Loading";
 import ReturnBillTable from "./ReturnBillTable";
@@ -7,7 +6,7 @@ import { fetchCustomers } from "../store/customerSlice";
 import { ToastContainer, toast } from "react-toastify";
 import { fetchProducts } from "../store/productSlice";
 import { fetchDailyReport } from "../store/reportSlice";
-import axios from "axios";
+import apiCaller from "../libs/apiCaller";
 import { apiUrl } from "../constant";
 import { useDispatch, useSelector } from "react-redux";
 import TransactionModal from "./TransactionModal";
@@ -49,7 +48,7 @@ const ReturnProduct = () => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post(apiUrl + "/products/return", {
+      const res = await apiCaller.post(apiUrl + "/products/return", {
         foundCustomer,
         purchased,
         returnType,

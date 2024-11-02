@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { apiUrl } from "../constant";
-import axios from "axios";
-axios.defaults.withCredentials = true;
 
 import Loading from "./Loading";
 import BillStrap from "./BillStrap";
@@ -10,6 +8,7 @@ import { calculateDate, calculateTime } from "../libs/constant";
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
 import { FaLock } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import apiCaller from "../libs/apiCaller";
 
 const IndividualCustomer = () => {
   const params = useParams();
@@ -37,7 +36,9 @@ const IndividualCustomer = () => {
   const onLaodData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(apiUrl + "/getCustomer" + "/" + state._id);
+      const res = await apiCaller.get(
+        apiUrl + "/getCustomer" + "/" + state._id
+      );
       setCustomer(res.data.customer);
       setLoading(false);
     } catch (err) {
@@ -57,7 +58,7 @@ const IndividualCustomer = () => {
   async function fetchData() {
     let token = localStorage.getItem("token");
 
-    let res = await axios.post(apiUrl + "/getCustomerData", {
+    let res = await apiCaller.post(apiUrl + "/getCustomerData", {
       token: token,
       days: days,
       customerId: id,

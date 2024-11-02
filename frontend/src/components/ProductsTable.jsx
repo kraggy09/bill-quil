@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { MdCancel } from "react-icons/md";
 import { CiWarning } from "react-icons/ci";
-import axios from "axios";
+import apiCaller from "../libs/apiCaller";
 import { IoTrashBin } from "react-icons/io5";
 import { apiUrl } from "../constant";
 import { Toaster, toast } from "react-hot-toast";
@@ -25,7 +25,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
   const deleteProduct = async () => {
     setLoading(true);
     try {
-      const res = await axios.delete(`${apiUrl}/products/delete`, {
+      const res = await apiCaller.delete(`${apiUrl}/products/delete`, {
         params: deleted, // Include `deleted` in the request body
       });
 

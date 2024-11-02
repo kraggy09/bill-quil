@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiUrl } from "../constant";
-import axios from "axios";
+import apiCaller from "../libs/apiCaller";
 
 const initialState = {
   id: null,
@@ -11,7 +11,7 @@ const initialState = {
 export const fetchLastBillId = createAsyncThunk(
   "id/fetchLastBillId",
   async () => {
-    const response = await axios.get(apiUrl + "/getLatestBillId");
+    const response = await apiCaller.get(apiUrl + "/getLatestBillId");
     console.log(response.data);
 
     return response.data.billId;

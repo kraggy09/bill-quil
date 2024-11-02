@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import { FaEyeSlash, FaLock } from "react-icons/fa";
 
-axios.defaults.withCredentials = true;
 import { apiUrl } from "../constant";
 import Loading from "../components/Loading";
 import { FaPercentage } from "react-icons/fa";
@@ -11,6 +9,7 @@ import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import { FaIndianRupeeSign } from "react-icons/fa6";
 import { calculateDate, calculateTime } from "../libs/constant";
 import BillStrap from "../components/BillStrap";
+import apiCaller from "../libs/apiCaller";
 const DailyReportPage = () => {
   const daily = useSelector((store) => store.report.report);
   const user = useSelector((store) => store.user);
@@ -28,7 +27,7 @@ const DailyReportPage = () => {
   const getBills = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(apiUrl + apiUrl1, {
+      const res = await apiCaller.get(apiUrl + apiUrl1, {
         params: {
           startDate,
           endDate,
