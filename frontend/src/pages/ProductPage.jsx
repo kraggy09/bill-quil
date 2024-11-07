@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import ProductsTable from "../components/ProductsTable";
@@ -8,34 +8,33 @@ const ProductPage = () => {
   const navigate = useNavigate();
   const products = useSelector((store) => store.product.products);
   const [filteredProducts, setFilteredProducts] = useState(products);
-  const user = useSelector((store) => store.user);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const calculateStock = () => {
+  const totalStockValue = useMemo(() => {
     let total = 0;
-    for (let i = 0; i < products.length; i++) {
-      let temp = products[i].stock * products[i].costPrice;
+    for (let i = 0; i < filteredProducts.length; i++) {
+      let temp = filteredProducts[i].stock * filteredProducts[i].costPrice;
       total += temp;
     }
     return total;
-  };
+  }, [filteredProducts]);
   return (
-    <div className="pl-20 min-w-[90vw] max-w-full">
-      {user.isAdmin && (
-        <div className="pl-20 pt-3 min-w-full font-bold text-2xl ">
-          Your Current Stock Value: ₹{calculateStock().toFixed(3)}
-        </div>
-      )}
-      <div className="relative min-h-[90vh]  min-w-[85vw]">
+    <div className="pl-24 min-w-full max-w-full">
+      <div className="relative">
         <ProductHeader
           setFilteredProducts={setFilteredProducts}
           filteredProducts={filteredProducts}
+          totalStockValue={totalStockValue}
+          setCurrentPage={setCurrentPage}
         />
         <ProductsTable
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
           filteredProducts={filteredProducts}
           setFilteredProducts={setFilteredProducts}
         />
         <button
-          className="rounded-xl  absolute bottom-10 right-8 font-bold hover:bg-green-200 px-5 py-3 bg-green-100 text-green-800 border border-green-100 text-3xl"
+          className="rounded-xl  absolute bottom-4 right-6 font-bold hover:bg-green-200 px-5 py-3 bg-green-100 text-green-800 border border-green-100 text-3xl"
           onClick={() => navigate("/newProduct")}
         >
           +

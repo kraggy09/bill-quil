@@ -34,6 +34,7 @@ const NewBillPage = () => {
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
   console.log(purchased);
+  const [apiSuccess, setApiSuccess] = useState(true);
   const [discount, setDiscount] = useState(0);
   const [payment, setPayment] = useState("");
   const [total, setTotal] = useState(0);
@@ -83,6 +84,10 @@ const NewBillPage = () => {
         setLoading(false);
         return;
       }
+      if (apiSuccess) {
+        toast.error("API called already");
+        return;
+      }
       const response = await apiCaller.post(apiUrl + API_URL, {
         purchased,
         discount,
@@ -93,6 +98,7 @@ const NewBillPage = () => {
         customerId: foundCustomer?._id,
         createdBy: user.id,
       });
+      setApiSuccess(true);
 
       setPrint(true);
       console.log(response.data);
@@ -134,12 +140,16 @@ const NewBillPage = () => {
       />
       <div className="min-w-full  flex items-center justify-end">
         <div
+        className="flex gap-x-11"
           onMouseEnter={() => setDisabledRefresh(false)}
           onMouseLeave={() => setDisabledRefresh(true)}
           onClick={() => {
             handleRefresh();
           }}
         >
+
+          <div >Total Products: <span className="bg-green-200 text-green-800 font-semibold px-2 rounded-lg">
+          {purchased.length}</span></div>
           <button
             disabled={disabledRefresh}
             className="flex items-center justify-center  bg-green-500 text-white rounded-xl font-bold px-3 py-1"

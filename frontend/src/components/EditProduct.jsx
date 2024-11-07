@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styling
 import { IoArrowBackOutline } from "react-icons/io5";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
 import { apiUrl } from "../constant";
 import Loading from "./Loading";
@@ -29,6 +29,7 @@ const EditProduct = () => {
     packet: product.packet,
     box: product.box,
     minQuantity: product.minQuantity,
+    category: product.category || "",
   };
 
   const formReducer = (state, action) => {
@@ -47,17 +48,26 @@ const EditProduct = () => {
   const navigate = useNavigate();
   const dispatchR = useDispatch();
 
+  const categories = useSelector((store) => store.categories.categories);
+
   const [formData, dispatch] = useReducer(formReducer, initialState);
   console.log(formData);
 
   //   const [submitted, setSubmitted] = useState(false);
 
   const handleBarcode = (barcode, op) => {
-    // Filter out the barcode to remove from the array
+    if (isNaN(barcode)) {
+      toast.error("Please enter the barcode");
+      return;
+    }
     let newBarcode;
     if (op === "delete") {
       newBarcode = formData.barcode.filter((b) => b !== barcode);
     } else {
+      if (formData.barcode.includes(barcode)) {
+        toast.error("Duplicate barcode");
+        return;
+      }
       newBarcode = formData.barcode;
       newBarcode.push(barcode);
     }
@@ -104,6 +114,7 @@ const EditProduct = () => {
       box: parseInt(formData.box),
       minQuantity: parseInt(formData.minQuantity),
       _id: product._id,
+      category: formData.category,
     };
     if (formData2.barcode.length < 1) {
       toast.error("Ek barcode to daliye sir");
@@ -140,14 +151,14 @@ const EditProduct = () => {
   const css = {
     input:
       "mx-auto outline-none focus:border-green-800 transtion-all duration-300 ease-linear   border-b-2 px-2 text-xl font-bold max-w-[300px]",
-    label: "text-xl mx-3 font-bold",
-    holder: "mx-auto ",
+    label: "text-xl col-span-1 font-bold",
+    holder: "grid grid-cols-3",
   };
 
   return (
-    <div className="flex items-center   justify-center pt-3 ">
+    <div className="flex items-center  min-w-full  justify-center pt-3 ">
       <form
-        className="shadow-xl shadow-gray-400 border-green-500 border-2 ml-3 min-w-[80vw] rounded-2xl max-w-[80vw]"
+        className="shadow-xl shadow-gray-400 border-green-500 border-2 ml-3  rounded-2xl max-w-[70vw]"
         onSubmit={handleSubmit}
       >
         <span className="text-4xl">
@@ -163,7 +174,7 @@ const EditProduct = () => {
         </h1>
         <div
           id="container"
-          className="grid mt-16 grid-cols-2 mb-16 gap-y-10 justify-center items-center "
+          className="grid mt-16 px-12 grid-cols-2  gap-y-6 justify-center items-center "
         >
           <div className={css.holder}>
             <label className={css.label} htmlFor="name">
@@ -213,7 +224,6 @@ const EditProduct = () => {
               placeholder="MRP₹"
             />
           </div>
-
           <div className={css.holder}>
             <label className={css.label} htmlFor="">
               Cost Price
@@ -229,7 +239,6 @@ const EditProduct = () => {
               placeholder="Enter the Cost Price"
             />
           </div>
-
           <div className={css.holder}>
             <label className={css.label} htmlFor="">
               Retail Price
@@ -245,7 +254,6 @@ const EditProduct = () => {
               placeholder="Enter the Retail Price"
             />
           </div>
-
           <div className={css.holder}>
             <label className={css.label} htmlFor="">
               WholeSale
@@ -276,40 +284,40 @@ const EditProduct = () => {
               placeholder="Enter the WholeSale Price"
             />
           </div>
-
-          <div className="flex flex-col items-center justify-center">
-            <div className={`${css.holder} my-3 relative`}>
+          <div className="flex flex-col  justify-center">
+            <div className={`${css.holder} my-3 relative `}>
               <label className={css.label} htmlFor="">
                 Barcode
               </label>
+              <div className={`${css.input} border-b-0 border-none relative`}>
+                <input
+                  className={css.input}
+                  // required
+                  type="number"
+                  id="barcode"
+                  name="barcode"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Enter the Barcode"
+                />
 
-              <input
-                className={css.input}
-                // required
-                type="number"
-                id="barcode"
-                name="barcode"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Enter the Barcode"
-              />
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleBarcode(parseInt(query), "add");
-                }}
-                className="absolute right-0 bottom-2 rounded-xl font-bold bg-green-200 text-green-800 px-2 py-1 "
-              >
-                {" "}
-                + Barcode
-              </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleBarcode(parseInt(query), "add");
+                  }}
+                  className="absolute right-0 bottom-1 rounded-xl text-sm font-bold bg-green-200 text-green-800 px-2 py-1 "
+                >
+                  + Barcode
+                </button>
+              </div>
             </div>
-            <div>
+            <div className="flex items-start justify-start scrollbar-hide overflow-x-scroll">
               {formData.barcode &&
                 formData.barcode.map((bar) => {
                   return (
                     <span
-                      className="bg-green-200 text-green-700 rounded-xl px-3 py-2 mx-2 font-bold"
+                      className="bg-green-200 flex items-center justify-center text-green-700 rounded-xl px-3 py-2 mx-2 font-bold"
                       key={bar}
                     >
                       {bar}{" "}
@@ -327,7 +335,6 @@ const EditProduct = () => {
                 })}
             </div>
           </div>
-
           <div className={css.holder}>
             <label className={css.label} htmlFor="">
               Stock
@@ -344,7 +351,6 @@ const EditProduct = () => {
               placeholder="Enter the stock"
             />
           </div>
-
           <div className={css.holder}>
             <label className={css.label} htmlFor="">
               Pakcet
@@ -360,7 +366,6 @@ const EditProduct = () => {
               placeholder="Number of pieces in packet"
             />
           </div>
-
           <div className={css.holder}>
             <label className={css.label} htmlFor="">
               Box
@@ -376,7 +381,6 @@ const EditProduct = () => {
               placeholder="Number of pieces in box"
             />
           </div>
-
           <div className={css.holder}>
             <label className={css.label} htmlFor="">
               Minimum
@@ -392,14 +396,41 @@ const EditProduct = () => {
               placeholder="Min Number of Pieces"
             />
           </div>
-
-          <button
-            type="submit"
-            className="min-w-[300px] flex items-center justify-center mx-auto hover:bg-green-600 border-green-300 border duration-300 ease-linear transition-all py-2 hover:text-white font-bold rounded-xl text-xl "
-          >
-            <AiOutlinePlus className="font-bold" />
-            Update
-          </button>
+          <div className={css.holder}>
+            <label className={css.label} htmlFor="category">
+              Category
+            </label>
+            <select
+              name="category"
+              id="category"
+              className="max-w-[300px] font-bold px-2 text-xl min-w-[300px] mx-auto"
+              value={formData.category || ""}
+              onChange={(e) =>
+                dispatch({
+                  type: "updateField",
+                  fieldName: "category",
+                  fieldValue: e.target.value,
+                })
+              }
+            >
+              <option value="null">Select a Category</option>
+              {categories &&
+                categories.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className="flex items-end justify-end">
+            <button
+              type="submit"
+              className="min-w-[300px] flex items-center justify-center  hover:bg-green-600 border-green-300 border duration-300 ease-linear transition-all py-2 hover:text-white font-bold rounded-xl text-xl "
+            >
+              <AiOutlinePlus className="font-bold" />
+              Update
+            </button>
+          </div>
           <ToastContainer autoClose={3000} />
         </div>
       </form>

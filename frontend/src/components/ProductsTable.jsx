@@ -13,7 +13,7 @@ import Loading from "./Loading";
 import { fetchProducts } from "../store/productSlice";
 import { calculateMeasuring } from "../libs/constant";
 
-const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
+const ProductsTable = ({ filteredProducts, currentPage, setCurrentPage }) => {
   const user = useSelector((store) => store.user);
   const navigate = useNavigate();
   const itemsPerPage = 10; // Number of items to display per page
@@ -46,8 +46,6 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
     }
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-
   // Calculate the index range for the current page
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -74,7 +72,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
   };
 
   return (
-    <div className="relative max-w-[100vw]">
+    <div className="relative">
       <Toaster position="top-center" reverseOrder={false} />
 
       {loading && <Loading />}
@@ -136,7 +134,7 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
           </div>
         </div>
       )}
-      <table className="min-w-[95%] ml-8">
+      <table className="min-w-[95%]">
         <thead>
           <tr>
             <th className="text-start ">Barcode</th>
@@ -149,7 +147,12 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
             <th className="text-start ">Stock</th>
             <th className="text-start ">Packet</th>
             <th className="text-start ">Box</th>
-            {user.isAdmin && <th className="text-start ">Del</th>}
+            <th className="text-center">Category</th>
+            {user.isAdmin && (
+              <>
+                <th className="text-start ">Del</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -239,6 +242,8 @@ const ProductsTable = ({ filteredProducts, setFilteredProducts }) => {
                 <td className="text-start font-semibold  py-2">
                   {product.box}
                 </td>
+                <td className="text-center capitalize">{product?.category}</td>
+
                 {user.isAdmin && (
                   <td className="mx-auto">
                     <div
@@ -292,5 +297,6 @@ export default ProductsTable;
 
 ProductsTable.propTypes = {
   filteredProducts: PropTypes.array.isRequired,
-  setFilteredProducts: PropTypes.func.isRequired,
+  currentPage: PropTypes.number,
+  setCurrentPage: PropTypes.func,
 };

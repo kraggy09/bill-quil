@@ -11,12 +11,15 @@ import toast, { Toaster } from "react-hot-toast";
 import { fetchCustomers } from "../store/customerSlice";
 import { fetchDailyReport } from "../store/reportSlice";
 import apiCaller from "../libs/apiCaller";
+import Loading from "../components/Loading";
 
 const TransactionPage = () => {
   const [transaction, setTransaction] = useState(null);
+  const [loading,setLoading]=useState(false)
   const dispatch = useDispatch();
 
   async function approveTransaction(id) {
+    setLoading(true)
     try {
       let res = await apiCaller.post(apiUrl + "/approveTransaction", {
         id,
@@ -39,9 +42,12 @@ const TransactionPage = () => {
           <button onClick={() => toast.dismiss(t.id)}>Dismiss</button>
         </span>
       ));
+    }finally{
+      setLoading(false)
     }
   }
   async function rejectTransaction(id) {
+    setLoading(true)
     try {
       let res = await apiCaller.post(apiUrl + "/rejectTransaction", {
         id,
@@ -52,6 +58,8 @@ const TransactionPage = () => {
       dispatch(fetchDailyReport());
     } catch (error) {
       toast.error(error.response.data.msg);
+    }finally{
+      setLoading(false)
     }
   }
   const navigate = useNavigate();
@@ -70,6 +78,7 @@ const TransactionPage = () => {
 
   return (
     <main className="relative flex pt-6 gap-6 min-w-[100vw] pl-24">
+      {loading && <Loading/>}
       {transaction && transaction.length > 0 ? (
         transaction.map((tr) => {
           return (

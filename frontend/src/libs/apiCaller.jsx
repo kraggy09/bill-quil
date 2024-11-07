@@ -10,7 +10,7 @@ apiCaller.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
 
-    console.log(config.url, "URL from the user");
+    // console.log(config.url, "URL from the user");
 
     const exemptedRoutes = ["/login", "/signup"];
 
@@ -22,7 +22,7 @@ apiCaller.interceptors.request.use(
       return Promise.reject(new Error("Token not found"));
     }
 
-    console.log(token, "token");
+    // console.log(token, "token");
 
     if (config.method === "post") {
       config.data = {

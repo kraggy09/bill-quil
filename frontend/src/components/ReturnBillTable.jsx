@@ -29,8 +29,9 @@ const ReturnBillTable = ({
       <table className="min-w-[60vw]  mt-6">
         <thead className="border border-black rounded-xl">
           <tr>
-            <th className=" ">Action</th>
 
+          <th className=" ">Stock</th>
+            <th className=" ">Action</th>
             <th className="">Name</th>
             <th className="">Price</th>
             <th className="">Toggle</th>

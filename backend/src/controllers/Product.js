@@ -14,6 +14,7 @@ export const createNewProduct = async (req, res) => {
   try {
     let {
       name,
+      category,
       barcode,
       mrp,
       costPrice,
@@ -29,6 +30,7 @@ export const createNewProduct = async (req, res) => {
     name = name.trim();
     name = name.toLowerCase();
 
+    
     let newOne;
     const get_base_url = (lang, word) =>
       `https://www.google.com/inputtools/request?ime=transliteration_en_${lang}&num=5&cp=0&cs=0&ie=utf-8&oe=utf-8&app=jsapi&text=${word}`;
@@ -82,7 +84,7 @@ export const createNewProduct = async (req, res) => {
       box,
       minQuantity,
       hi: newOne[0],
-      category: "null",
+      category,
     });
 
     return res.status(201).json({
@@ -189,6 +191,7 @@ export const updateProductDetails = async (req, res) => {
     console.log(product);
     const newProduct = {
       name: product.name.trim(),
+      category:product.category,
       mrp: product.mrp,
       costPrice: product.costPrice,
       measuring: product.measuring,
@@ -202,7 +205,7 @@ export const updateProductDetails = async (req, res) => {
       barcode: product.barcode,
     };
 
-    console.log(newProduct.barcode);
+    // console.log(newProduct.barcode);
     // console.log("barcode", barcode);
     // console.log(newProduct);
     // console.log(product._id);
