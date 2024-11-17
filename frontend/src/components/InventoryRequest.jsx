@@ -113,31 +113,31 @@ const InventoryRequest = () => {
                 {inventoryRequests &&
                   inventoryRequests.map((inv) => {
                     return (
-                      <tr className="border border-black" key={inv._id}>
+                      <tr className="border border-black" key={inv?._id}>
                         <td className="font-semibold capitalize text-center px-1">
-                          {calculateDate(new Date(inv.date))}
+                          {calculateDate(new Date(inv?.date))}
                         </td>
                         <td className="font-semibold capitalize text-center px-1">
-                          {calculateTime(new Date(inv.date))}
+                          {calculateTime(new Date(inv?.date))}
                         </td>
                         <td className="font-semibold capitalize text-center px-1">
-                          {inv.createdBy}
+                          {inv?.createdBy}
                         </td>
                         <td className="font-semibold capitalize text-center px-1">
-                          {inv.product.name}
+                          {inv?.product?.name}
                         </td>
                         <td className="font-semibold capitalize text-center px-1">
-                          {inv.oldStock % 1 != 0
-                            ? inv.oldStock.toFixed(3)
-                            : inv.oldStock}
+                          {inv?.oldStock % 1 != 0
+                            ? inv?.oldStock.toFixed(3)
+                            : inv?.oldStock}
                         </td>
                         <td className="font-semibold capitalize text-center px-1">
-                          {inv.product.stock % 1 != 0
-                            ? inv.product.stock.toFixed(3)
-                            : inv.product.stock}
+                          {inv?.product?.stock % 1 != 0
+                            ? inv?.product?.stock.toFixed(3)
+                            : inv?.product?.stock}
                         </td>
                         <td className="font-semibold capitalize text-center px-1">
-                          {inv.quantity}
+                          {inv?.quantity}
                         </td>
                         {user.isAdmin && (
                           <>
@@ -150,7 +150,7 @@ const InventoryRequest = () => {
                               </p>
                             </td>
                             <td
-                              onClick={() => handleRejection(inv._id)}
+                              onClick={() => handleRejection(inv?._id)}
                               className="font-semibold capitalize text-center px-1"
                             >
                               <p className="flex items-center font-bold justify-center bg-red-200 mx-4  rounded-lg px-2 py-1 text-red-800 hover:cursor-pointer">

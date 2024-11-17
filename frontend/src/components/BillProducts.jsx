@@ -27,7 +27,7 @@ const reducer = (state, action) => {
   }
 };
 
-const BillProducts = ({ product, purchased, setPurchased }) => {
+const BillProducts = ({ product, purchased, setPurchased, billType }) => {
   // Define an initial state
   const initialState = {
     piece: product.piece,
@@ -38,7 +38,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     type: product.type,
     total: product.total,
   };
-  const { getPriceTag } = usePriceTag();
+  const { getPriceTag } = usePriceTag(billType);
 
   // Use the reducer to manage state
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -94,7 +94,7 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     dispatch({ type: "CHANGE_TYPE", value: updated.type });
     dispatch({ type: "CHANGE_PRICE", value: updated.price });
 
-    let newTotal = state.price * totalPieces;
+    let newTotal = updated.price * totalPieces - state.discount;
     dispatch({ type: "CHANGE_TOTAL", value: newTotal.toFixed(2) });
   };
 
@@ -135,10 +135,11 @@ const BillProducts = ({ product, purchased, setPurchased }) => {
     if (product !== undefined && change) {
       const foundProduct = purchased.find((pr) => pr.id === product.id);
       if (foundProduct) {
+        let { price } = getPriceTag(foundProduct, 1);
         const updatedProduct = {
           ...foundProduct,
           piece: Number(state.piece),
-          price: Number(state.price),
+          price: price,
           packet: Number(state.packet),
           box: Number(state.box),
           discount: Number(state.discount),
@@ -313,6 +314,7 @@ BillProducts.propTypes = {
   }).isRequired,
   purchased: PropTypes.array.isRequired,
   setPurchased: PropTypes.func.isRequired,
+  billType: PropTypes.string.isRequired,
 };
 
 export default BillProducts;

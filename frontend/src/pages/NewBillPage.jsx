@@ -34,7 +34,7 @@ const NewBillPage = () => {
   const [foundCustomer, setFoundCustomer] = useState({});
   const [purchased, setPurchased] = useState([]);
   console.log(purchased);
-  const [apiSuccess, setApiSuccess] = useState(true);
+  const [apiSuccess, setApiSuccess] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [payment, setPayment] = useState("");
   const [total, setTotal] = useState(0);
@@ -73,7 +73,7 @@ const NewBillPage = () => {
     try {
       let err = false;
       purchased.forEach((pr) => {
-        if (pr.total === 0) {
+        if (pr.piece === 0 && pr.packet === 0 && pr.box === 0) {
           toast.error(`${pr.name} has  0 quantity`);
           err = true;
         }
@@ -140,16 +140,19 @@ const NewBillPage = () => {
       />
       <div className="min-w-full  flex items-center justify-end">
         <div
-        className="flex gap-x-11"
+          className="flex gap-x-11"
           onMouseEnter={() => setDisabledRefresh(false)}
           onMouseLeave={() => setDisabledRefresh(true)}
           onClick={() => {
             handleRefresh();
           }}
         >
-
-          <div >Total Products: <span className="bg-green-200 text-green-800 font-semibold px-2 rounded-lg">
-          {purchased.length}</span></div>
+          <div>
+            Total Products:{" "}
+            <span className="bg-green-200 text-green-800 font-semibold px-2 rounded-lg">
+              {purchased.length}
+            </span>
+          </div>
           <button
             disabled={disabledRefresh}
             className="flex items-center justify-center  bg-green-500 text-white rounded-xl font-bold px-3 py-1"
@@ -161,6 +164,7 @@ const NewBillPage = () => {
       </div>
       <BillTable
         foundCustomer={foundCustomer}
+        billType={billType}
         purchased={purchased}
         setPurchased={setPurchased}
         discount={discount}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import PropTypes from "prop-types";
+import usePriceTag from "../hooks/usePriceTag";
 
 class Product {
   constructor(
@@ -62,6 +63,8 @@ const BillingHeader = ({
   const [productName, setProductName] = useState("");
   const [name, setName] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
+
+  const { getPriceTag } = usePriceTag(billType);
 
   const products = useSelector((store) => store.product.products);
   const customers = useSelector((store) => store.customer.customers);
@@ -151,6 +154,21 @@ const BillingHeader = ({
     setFoundCustomer(customer);
   };
 
+  const setCustomerToRetail = () => {
+    if (foundCustomer && foundCustomer._id == "65350378519a3911ee52797d") {
+      setFoundCustomer({});
+      setName("");
+      setVisible(false);
+      return;
+    }
+    let retailCustomer = customers.filter(
+      (cus) => cus._id === "65350378519a3911ee52797d"
+    )[0];
+    console.log(retailCustomer);
+    setFoundCustomer(retailCustomer);
+    setName(retailCustomer.name);
+    setVisible(false);
+  };
   const customerNameRef = useRef();
 
   useEffect(() => {
@@ -195,7 +213,9 @@ const BillingHeader = ({
   const handleProductSelection = (product) => {
     setProductName("");
     const existingProduct = purchased.find((p) => p.name === product.name);
+    let actualProduct = products.filter((p) => p.name === product.name)[0];
     if (!existingProduct) {
+      let { price } = getPriceTag(actualProduct, 1);
       const newProduct = new Product(
         product._id,
         product.packet,
@@ -206,22 +226,14 @@ const BillingHeader = ({
         product.measuring,
         product.barcode,
         product.name,
-        billType === "wholesale"
-          ? product.wholesalePrice
-          : billType === "superWholesale"
-          ? product.superWholesalePrice
-          : product.retailPrice,
+        price,
         product.mrp,
         billType,
         1,
         0,
         0,
         0,
-        (billType === "wholesale"
-          ? product.wholesalePrice
-          : billType === "superWholesale"
-          ? product.superWholesalePrice
-          : product.retailPrice) * 1,
+        price,
         product.category,
         product.hi,
         product.stock
@@ -282,6 +294,15 @@ const BillingHeader = ({
               setVisible(true);
             }}
           />
+          <input
+            onChange={setCustomerToRetail}
+            checked={
+              foundCustomer && foundCustomer._id === "65350378519a3911ee52797d"
+            }
+            type="checkbox"
+            className="scale-150 cursor-pointer checked:bg-green-500 accent-green-500 "
+          />
+
           <div className="min-w-[300px] max-h-[150px] overflow-auto absolute right-0 bg-gray-200 z-20 rounded-xl">
             {visible &&
               name !== "" &&

@@ -10,12 +10,12 @@ const BillTable = ({
   setDiscount,
   total,
   setTotal,
+  billType,
   payment,
   setPayment,
   paymentMode,
   setPaymentMode,
 }) => {
-  // console.log(purchased);
   const [change, setChange] = useState(false);
   let paymentRef = useRef();
   useEffect(() => {
@@ -77,6 +77,7 @@ const BillTable = ({
                 purchased={purchased}
                 change={change}
                 setPurchased={setPurchased}
+                billType={billType}
               />
             );
           })}
@@ -169,6 +170,7 @@ BillTable.propTypes = {
   setDiscount: PropTypes.func.isRequired,
   setTotal: PropTypes.func.isRequired,
   setPaymentMode: PropTypes.func.isRequired,
+  billType: PropTypes.string.isRequired,
 };
 
 export default BillTable;

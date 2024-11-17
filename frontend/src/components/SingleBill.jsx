@@ -102,10 +102,10 @@ const SingleBill = () => {
               purchased={
                 bill &&
                 bill.items.map((item) => {
-                  // console.log(item);
+                  console.log(item);
                   return {
-                    name: item.product.name,
-                    mrp: item.product.mrp,
+                    name: item.product ? item.product.name : "Deleted Product",
+                    mrp: item.product?.mrp,
                     piece: item.quantity,
                     box: 0,
                     boxQuantity: 0,
@@ -114,8 +114,8 @@ const SingleBill = () => {
                     price: item.total / item.quantity,
                     total: item.total,
                     discount: item.discount,
-                    measuring: item.product.measuring,
-                    hi: item.product.hi,
+                    measuring: item.product?.measuring,
+                    hi: item.product?.hi,
                   };
                 })
               }
@@ -148,7 +148,9 @@ const SingleBill = () => {
                 return (
                   <tr key={item._id}>
                     <td className="capitalize  pl-20">
-                      <p className="text-start">{item.product.name}</p>
+                      <p className="text-start">
+                        {item.product ? item.product.name : "Deleted Product"}
+                      </p>
                     </td>
                     <td className="px-16">
                       <p className="text-center">{item.quantity}</p>

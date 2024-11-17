@@ -1,14 +1,18 @@
 import { useSelector } from "react-redux";
 
-const usePriceTag = () => {
+const usePriceTag = (billType) => {
   const { categories } = useSelector((store) => store.categories);
 
   const getPriceTag = (product, val) => {
     const productCategory = product.category;
-    console.log(productCategory);
     const categoryInfo = categories.find((cat) => cat.name === productCategory);
-    console.log(categoryInfo);
+    console.log("bill type", billType, val);
 
+    if (billType === "superWholesale") {
+      return { type: "superWholesale", price: product.superWholesalePrice };
+    } else if (billType === "wholesale" && val < categoryInfo.superWholeSale) {
+      return { type: "wholesale", price: product.wholesalePrice };
+    }
     if (categoryInfo) {
       const { wholesale, superWholeSale } = categoryInfo;
       if (val) {
