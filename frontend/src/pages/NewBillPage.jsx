@@ -72,8 +72,17 @@ const NewBillPage = () => {
 
     try {
       let err = false;
+      if (foundCustomer._id === "65350378519a3911ee52797d") {
+        if (total !== Number(payment)) {
+          toast.error("Payment check kro!!! Retail Customer hai ye");
+          return;
+        }
+      }
       purchased.forEach((pr) => {
-        if (pr.piece === 0 && pr.packet === 0 && pr.box === 0) {
+        if (
+          (pr.piece === 0 && pr.packet === 0 && pr.box === 0) ||
+          pr.total === 0
+        ) {
           toast.error(`${pr.name} has  0 quantity`);
           err = true;
         }

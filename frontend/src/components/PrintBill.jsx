@@ -8,7 +8,16 @@ import {
 
 const PrintBill = React.forwardRef(
   (
-    { foundCustomer, purchased, payment, total, discount, billId, createdAt },
+    {
+      foundCustomer,
+      purchased,
+      payment,
+      total,
+      discount,
+      billId,
+      createdAt,
+      withMRP,
+    },
     ref
   ) => {
     // console.log(billId);
@@ -28,9 +37,9 @@ const PrintBill = React.forwardRef(
     return (
       <div
         ref={ref}
-        className="min-h-[90vh] bg-white absolute min-w-[95vw] upper flex justify-start items-start"
+        className="min-h-[90vh] bg-white absolute min-w-[100vw] upper flex justify-start items-start"
       >
-        <div className="min-h-[92vh] ml-6 min-w-[480px] mt-3 max-w-[510px]  border-2 rounded-lg border-black">
+        <div className="max-h-[85vh] scrollbar-hide overflow-y-scroll ml-6 min-w-[480px] mt-3 max-w-[510px]  border-2 rounded-lg border-black">
           <div className="min-w-[98%] flex justify-start rounded-xl   mx-1 mr- my-2 border-2 border-black">
             <div className="max-w-[55%] border-r-2 border-black pl-3">
               <p className="italic capitalize font-bold  max-w-[90%]">
@@ -75,9 +84,12 @@ const PrintBill = React.forwardRef(
                 <th className="border border-black">Sr No.</th>
                 <th className="border border-black">Name</th>
                 <th className="border border-black">Quantity</th>
-                <th className="border border-black">Price</th>
-
-                <th className="border border-black">MRP</th>
+                {withMRP && (
+                  <>
+                    <th className="border border-black">Price</th>
+                    <th className="border border-black">MRP</th>
+                  </>
+                )}
                 <th className="border border-black">Total</th>
               </tr>
             </thead>
@@ -110,15 +122,18 @@ const PrintBill = React.forwardRef(
                             : total}
                         </p>
                       </td>
-
-                      <td>
-                        <p className="text-center">
-                          {price % 1 != 0 ? price.toFixed(2) : price}
-                        </p>
-                      </td>
-                      <td>
-                        <p className="text-center"> {product.mrp}</p>
-                      </td>
+                      {withMRP && (
+                        <>
+                          <td>
+                            <p className="text-center">
+                              {price % 1 != 0 ? price.toFixed(2) : price}
+                            </p>
+                          </td>
+                          <td>
+                            <p className="text-center"> {product.mrp}</p>
+                          </td>
+                        </>
+                      )}
                       <td>
                         <p className="text-center">
                           {(price * total - product.discount) % 1 != 0
@@ -171,6 +186,9 @@ PrintBill.propTypes = {
   total: PropTypes.number,
   payment: PropTypes.string,
   discount: PropTypes.number,
+  withMRP: PropTypes.number,
+  billId: PropTypes.number,
+  createdAt: PropTypes.string,
 };
 
 PrintBill.displayName = "PrintBill";

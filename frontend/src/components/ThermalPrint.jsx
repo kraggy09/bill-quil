@@ -8,7 +8,16 @@ import {
 
 const ThermalPrint = React.forwardRef(
   (
-    { foundCustomer, purchased, payment, total, discount, billId, createdAt },
+    {
+      foundCustomer,
+      purchased,
+      payment,
+      total,
+      discount,
+      billId,
+      createdAt,
+      withMRP,
+    },
     ref
   ) => {
     const calculateSave = (product) => {
@@ -84,13 +93,17 @@ const ThermalPrint = React.forwardRef(
               <tr>
                 <th className="border border-black">Name</th>
                 <th className="border border-black">Quantity</th>
-                <th className="border border-black">Price</th>
+                {withMRP && (
+                  <>
+                    <th className="border border-black">Price</th>
 
-                <th className="border border-black">MRP</th>
+                    <th className="border border-black">MRP</th>
+                  </>
+                )}
                 <th className="border border-black">Total</th>
               </tr>
               {purchased &&
-                [...purchased].reverse().map((product, _) => {
+                [...purchased].reverse().map((product) => {
                   // console.log(product, "current product");
                   const total =
                     product.piece +
@@ -115,14 +128,18 @@ const ThermalPrint = React.forwardRef(
                         </p>
                       </td>
 
-                      <td>
-                        <p className="text-center">
-                          {price % 1 != 0 ? price.toFixed(2) : price}
-                        </p>
-                      </td>
-                      <td>
-                        <p className="text-center"> {product.mrp}</p>
-                      </td>
+                      {withMRP && (
+                        <>
+                          <td>
+                            <p className="text-center">
+                              {price % 1 != 0 ? price.toFixed(2) : price}
+                            </p>
+                          </td>
+                          <td>
+                            <p className="text-center"> {product.mrp}</p>
+                          </td>
+                        </>
+                      )}
                       <td>
                         <p className="text-center">
                           {(price * total - product.discount) % 1 != 0
@@ -184,6 +201,9 @@ ThermalPrint.propTypes = {
   total: PropTypes.number,
   payment: PropTypes.string,
   discount: PropTypes.number,
+  withMRP: PropTypes.number,
+  billId: PropTypes.number,
+  createdAt: PropTypes.string,
 };
 
 ThermalPrint.displayName = "ThermalPrint";
