@@ -5,6 +5,7 @@ const usePriceTag = (billType) => {
 
   const getPriceTag = (product, val) => {
     const productCategory = product.category;
+
     const categoryInfo = categories.find((cat) => cat.name === productCategory);
     console.log("bill type", billType, val);
 
@@ -12,6 +13,13 @@ const usePriceTag = (billType) => {
       return { type: "superWholesale", price: product.superWholesalePrice };
     } else if (billType === "wholesale" && val < categoryInfo.superWholeSale) {
       return { type: "wholesale", price: product.wholesalePrice };
+    }
+
+    if (productCategory === "null" && val === 1) {
+      console.log(product.price, "this is the price when getting");
+      return { type: product.type, price: product.retailPrice };
+    } else if (productCategory === "null") {
+      return { type: product.type, price: product.price };
     }
     if (categoryInfo) {
       const { wholesale, superWholeSale } = categoryInfo;

@@ -135,11 +135,11 @@ const BillProducts = ({ product, purchased, setPurchased, billType }) => {
     if (product !== undefined && change) {
       const foundProduct = purchased.find((pr) => pr.id === product.id);
       if (foundProduct) {
-        let { price } = getPriceTag(foundProduct, 1);
+        // let { price } = getPriceTag(foundProduct, 1);
         const updatedProduct = {
           ...foundProduct,
           piece: Number(state.piece),
-          price: price,
+          price: Number(state.price),
           packet: Number(state.packet),
           box: Number(state.box),
           discount: Number(state.discount),
