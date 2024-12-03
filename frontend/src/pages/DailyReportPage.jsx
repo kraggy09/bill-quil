@@ -406,6 +406,7 @@ const DailyReportPage = () => {
                 <tr className="border border-black">
                   <th className="border border-black mx-6">Date</th>
                   <th className="border border-black mx-6">Time</th>
+                  <th className="border border-black mx-6">Trans. Id</th>
                   <th className="border border-black">Party Name</th>
                   <th className="border border-black px-0">Payment ₹</th>
                 </tr>
@@ -421,6 +422,11 @@ const DailyReportPage = () => {
                           </td>
                           <td className="lg:px-6 md:px-2 py-3 font-semibold">
                             {calculateTime(new Date(transaction.createdAt))}
+                          </td>
+                          <td className="px-16 py-3 capitalize font-semibold">
+                            {transaction.id
+                              ? `T-${transaction.id}`
+                              : "Old Trans"}
                           </td>
                           <td className="px-16 py-3 capitalize font-semibold">
                             {transaction.name}

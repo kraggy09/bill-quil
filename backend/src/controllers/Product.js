@@ -488,7 +488,7 @@ export const returnProduct = async (req, res) => {
         }
       } else {
         const newTransactionId = await Counter.findOneAndUpdate(
-          { value: "transactionId" },
+          { name: "transactionId" },
           {
             $inc: { value: 1 },
           },
