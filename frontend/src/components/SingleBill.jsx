@@ -59,7 +59,7 @@ const SingleBill = () => {
             <p>
               Bill Id:
               <span className="border-b-2 border-green-500 px-3">
-                {bill?.id?.id ? bill.id.id : "Old Bill"}
+                {bill.id ? `B-${bill.id}` : "Old Bill"}
               </span>
             </p>
             <p>
@@ -131,7 +131,7 @@ const SingleBill = () => {
               total={bill && bill.total}
               payment={bill && bill.payment}
               discount={bill && bill.discount}
-              billId={bill && bill?.id?.id ? bill.id.id : "Old Bill"}
+              billId={bill && bill?.id ? bill.id : null}
             />
           </header>
           <table className="table-auto my-6 mx-16">

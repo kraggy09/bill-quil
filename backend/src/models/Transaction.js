@@ -9,6 +9,11 @@ const IST = "Asia/Kolkata";
 const newDate = getDate();
 
 const transactionSchema = mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+    unique: true,
+  },
   date: {
     type: String,
     default: newDate,

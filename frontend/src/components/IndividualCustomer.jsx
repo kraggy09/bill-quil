@@ -352,7 +352,7 @@ const IndividualCustomer = () => {
                 <tr className="border border-black">
                   <th className="border border-black mx-6">Date</th>
                   <th className="border border-black">Time</th>
-
+                  <th className="border border-black">Trans. Id</th>
                   <th className="border border-black">Purpose</th>
                   <th className="border border-black px-0">
                     Previous Outstanding
@@ -373,6 +373,9 @@ const IndividualCustomer = () => {
                           {calculateTime(new Date(transaction.createdAt))}
                         </td>
 
+                        <td className="lg:px-6 md:px-2 py-3  font-semibold">
+                          {transaction.id ? `T-${transaction.id}` : "Old Trans"}
+                        </td>
                         <td className="lg:px-6 md:px-2 py-3  font-semibold">
                           {transaction?.purpose}
                         </td>

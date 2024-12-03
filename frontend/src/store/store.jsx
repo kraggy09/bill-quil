@@ -5,6 +5,7 @@ import reportSlice from "./reportSlice";
 import userSlice from "./userSlice";
 import billIdSlice from "./billIdSlice";
 import categorySlice from "./categorySlice";
+import transationIdSlice from "./transactionIdSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     user: userSlice,
     billId: billIdSlice,
     categories: categorySlice,
+    transactionId: transationIdSlice,
   },
 });
 

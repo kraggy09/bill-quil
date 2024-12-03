@@ -7,8 +7,9 @@ const IST = "Asia/Kolkata";
 
 const billSchema = mongoose.Schema({
   id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "BillId",
+    type: Number,
+    required: true,
+    unique: true,
   },
   date: {
     type: Date,
@@ -30,6 +31,14 @@ const billSchema = mongoose.Schema({
   },
   items: [
     {
+      previousQuantity: {
+        type: Number,
+        required: true,
+      },
+      newQuantity: {
+        type: Number,
+        required: true,
+      },
       product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
@@ -48,6 +57,10 @@ const billSchema = mongoose.Schema({
         enum: ["wholesale", "retail", "superWholesale"],
       },
       total: {
+        type: Number,
+        required: true,
+      },
+      costPrice: {
         type: Number,
         required: true,
       },

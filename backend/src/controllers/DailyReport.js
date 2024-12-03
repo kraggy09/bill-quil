@@ -1,6 +1,8 @@
 import getDate, { getCurrentDateOfUser } from "../config/getDate.js";
 import DailyReport from "../models/DailyReport.js";
 
+// No need to add transaction in all this API's
+
 export const getDailyReport = async (req, res) => {
   try {
     const date = getDate();
@@ -12,10 +14,6 @@ export const getDailyReport = async (req, res) => {
           {
             path: "items.product",
             model: "Product",
-          },
-          {
-            path: "id",
-            model: "BillId",
           },
         ],
       })
@@ -71,7 +69,6 @@ export const getDailyReportOfDays = async (req, res) => {
             path: "items.product",
             model: "Product",
           },
-          { path: "id", model: "BillId" },
         ],
       })
       .populate("transactions")

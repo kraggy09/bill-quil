@@ -50,7 +50,7 @@ const PrintBill = React.forwardRef(
                 Mob:9370564909 / 9145506000
               </p>
               <p className="text-sm my-1 font-semibold text-gray-800">
-                Bill No. {billId}
+                Bill No. B-{billId}
               </p>
             </div>
             <div className="pl-2">

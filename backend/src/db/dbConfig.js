@@ -4,8 +4,6 @@ const connection = async (url) => {
   try {
     url = String(url);
     mongoose.connect(url, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       family: 4,
     });
     const connection = mongoose.connection;

@@ -31,6 +31,7 @@ import { fetchLastBillId } from "./store/billIdSlice";
 import { Toaster } from "react-hot-toast";
 import CategoriesPage from "./pages/CategoriesPage";
 import NewTransaction from "./components/NewTransaction";
+import { fetchLastTransactionId } from "./store/transactionIdSlice";
 const App = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
@@ -42,6 +43,7 @@ const App = () => {
       dispatch(fetchDailyReport());
       dispatch(fetchLastBillId());
       dispatch(fetchCategories());
+      dispatch(fetchLastTransactionId());
     }
   }, [user]);
 

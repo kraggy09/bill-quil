@@ -333,7 +333,11 @@ const BillPage = () => {
                 <th className="border border-black mx-6">Date</th>
                 <th className="border border-black">Time</th>
                 <th className="border border-black">Customer Name</th>
+                <th className="border border-black">Prev. Quan</th>
+
                 <th className="border border-black">Quantity </th>
+                <th className="border border-black">New. Quan</th>
+
                 <th className="border border-black">Total Price </th>
                 <th className="border border-black">View</th>
               </tr>
@@ -357,7 +361,16 @@ const BillPage = () => {
                     </td>
                     <td className="px-16 py-3 capitalize font-semibold text-lg">
                       {" "}
+                      {p.items[0].previousQuantity ?? "Old"}
+                    </td>
+                    <td className="px-16 py-3 capitalize font-semibold text-lg">
+                      {" "}
                       {p.items[0].quantity}
+                    </td>
+
+                    <td className="px-16 py-3 capitalize font-semibold text-lg">
+                      {" "}
+                      {p.items[0].newQuantity ?? "Old"}
                     </td>
                     <td className="px-16 py-3 capitalize font-semibold text-lg">
                       {" "}

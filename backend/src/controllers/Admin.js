@@ -183,6 +183,8 @@ export const getAdminData = async (req, res) => {
   }
 };
 
+//Todo: Low Priority (Write an aggreagate function to get the profit of the single customer too)
+
 export const getCustomerData = async (req, res) => {
   let { days, customerId } = req.body;
   customerId = new mongoose.Types.ObjectId(customerId);

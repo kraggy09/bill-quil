@@ -30,7 +30,10 @@ const dailyReportSchema = mongoose.Schema({
         required: true,
       },
       quantity: { type: Number, required: true },
-
+      purpose: {
+        type: String,
+        required: true,
+      },
       createdAt: {
         type: Date,
         default: () => moment.tz(getCurrentDateAndTime(), IST),

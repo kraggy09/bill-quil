@@ -1,5 +1,7 @@
 import Category from "../models/Category.js";
 
+// No need for transaction in this API's
+
 export const createNewCategory = async (req, res) => {
   let { name, wholesale, superWholeSale } = req.body;
 

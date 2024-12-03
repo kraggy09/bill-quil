@@ -126,8 +126,8 @@ const UpdateStockRequest = () => {
       }
       setTimeout(() => {
         navigate("/products");
+        setLoading(false);
       }, 1500);
-      setLoading(false);
     } catch (error) {
       toast.error("Error" + error.message);
       setLoading(false);

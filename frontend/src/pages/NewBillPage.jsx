@@ -16,8 +16,10 @@ import { fetchProducts } from "../store/productSlice";
 import { fetchCustomers } from "../store/customerSlice";
 import { fetchDailyReport } from "../store/reportSlice";
 import { fetchLastBillId } from "../store/billIdSlice";
+
 import { apiUrl } from "../constant";
 import apiCaller from "../libs/apiCaller";
+import { fetchLastTransactionId } from "../store/transactionIdSlice";
 
 // Constants
 const API_URL = "/createBill";
@@ -41,6 +43,7 @@ const NewBillPage = () => {
   const [disabledRefresh, setDisabledRefresh] = useState(true);
   const [loading, setLoading] = useState(false);
   const { id } = useSelector((store) => store.billId);
+  const transactionId = useSelector((store) => store.transactionId);
   const handleRefresh = async () => {
     setLoading(true);
 
@@ -49,6 +52,7 @@ const NewBillPage = () => {
       await dispatch(fetchCustomers());
       await dispatch(fetchLastBillId());
       await dispatch(fetchDailyReport());
+      await dispatch(fetchLastTransactionId());
       setReload(true);
       setLoading(false);
     } catch (error) {
@@ -101,7 +105,8 @@ const NewBillPage = () => {
         purchased,
         discount,
         billId: id,
-        payment: payment === "" ? 0 : payment,
+        transactionId: transactionId.id,
+        payment: payment === "" ? 0 : Number(payment),
         total,
         paymentMode,
         customerId: foundCustomer?._id,
@@ -115,6 +120,7 @@ const NewBillPage = () => {
       dispatch(fetchCustomers());
       dispatch(fetchDailyReport());
       dispatch(fetchLastBillId());
+      dispatch(fetchLastTransactionId());
 
       toast.success("Bill created successfully"); // Display success message
     } catch (error) {

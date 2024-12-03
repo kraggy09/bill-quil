@@ -2,6 +2,8 @@ import Bill from "../models/Bill.js";
 import Customer from "../models/Customer.js";
 import Transaction from "../models/Transaction.js";
 
+//Todo: To be able to edit customer data with the id
+
 export const createNewCustomer = async (req, res) => {
   try {
     const customerData = req.body;
@@ -68,9 +70,9 @@ export const getSingleCustomer = async (req, res) => {
   const customerId = req.params.customerId; // Access the customer ID from the route parameter
   try {
     const customer = await Customer.findById(customerId);
-    let bills = await Bill.find({ customer: customerId })
-      .sort({ createdAt: 1 })
-      .populate({ path: "id", model: "BillId" });
+    let bills = await Bill.find({ customer: customerId }).sort({
+      createdAt: 1,
+    });
 
     let transactions = await Transaction.find({
       customer: customerId,

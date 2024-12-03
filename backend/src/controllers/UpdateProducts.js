@@ -5,55 +5,59 @@ import Product from "../models/Product.js";
 import UpdateProducts from "../models/UpdateProducts.js";
 import mongoose from "mongoose";
 
-// Update Inventory Request
 export const updateInventoryRequest = async (req, res) => {
   const products = req.body;
   const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
-    const items = [];
+    const result = await session.withTransaction(async () => {
+      const bulkOperations = [];
+      const updateProductsData = [];
 
-    for (const productData of products.update) {
-      const item = productData.barcode;
-      const existingProduct = await Product.findOne({ barcode: item }).session(
-        session
-      );
+      for (const productData of products.update) {
+        const item = productData.barcode;
 
-      if (!existingProduct) {
-        throw new Error("Product not found");
+        // Find the existing product
+        const existingProduct = await Product.findOne({
+          barcode: item,
+        }).session(session);
+        if (!existingProduct) {
+          throw new Error(`Product not found for barcode: ${item}`);
+        }
+
+        // Prepare data for the `UpdateProducts` collection
+        updateProductsData.push({
+          product: existingProduct._id,
+          createdBy: products.createdBy,
+          oldStock: productData.stock,
+          quantity: productData.quantity,
+        });
       }
 
-      console.log(existingProduct);
-      const updatedProduct = await UpdateProducts.create(
-        [
-          {
-            product: existingProduct._id,
-            createdBy: products.createdBy,
-            oldStock: productData.stock,
-            quantity: productData.quantity,
-          },
-        ],
-        { session }
-      );
+      // Insert the update logs in bulk
+      const createdItems = await UpdateProducts.insertMany(updateProductsData, {
+        session,
+      });
 
-      items.push(updatedProduct);
-    }
+      return createdItems;
+    });
 
-    await session.commitTransaction();
+    // Success response
     return res.status(200).json({
       success: true,
       msg: "Sent for verification to Admin",
-      items,
+      items: result,
     });
   } catch (error) {
-    await session.abortTransaction();
-    console.error("Error:", error);
+    console.error("Error:", error.message);
+
+    // Error response
     return res.status(500).json({
       success: false,
-      msg: "Internal server error",
+      msg: error.message || "Internal server error",
     });
   } finally {
+    // Ensure the session ends
     session.endSession();
   }
 };
@@ -89,146 +93,53 @@ export const rejectInventoryRequest = async (req, res) => {
   const session = await mongoose.startSession();
 
   try {
-    session.startTransaction();
+    await session.withTransaction(async () => {
+      const product = await UpdateProducts.findOneAndDelete({
+        _id: id,
+      }).session(session);
 
-    const product = await UpdateProducts.findOneAndDelete({ _id: id }).session(
-      session
-    );
+      if (!product) {
+        throw new Error("Product not found");
+      }
 
-    if (product) {
-      await session.commitTransaction();
-      return res.status(200).json({
-        success: true,
-        msg: "Request Rejected Successfully",
-        product,
-      });
-    } else {
-      await session.abortTransaction();
-      return res.status(404).json({
-        success: false,
-        msg: "Product not found",
-      });
-    }
+      return product; // Returning the deleted product for response
+    });
+
+    // Success response
+    return res.status(200).json({
+      success: true,
+      msg: "Request Rejected Successfully",
+    });
   } catch (error) {
-    await session.abortTransaction();
-    console.error("Error rejecting inventory request:", error);
+    console.error("Error rejecting inventory request:", error.message);
     return res.status(500).json({
       success: false,
-      msg: "Server down",
+      msg: error.message || "Internal server error",
     });
   } finally {
     session.endSession();
   }
 };
 
-// Accept Inventory Request
+//Todo: Regressly test
 export const acceptInventoryRequest = async (req, res) => {
   const { inv } = req.body;
   const session = await mongoose.startSession();
 
   try {
-    session.startTransaction();
-    const currentDate = getDate();
+    await session.withTransaction(async () => {
+      const currentDate = getDate();
 
-    // Fetch the available product within the transaction session
-    const availableProduct = await Product.findById(inv.product._id).session(
-      session
-    );
-    if (!availableProduct) {
-      throw new Error("Product not found");
-    }
-
-    // Update the product's stock within the session
-    const updatedProduct = await Product.findByIdAndUpdate(
-      inv.product._id,
-      { $inc: { stock: inv.quantity } },
-      { new: true, session }
-    );
-
-    if (!updatedProduct) {
-      throw new Error("Product update failed");
-    }
-
-    // Create the log entry within the transaction session
-    await Logger.create(
-      [
-        {
-          name: "Stock Update",
-          previousQuantity: availableProduct.stock,
-          newQuantity: updatedProduct.stock,
-          product: availableProduct._id,
-          quantity: inv.quantity,
-        },
-      ],
-      { session }
-    );
-
-    const product = {
-      product: updatedProduct._id,
-      quantity: inv.quantity,
-      previousQuantity: updatedProduct.stock - inv.quantity,
-    };
-
-    // Update the daily report within the transaction session
-    const dailyReport = await DailyReport.findOneAndUpdate(
-      { date: currentDate },
-      { $push: { updatedToday: product } },
-      { upsert: true, new: true, session }
-    );
-
-    if (!dailyReport) {
-      throw new Error("Daily report update failed");
-    }
-
-    // Delete the inventory request within the transaction session
-    const deleteRequest = await UpdateProducts.findOneAndDelete({
-      _id: inv._id,
-    }).session(session);
-    if (!deleteRequest) {
-      throw new Error("Failed to delete the inventory request");
-    }
-
-    // Commit the transaction if all operations are successful
-    await session.commitTransaction();
-
-    return res.status(200).json({
-      success: true,
-      msg: "Stock updated successfully",
-    });
-  } catch (error) {
-    // Abort the transaction if any error occurs
-    await session.abortTransaction();
-    console.error("Error accepting inventory request:", error);
-    return res.status(500).json({
-      msg: "Server down",
-      success: false,
-    });
-  } finally {
-    // Ensure the session is properly ended
-    session.endSession();
-  }
-};
-
-// Accept All Inventory Requests
-export const acceptAllInventoryRequest = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const currentDate = getDate();
-    const requests = req.body; // Assuming req.body is an array of inventory requests
-
-    for (const inv of requests) {
-      // Fetch the product to be updated within the session
+      // Fetch the available product within the transaction session
       const availableProduct = await Product.findById(inv.product._id).session(
         session
       );
       if (!availableProduct) {
-        throw new Error("Product not found");
+        const error = new Error("Product not found");
+        error.statusCode = 404;
+        error.data = { productId: inv.product._id };
+        throw error;
       }
-
-      const newStock = availableProduct.stock + inv.quantity;
-      console.log(newStock, "This is manual");
 
       // Update the product's stock within the session
       const updatedProduct = await Product.findByIdAndUpdate(
@@ -237,68 +148,178 @@ export const acceptAllInventoryRequest = async (req, res) => {
         { new: true, session }
       );
 
-      console.log(updatedProduct.stock, "This is automatic");
-
       if (!updatedProduct) {
-        throw new Error("Product update failed");
+        const error = new Error("Product update failed");
+        error.statusCode = 500;
+        error.data = { productId: inv.product._id };
+        throw error;
       }
 
-      // Create a log for the stock update within the session
+      // Create the log entry within the transaction session
       await Logger.create(
         [
           {
             name: "Stock Update",
             previousQuantity: availableProduct.stock,
             newQuantity: updatedProduct.stock,
-            quantity: inv.quantity,
             product: availableProduct._id,
+            quantity: inv.quantity,
           },
         ],
         { session }
       );
 
-      const product = {
-        product: updatedProduct._id,
-        quantity: inv.quantity,
-        previousQuantity: updatedProduct.stock - inv.quantity,
-      };
-
-      // Update the daily report within the session
+      // Update the daily report within the transaction session
       const dailyReport = await DailyReport.findOneAndUpdate(
         { date: currentDate },
-        { $push: { updatedToday: product } },
+        {
+          $push: {
+            updatedToday: {
+              product: updatedProduct._id,
+              quantity: inv.quantity,
+              previousQuantity: updatedProduct.stock - inv.quantity,
+            },
+          },
+        },
         { upsert: true, new: true, session }
       );
 
       if (!dailyReport) {
-        throw new Error("Daily report update failed");
+        const error = new Error("Daily report update failed");
+        error.statusCode = 500;
+        throw error;
       }
 
-      // Delete the inventory request within the session
-      const deletedRequest = await UpdateProducts.findOneAndDelete({
+      // Delete the inventory request within the transaction session
+      const deleteRequest = await UpdateProducts.findOneAndDelete({
         _id: inv._id,
       }).session(session);
-      if (!deletedRequest) {
-        throw new Error("Failed to delete the inventory request");
-      }
-    }
 
-    // Commit the transaction if all operations are successful
-    await session.commitTransaction();
+      if (!deleteRequest) {
+        const error = new Error("Failed to delete the inventory request");
+        error.statusCode = 500;
+        error.data = { requestId: inv._id };
+        throw error;
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      msg: "Stock updated successfully",
+    });
+  } catch (error) {
+    // Log the error for debugging
+    console.error("Error accepting inventory request:", error);
+
+    // Send a custom error response to the client
+    return res.status(error.statusCode || 500).json({
+      success: false,
+      msg: error.message || "Server down",
+      data: error.data || null,
+    });
+  } finally {
+    // Ensure the session is properly ended
+    session.endSession();
+  }
+};
+
+// Todo: Regressly test
+export const acceptAllInventoryRequest = async (req, res) => {
+  const session = await mongoose.startSession();
+
+  const requests = req.body.inventoryRequests; // Assuming req.body is an array of inventory requests
+  console.log(requests);
+
+  try {
+    const currentDate = getDate();
+
+    await session.withTransaction(async () => {
+      const productBulkOps = [];
+      const loggerEntries = [];
+      const dailyReportItems = [];
+      const deleteRequests = [];
+
+      for (const inv of requests) {
+        // Fetch the product to be updated
+        const availableProduct = await Product.findById(
+          inv.product._id
+        ).session(session);
+        if (!availableProduct) {
+          throw new Error(`Product not found: ${inv.product._id}`);
+        }
+
+        // Prepare product stock update operation
+        productBulkOps.push({
+          updateOne: {
+            filter: { _id: inv.product._id },
+            update: { $inc: { stock: inv.quantity } },
+          },
+        });
+
+        // Prepare logger entry
+        loggerEntries.push({
+          name: "Stock Update",
+          previousQuantity: availableProduct.stock,
+          newQuantity: availableProduct.stock + inv.quantity,
+          quantity: inv.quantity,
+          product: availableProduct._id,
+        });
+
+        // Prepare daily report entry
+        dailyReportItems.push({
+          product: availableProduct._id,
+          quantity: inv.quantity,
+          previousQuantity: availableProduct.stock,
+          purpose: "Stock Update",
+        });
+
+        // Collect requests to delete
+        deleteRequests.push(inv._id);
+      }
+
+      // Execute bulk write for product updates
+      if (productBulkOps.length > 0) {
+        const productUpdateResult = await Product.bulkWrite(productBulkOps, {
+          session,
+        });
+        if (productUpdateResult.modifiedCount !== productBulkOps.length) {
+          throw new Error("Failed to update all product stocks");
+        }
+      }
+
+      // Insert logger entries in bulk
+      if (loggerEntries.length > 0) {
+        await Logger.insertMany(loggerEntries, { session });
+      }
+
+      // Update daily report with all items
+      await DailyReport.findOneAndUpdate(
+        { date: currentDate },
+        { $push: { updatedToday: dailyReportItems } },
+        { upsert: true, new: true, session }
+      );
+
+      // Delete inventory requests in bulk
+      if (deleteRequests.length > 0) {
+        await UpdateProducts.deleteMany({
+          _id: { $in: deleteRequests },
+        }).session(session);
+      }
+    });
+
+    // Success response
     return res.status(200).json({
       success: true,
       msg: "All stock updates successful",
     });
   } catch (error) {
-    // Abort the transaction if any error occurs
-    await session.abortTransaction();
-    console.error("Error accepting all inventory requests:", error);
+    console.error("Error accepting all inventory requests:", error.message);
     return res.status(500).json({
-      msg: "Server down",
       success: false,
+      msg: error.message || "Internal server error",
     });
   } finally {
-    // Ensure the session is properly ended
+    // Ensure session is ended
     session.endSession();
   }
 };

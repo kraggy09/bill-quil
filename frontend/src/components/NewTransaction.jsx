@@ -1,4 +1,4 @@
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Toaster, toast } from "react-hot-toast";
 import { fetchDailyReport } from "../store/reportSlice";
@@ -9,6 +9,9 @@ import { fetchCustomers } from "../store/customerSlice";
 import { useNavigate } from "react-router-dom";
 import TransactionModal from "./TransactionModal";
 import apiCaller from "../libs/apiCaller";
+import { fetchProducts } from "../store/productSlice";
+import { fetchLastBillId } from "../store/billIdSlice";
+import { fetchLastTransactionId } from "../store/transactionIdSlice";
 const initialState = {
   name: "",
   purpose: "",
@@ -37,19 +40,26 @@ const findCustomer = (customers, val) => {
 
 const NewTransaction = () => {
   const navigate = useNavigate();
+  const transactionId = useSelector((store) => store.transactionId);
+
   const [taken, setTaken] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [formData, dispatch] = useReducer(formReducer, initialState);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [reload, setReload] = useState(false);
+  const [apiSuccess, setApiSuccess] = useState(false);
   const [foundCustomer, setFoundCustomer] = useState({});
   console.log(foundCustomer);
 
   const customers = useSelector((store) => store.customer.customers);
   // console.log(customers);
 
-  console.log(formData);
+  console.log(Number(formData.amount) + foundCustomer?.outstanding);
 
+  useEffect(() => {
+    findCustomer(customers, foundCustomer.name);
+  }, [reload]);
   const css = {
     input:
       "mx-auto capitalize outline-none focus:border-green-800 transtion-all duration-300 ease-linear   border-b-2 px-2 text-xl font-bold max-w-[300px]",
@@ -75,12 +85,17 @@ const NewTransaction = () => {
     if (!taken) {
       await apiCaller
         .post(apiUrl + "/createPayment", {
-          ...formData,
+          name: formData.name,
+          amount: Number(formData.amount),
+          purpose: formData.purpose,
           id: foundCustomer._id,
+          transactionId: transactionId.id,
+          paymentMode: formData.paymentMode,
         })
         .then((res) => {
           console.log(res);
           setLoading(false);
+          setApiSuccess(true);
           toast.success("Payment Recieved");
           setIsOpen(true);
         })
@@ -92,11 +107,16 @@ const NewTransaction = () => {
     } else {
       await apiCaller
         .post(apiUrl + "/createTransation", {
-          ...formData,
+          name: formData.name,
+          amount: Number(formData.amount),
+          purpose: formData.purpose,
+          transactionId: transactionId.id,
+          paymentMode: formData.paymentMode,
         })
         .then((res) => {
           console.log(res);
           setLoading(false);
+          setApiSuccess(true);
           navigate("/");
           toast.success("Cashout Done");
         })
@@ -107,8 +127,28 @@ const NewTransaction = () => {
     }
     dispatchR(fetchCustomers());
     dispatchR(fetchDailyReport());
+    dispatchR(fetchLastTransactionId());
     // dispatch({ type: "reset" });
     // setFoundCustomer(null);
+  };
+
+  const handleRefresh = async () => {
+    setLoading(true);
+
+    try {
+      await dispatchR(fetchProducts()); // Wait for the fetchProducts operation to complete
+      await dispatchR(fetchCustomers());
+      await dispatchR(fetchLastBillId());
+      await dispatchR(fetchDailyReport());
+      await dispatchR(fetchLastTransactionId());
+      setReload(true);
+    } catch (error) {
+      console.error(error);
+      toast.error("Error!! Please re-login");
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // console.log(foundCustomer);
@@ -153,6 +193,20 @@ const NewTransaction = () => {
               </span>
             </div>
           </div>
+          <span className="mx-auto my-3 flex justify-center items-center">
+            <label className={css.label}>Transaction Id:</label>
+            <p
+              className={
+                "font-bold text-lg bg-green-300 text-green-800 px-1 rounded-lg"
+              }
+            >
+              {"T-" + Number(transactionId.id + 1) ?? "Null"}
+            </p>
+
+            <button onClick={() => handleRefresh()} className="mx-6">
+              Refresh
+            </button>
+          </span>
 
           <span className="mx-auto my-3 relative">
             <label className={css.label} htmlFor="name">
@@ -281,6 +335,7 @@ const NewTransaction = () => {
           )}
 
           <button
+            disabled={apiSuccess}
             onClick={() => {
               handleSubmit();
             }}

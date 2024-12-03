@@ -58,6 +58,7 @@ const BillingHeader = ({
   setPurchased,
 }) => {
   const bill = useSelector((store) => store.billId);
+  const transaction = useSelector((store) => store.transactionId);
   const [visible, setVisible] = useState(true);
   const [productvisible, setProductVisible] = useState(false);
   const [productName, setProductName] = useState("");
@@ -263,15 +264,30 @@ const BillingHeader = ({
     <header className="py-4">
       <div className="min-w-full mx-auto flex justify-around">
         <div className="flex flex-col mb-3">
-          <p className="font-bold">Bill No.: {bill.id + 1}</p>
-          <p className="font-bold">
+          <p className="font-bold mb-4">
             Bill Type:{" "}
             <i className="capitalize bg-green-500 px-2 py-1 text-white rounded-xl">
               {billType}
             </i>
           </p>
+          <div className="flex gap-x-12 ">
+            <p className="font-bold">
+              Bill No.:{" "}
+              <span className="bg-green-200 text-green-800 px-2 rounded-lg">
+                B-{bill.id + 1}
+              </span>
+            </p>
+            <p className="font-bold">
+              Trans No.:{" "}
+              <span className="bg-green-200 text-green-800 px-2 rounded-lg">
+                T-{transaction.id + 1}
+              </span>
+            </p>
+          </div>
         </div>
-        <span className="relative">
+        <span
+          className={` ${billType === "refund" ? "invisible" : "relative"}`}
+        >
           <label htmlFor="customer_name">
             Customer Name
             <sup className="text-sm ml-2 rounded-full bg-green-300 px-2 py-1">

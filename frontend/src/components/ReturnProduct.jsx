@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import TransactionModal from "./TransactionModal";
 import { fetchLastBillId } from "../store/billIdSlice";
 import { IoRefresh } from "react-icons/io5";
+import { fetchLastTransactionId } from "../store/transactionIdSlice";
 
 const ReturnProduct = () => {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const ReturnProduct = () => {
   const [total, setTotal] = useState(0);
   console.log("Hey, I am the total", total);
   const { id } = useSelector((store) => store.billId);
-
+  const transactionId = useSelector((store) => store.transactionId);
   const handleRefresh = async () => {
     setLoading(true);
 
@@ -31,7 +32,8 @@ const ReturnProduct = () => {
       await dispatch(fetchCustomers());
       await dispatch(fetchLastBillId());
       await dispatch(fetchDailyReport());
-      setReload(true);
+      await dispatch(fetchLastTransactionId());
+      await setReload(true);
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -54,6 +56,7 @@ const ReturnProduct = () => {
         returnType,
         billId: id,
         total,
+        transactionId: transactionId.id,
       });
 
       dispatch(fetchCustomers());
@@ -127,22 +130,26 @@ const ReturnProduct = () => {
       </div>
       <BillingHeader
         reload={reload}
-        billType="return"
+        billType={returnType}
         purchased={purchased}
         setFoundCustomer={setFoundCustomer}
         setPurchased={setPurchased}
       />
       <div className="min-w-full  flex items-center justify-end">
         <div
-        className="flex gap-x-8"
+          className="flex gap-x-8"
           onMouseEnter={() => setDisabledRefresh(false)}
           onMouseLeave={() => setDisabledRefresh(true)}
           onClick={() => {
             handleRefresh();
           }}
         >
-          <div >Total Products: <span className="bg-green-200 text-green-800 font-semibold px-2 rounded-lg">
-          {purchased.length}</span></div>
+          <div>
+            Total Products:{" "}
+            <span className="bg-green-200 text-green-800 font-semibold px-2 rounded-lg">
+              {purchased.length}
+            </span>
+          </div>
           <button
             disabled={disabledRefresh}
             className="flex items-center justify-center  bg-green-500 text-white rounded-xl font-bold px-3 py-1"

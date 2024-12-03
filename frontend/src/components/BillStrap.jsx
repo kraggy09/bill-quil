@@ -26,7 +26,7 @@ const BillStrap = ({ bill }) => {
       <td className="lg:px-6 md:px-2 py-3 ">{calculateDate(date)}</td>
       <td className="lg:px-6 md:px-2 py-3 ">{calculateTime(date)}</td>
       <td className="lg:px-6 md:px-2 py-3 ">
-        {bill?.id?.id ? bill.id.id : "Old Bill"}
+        {bill.id ? `B-${bill.id}` : "Old Bill"}
       </td>
       <td className="lg:px-6 md:px-2 py-3 ">
         {" "}

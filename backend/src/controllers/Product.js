@@ -9,6 +9,7 @@ import Transaction from "../models/Transaction.js";
 import mongoose from "mongoose";
 import Logger from "../models/Logger.js";
 import BillId from "../models/BillId.js";
+import Counter from "../models/Counter.js";
 
 export const createNewProduct = async (req, res) => {
   try {
@@ -30,7 +31,6 @@ export const createNewProduct = async (req, res) => {
     name = name.trim();
     name = name.toLowerCase();
 
-    
     let newOne;
     const get_base_url = (lang, word) =>
       `https://www.google.com/inputtools/request?ime=transliteration_en_${lang}&num=5&cp=0&cs=0&ie=utf-8&oe=utf-8&app=jsapi&text=${word}`;
@@ -191,7 +191,7 @@ export const updateProductDetails = async (req, res) => {
     console.log(product);
     const newProduct = {
       name: product.name.trim(),
-      category:product.category,
+      category: product.category,
       mrp: product.mrp,
       costPrice: product.costPrice,
       measuring: product.measuring,
@@ -260,77 +260,77 @@ export const updateProductDetails = async (req, res) => {
 
 export const updateStock = async (req, res) => {
   const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
     const currentDate = getDate();
     const { quantity, id } = req.body;
 
-    // Find the product with the current session to ensure it's part of the transaction
-    const availableProduct = await Product.findById(id).session(session);
-    if (!availableProduct) {
-      throw new Error("Unable to find the available product");
-    }
+    const result = await session.withTransaction(async () => {
+      // Find the product with the current session to ensure it's part of the transaction
+      const availableProduct = await Product.findById(id).session(session);
+      if (!availableProduct) {
+        throw new Error("Unable to find the available product");
+      }
 
-    // Use the $inc operator to increment the stock field by the given quantity
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { $inc: { stock: quantity } },
-      { new: true, session }
-    );
+      // Update the stock using $inc
+      const updatedProduct = await Product.findByIdAndUpdate(
+        id,
+        { $inc: { stock: quantity } },
+        { new: true, session }
+      );
 
-    // Check if the update was successful
-    if (!updatedProduct) {
-      throw new Error("Unable to update the product");
-    }
+      if (!updatedProduct) {
+        throw new Error("Unable to update the product");
+      }
 
-    const product = {
-      product: updatedProduct._id,
-      quantity: quantity,
-      previousQuantity: availableProduct.stock,
-    };
+      const product = {
+        product: updatedProduct._id,
+        quantity,
+        previousQuantity: availableProduct.stock,
+        purpose: "Stock Update",
+      };
 
-    // Update or create the daily report
-    const dailyReport = await DailyReport.findOneAndUpdate(
-      { date: currentDate },
-      { $push: { updatedToday: product } },
-      { upsert: true, new: true, session }
-    );
+      // Update or create the daily report
+      const dailyReport = await DailyReport.findOneAndUpdate(
+        { date: currentDate },
+        { $push: { updatedToday: product } },
+        { upsert: true, new: true, session }
+      );
 
-    if (!dailyReport) {
-      throw new Error("Unable to update the dailyreport");
-    }
-    // Log the update
-    let logger = await Logger.create(
-      [
-        {
-          name: "Stock Update",
-          previousQuantity: availableProduct.stock,
-          newQuantity: updatedProduct.stock,
-          quantity: quantity,
-          product: updatedProduct._id,
-        },
-      ],
-      { session }
-    );
-    if (!logger) {
-      throw new Error("Unable to create the logger");
-    }
+      if (!dailyReport) {
+        throw new Error("Unable to update the daily report");
+      }
 
-    // Commit the transaction if all operations are successful
-    await session.commitTransaction();
+      // Log the update
+      const logger = await Logger.create(
+        [
+          {
+            name: "Stock Update",
+            previousQuantity: availableProduct.stock,
+            newQuantity: updatedProduct.stock,
+            quantity,
+            product: updatedProduct._id,
+          },
+        ],
+        { session }
+      );
 
-    // Respond with the updated product data
+      if (!logger) {
+        throw new Error("Unable to create the logger");
+      }
+
+      // Return the updated product
+      return updatedProduct;
+    });
+
     return res.status(200).json({
       success: true,
       msg: "Stock Updated Successfully",
-      data: updatedProduct,
+      data: result,
     });
   } catch (error) {
-    // If an error occurs, abort the transaction and handle the error
-    await session.abortTransaction();
     console.log("Error during stock update:", error.message);
-    returnres.status(500).json({
+    return res.status(500).json({
       success: false,
       msg: error.message || "Server Down",
     });
@@ -340,195 +340,237 @@ export const updateStock = async (req, res) => {
   }
 };
 
+//Todo: Regress testing
 export const returnProduct = async (req, res) => {
   const abc = req.body;
   const currentDate = getDate();
-  let { purchased, foundCustomer, billId, returnType, total } = abc;
+  let { purchased, foundCustomer, billId, transactionId, returnType, total } =
+    abc;
 
   const session = await mongoose.startSession();
-  session.startTransaction();
-  let newBillId = billId + 1;
-
   try {
-    let transaction, dailyReport;
+    await session.withTransaction(async () => {
+      // Validate billId
+      const previousBillId = await Counter.findOne({ name: "billId" }).session(
+        session
+      );
 
-    const previousBillId = await BillId.findOne({ id: newBillId }).session(
-      session
-    );
-    if (previousBillId) {
-      await session.abortTransaction();
-      return res.status(409).json({
-        msg: "Duplicate bill detected, please check your history",
-        success: false,
-        previousBillId,
-      });
-    }
+      const previousTransactionId = await Counter.findOne({
+        name: "transactionId",
+      }).session(session);
 
-    // Update the daily report for the current date
-    dailyReport = await DailyReport.findOneAndUpdate(
-      { date: currentDate },
-      {},
-      { new: true, upsert: true, session }
-    );
-
-    if (purchased.length === 0) {
-      throw new Error("No products to return");
-    }
-
-    // Update the stock for each purchased product
-    const items = [];
-    for (const product of purchased) {
-      const quantity =
-        product.piece +
-        product.packet * product.packetQuantity +
-        product.box * product.boxQuantity;
-      const id = new mongoose.Types.ObjectId(product.id);
-      let availableProduct = await Product.findById(id).session(session);
-      if (!availableProduct) {
-        throw new Error("Product not found");
+      if (previousBillId.value !== billId) {
+        throw new Error("Duplicate bill !! Pls refresh");
       }
 
-      const updatedProduct = await Product.findByIdAndUpdate(
-        id,
-        { $inc: { stock: quantity } },
+      if (previousTransactionId.value != transactionId) {
+        throw new Error("Duplicate Transaction !! Pls refresh");
+      }
+      if (purchased.length === 0) {
+        throw new Error("No products to return");
+      }
+
+      // Prepare bulk operations for product stock updates and logger entries
+      const productBulkOperations = [];
+      const loggerEntries = [];
+      const items = [];
+
+      for (const product of purchased) {
+        const quantity =
+          product.piece +
+          product.packet * product.packetQuantity +
+          product.box * product.boxQuantity;
+
+        const id = new mongoose.Types.ObjectId(product.id);
+
+        // Prepare stock update operation
+        productBulkOperations.push({
+          updateOne: {
+            filter: { _id: id },
+            update: { $inc: { stock: quantity } },
+          },
+        });
+
+        // Fetch product details for logging
+        const availableProduct = await Product.findById(id).session(session);
+        if (!availableProduct) {
+          throw new Error(`Product not found: ${product.name || product.id}`);
+        }
+
+        // Prepare logger entry
+        loggerEntries.push({
+          name: "Product Return",
+          previousQuantity: availableProduct.stock,
+          newQuantity: availableProduct.stock + quantity,
+          quantity,
+          product: availableProduct._id,
+        });
+
+        // Prepare item details for daily report
+        items.push({
+          product: availableProduct._id,
+          quantity,
+          previousQuantity: availableProduct.stock,
+        });
+      }
+
+      // Execute bulk write for product stock updates
+      const bulkWriteResult = await Product.bulkWrite(productBulkOperations, {
+        session,
+      });
+
+      if (bulkWriteResult.modifiedCount !== purchased.length) {
+        throw new Error("Failed to update all product stocks");
+      }
+
+      // Insert logger entries in bulk
+      await Logger.insertMany(loggerEntries, { session });
+
+      // Handle return type
+      let transaction = null;
+      if (returnType === "adjustment") {
+        // Fetch and validate customer
+        foundCustomer = await Customer.findById(foundCustomer._id).session(
+          session
+        );
+        if (!foundCustomer) {
+          throw new Error("Customer not found");
+        }
+
+        const newOutstanding = foundCustomer.outstanding - total;
+
+        let newTransactionId = await Counter.findOneAndUpdate(
+          { name: "transactionId" },
+          {
+            $inc: { value: 1 },
+          },
+          {
+            new: true,
+            session,
+          }
+        );
+
+        if (!newTransactionId) {
+          throw new Error("Unable to create transaction id");
+        }
+        // Create transaction
+        transaction = await Transaction.create(
+          [
+            {
+              id: newTransactionId.value,
+              name: foundCustomer.name,
+              previousOutstanding: foundCustomer.outstanding,
+              amount: total,
+              newOutstanding,
+              taken: false,
+              purpose: "Return Product",
+              paymentMode: "productReturn",
+              approved: true,
+              customer: foundCustomer._id,
+            },
+          ],
+          { session }
+        );
+
+        if (!transaction[0]) {
+          throw new Error("Unable to create the transaction");
+        }
+
+        // Update customer outstanding balance
+        const updatedCustomer = await Customer.findByIdAndUpdate(
+          foundCustomer._id,
+          { $inc: { outstanding: -total } },
+          { session }
+        );
+
+        if (!updatedCustomer) {
+          throw new Error("Unable to update customer's outstanding balance");
+        }
+      } else {
+        const newTransactionId = await Counter.findOneAndUpdate(
+          { value: "transactionId" },
+          {
+            $inc: { value: 1 },
+          },
+          {
+            new: true,
+            session,
+          }
+        );
+
+        console.log(newTransactionId, "this is the transaction");
+
+        if (!newTransactionId) {
+          throw new Error("Unable to create transaction id");
+        }
+        transaction = await Transaction.create(
+          [
+            {
+              id: newTransactionId.value,
+              name: "Product Return",
+              amount: total,
+              taken: true,
+              purpose: "return",
+              paymentMode: "cash",
+              approved: true,
+            },
+          ],
+          { session }
+        );
+
+        if (!transaction[0]) {
+          throw new Error("Unable to create the transaction");
+        }
+      }
+
+      // Update daily report correctly here
+      const dailyReport = await DailyReport.findOneAndUpdate(
+        { date: currentDate },
+        {
+          $push: {
+            updatedToday: items.map((item) => ({
+              product: item.product,
+              quantity: item.quantity,
+              previousQuantity: item.previousQuantity,
+              purpose: "Product Return",
+            })),
+            transactions: transaction[0]._id,
+          },
+        },
+        { upsert: true, new: true, session }
+      );
+
+      if (!dailyReport) {
+        throw new Error("Unable to update the daily report");
+      }
+
+      let newBillId = await Counter.findOneAndUpdate(
+        { name: "billId" },
+        {
+          $inc: { value: 1 },
+        },
         { new: true, session }
       );
 
-      if (!updatedProduct) {
-        throw new Error("Error while updating product stock");
+      if (!newBillId) {
+        throw new Error("Unable to create the bill id");
       }
-
-      let logger = await Logger.create(
-        [
-          {
-            name: "Product Return",
-            previousQuantity: availableProduct.stock,
-            newQuantity: updatedProduct.stock,
-            quantity: quantity,
-            product: availableProduct._id,
-          },
-        ],
-        { session }
-      );
-
-      if (!logger) {
-        throw new Error("Unable to create logger");
-      }
-
-      items.push({
-        product: updatedProduct._id,
-        quantity: quantity,
-        previousQuantity: updatedProduct.stock - quantity,
+      // Success response
+      return res.status(200).json({
+        success: true,
+        transaction,
+        dailyReport,
+        msg: "Updated successfully",
       });
-    }
-
-    // Create the transaction based on the return type
-    if (returnType === "adjustment") {
-      foundCustomer = await Customer.findById(foundCustomer._id).session(
-        session
-      );
-      if (!foundCustomer) {
-        throw new Error("Outstanding not found");
-      }
-      const newOutstanding = foundCustomer.outstanding - total;
-      transaction = await Transaction.create(
-        [
-          {
-            name: foundCustomer.name,
-            previousOutstanding: foundCustomer.outstanding,
-            amount: total,
-            newOutstanding,
-            taken: false,
-            purpose: "Return Product",
-            paymentMode: "productReturn",
-            approved: true,
-            customer: foundCustomer._id,
-          },
-        ],
-        { session }
-      );
-
-      if (!transaction) {
-        throw new Error("Unable to create the transaction");
-      }
-
-      const updatedCustomer = await Customer.findByIdAndUpdate(
-        foundCustomer._id,
-        {
-          $inc: { outstanding: -total },
-        },
-        { session }
-      );
-
-      if (!updatedCustomer) {
-        throw new Error("Unable to update the customer's outstanding balance");
-      }
-    } else {
-      // If returnType is not "adjustment", create a standard product return transaction
-      transaction = await Transaction.create(
-        [
-          {
-            name: "Product Return",
-            amount: total,
-            taken: true,
-            purpose: "return",
-            paymentMode: "cash",
-            approved: true,
-          },
-        ],
-        { session }
-      );
-
-      if (!transaction) {
-        throw new Error("Unable to create the transaction");
-      }
-    }
-
-    // Prepare data for daily report update
-    const productsForDailyReport = items.map((inv) => ({
-      product: inv.product,
-      quantity: inv.quantity,
-      previousQuantity: inv.previousQuantity,
-    }));
-
-    // Update the daily report document
-    if (transaction) {
-      dailyReport.updatedToday.push(...productsForDailyReport);
-      dailyReport.transactions.push(transaction[0]._id);
-      const savedDailyReport = await dailyReport.save({ session });
-
-      if (!savedDailyReport) {
-        throw new Error("Unable to save the daily report");
-      }
-
-      dailyReport = savedDailyReport;
-    } else {
-      throw new Error("Transaction was created but not saved");
-    }
-
-    const idS = await BillId.create([{ id: newBillId }], { session });
-    if (!idS[0]) {
-      throw new Error("Error creating the id");
-    }
-
-    // Commit the transaction if everything is successful
-    await session.commitTransaction();
-    return res.status(200).json({
-      success: true,
-      transaction,
-      dailyReport,
-      msg: "Updated successfully",
     });
   } catch (error) {
-    // If an error occurs, abort the transaction and return error response
-    await session.abortTransaction();
-    console.error("Error during processing:", error.message);
+    console.error("Error during transaction:", error.message);
     return res.status(500).json({
       success: false,
       msg: error.message,
     });
   } finally {
-    // Ensure the session is ended
+    // End session
     session.endSession();
   }
 };

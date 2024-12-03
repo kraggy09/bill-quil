@@ -46,7 +46,7 @@ const ThermalPrint = React.forwardRef(
           </div>
           <div className="text-xs justify-between font-semibold  flex ">
             <span id="left" className="mr-10">
-              <p>Invoice No.: {billId}</p>
+              <p>Invoice No.: {billId ? `B-${billId}` : "Old Bill"}</p>
               <p>
                 Date:
                 {createdAt
